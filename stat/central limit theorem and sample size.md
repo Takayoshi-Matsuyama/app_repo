@@ -103,6 +103,30 @@ $(z_{\alpha/2}+z_{\beta})\sqrt{\sigma^2} = (\mu_1 - \mu_0) \sqrt{n}$
 
 $n = \dfrac{(z_{\alpha/2}+z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}$
 
+### 計算例
+
+母平均$\mu$が$\mu_0$と異なるかどうかを検証する有意水準2.5%の片側検定を考える。
+
+帰無仮説H0: $\mu = \mu_0 = 5$  
+対立仮説H1: $\mu = \mu_1 = 5.5(> \mu_0)$
+
+標準偏差 $\sigma = 2$
+
+検定の第二種の過誤（誤ってH0受容。異常見逃し）の確率$\beta$=0.2（検出力0.8）に必要なサンプルサイズ$n$
+
+$n = \dfrac{(z_{\alpha/2}+z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2} = \dfrac{(1.96 + 0.84)^2 \times 2^2}{(5.5 - 5)^2} = 125.4 = 126$
+
+この場合の確率分布と棄却限界値を以下に示す。
+
+![平均値の分布](./central%20limit%20theorem%20and%20sample%20size%20data/mean_prob_dist_01.png)
+
+
 # 以降、作成中
+
+統計量$Z_0 = \dfrac{\overline{X} - \mu_0}{\sqrt{\sigma^2/n}}$ は標準正規分布$N(0, 1)$に従う。
+
+統計量$Z_0 = \frac{\overline{X} - \mu_0}{\sqrt{\sigma^2/n}}$ は標準正規分布$N(0, 1)$に従う。
+
+統計量$Z_0 = \dfrac{\bar{X} - \mu_0}{\sqrt{\sigma^2/n}}$ は標準正規分布$N(0, 1)$に従う。
 
 # 参考文献
