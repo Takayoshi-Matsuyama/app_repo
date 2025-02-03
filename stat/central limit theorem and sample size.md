@@ -117,6 +117,7 @@ $n = \dfrac{(z_{\alpha/2}+z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2}$
 $n = \dfrac{(z_{\alpha/2}+z_{\beta})^2 \sigma^2}{(\mu_1 - \mu_0)^2} = \dfrac{(1.96 + 0.84)^2 \times 2^2}{(5.5 - 5)^2} = 125.4 = 126$
 
 このときの $\overline{X}$ の確率分布と棄却限界値を以下に示す。
+棄却限界値のラインにおいて、第一種の過誤の確率（片側） $\alpha/2$ と第二種の過誤の確率 $\beta$ が釣り合っていることがわかる。
 
 ![平均値の分布](./central%20limit%20theorem%20and%20sample%20size%20data/mean_prob_dist_01.png)
 
