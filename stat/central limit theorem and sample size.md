@@ -4,6 +4,9 @@
 
 本稿は、個人的に勉強した内容を技術論文としてまとめたものである。
 
+本稿を書くために使用したpythonコードをフリーウェアとして公開する。  
+https://github.com/Takayoshi-Matsuyama/app_repo/blob/main/stat/central%20limit%20theorem%20and%20sample%20size.ipynb
+
 ## サンプルサイズ
 
 現場のデータ活用においては適切なサンプルサイズを決定することが重要である。
