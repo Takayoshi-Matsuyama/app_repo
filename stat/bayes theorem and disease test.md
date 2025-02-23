@@ -37,7 +37,7 @@ $$
 P(B|A) = \dfrac{N_{A \cap B}}{N_A} = \dfrac{\dfrac{N_{A \cap B}}{N_\Omega}}{\dfrac{N_A}{N_\Omega}} = \frac{P(A \cap B)}{P(A)}
 $$
 
-![A_and_B](./bayes%20theorem%20and%20PCR%20test%20data/A%20and%20B.png)
+![A_and_B](./bayes%20theorem%20and%20disease%20test%20data/A%20and%20B.png)
 
 ### 例
 
@@ -74,7 +74,7 @@ $$
 事象 $A$ がある。  
 事象 $A$ の原因として、排反な $n$ 個の事象 $H_1, H_2, \dots, H_n$ がある。
 
-![A_and_Hn](./bayes%20theorem%20and%20PCR%20test%20data/A%20and%20Hn.png)
+![A_and_Hn](./bayes%20theorem%20and%20disease%20test%20data/A%20and%20Hn.png)
 
 事象 $A$ が起こったという条件の下で  
 その原因が $H_i$ であったとする。  
@@ -114,7 +114,7 @@ $P(A|H_i)$ (原因ごとに事象 $A$ が起こる条件付き確率)が推定�
     * 特異度 (「疾患なし」)のうち、正しく陰性と判定する割合） 99%
 
 
-![test_situation](./bayes%20theorem%20and%20PCR%20test%20data/test_situation.png)
+![test_situation](./bayes%20theorem%20and%20disease%20test%20data/test_situation.png)
 
 ## 1回目の検査
 
@@ -194,6 +194,35 @@ $P(A|H_i)$ (原因ごとに事象 $A$ が起こる条件付き確率)が推定�
 * 本稿では、最初に条件付き確率とベイズの定理について理論を確認した。
 * 次に応用例として、疾患の検査を想定し、陽性の場合に真に疾患があるかどうかを統計的に調べた。
 * ベイズの定理を使うと、可能性を理論的・定量的に検討できる。それは、直感や印象に惑わされることなく、適切な対応をとるために役立つものである。
+
+# 付録 - FTA, FMEA, DRBFMと事前確率
+
+ベイズの定理の意義の一つとして、予め原因と故障の関係を整理することは、故障や不具合自体の低減に役立つことを述べた。
+
+## 例1：FTAと確率
+
+FTA (Fault Tree Analysis / 故障の木解析) (システム故障 → 部品故障へ分解) に確率を付したもの。<br>
+設計や運用の各段階で原因と故障の関係を定量的に論じ、整理することは、気づきや発見を促し、故障や不良そのものを減らすことに役立つ。<br>
+また、製品不良が起こったときに、どの故障の確率が高いかを客観的に示し、調査・対策の優先度をつけることが可能となる。
+
+![FTA](./bayes%20theorem%20and%20disease%20test%20data/FTA.png)
+
+## 例2：FMEAと確率
+
+FMEA (Failure Mode and Effects / 故障モード影響解析) (部品故障 → システム故障への影響解析)
+
+| 機能ブロック | 機能部品 | 機能 | 故障モード | 推定原因 | 頻度 (事前確率 $H_i$) | 故障が製品不良の原因となる条件付き確率 $P(A\|H_i)$ |
+| --- | --- | --- | --- | --- | --- | --- |
+| 機械 | 軸接手 | 回転力の伝達 | ガタつき | 摩耗 | --- | --- |
+
+
+
+
+
+## 例3：DRABFMと確率
+
+DRBFM (Design Review Based on Failure Mode) (変更点・変化点に着目した故障モードの影響解析)
+
 
 # 参考文献
 
