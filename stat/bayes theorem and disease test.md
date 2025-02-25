@@ -92,6 +92,7 @@ P(H_i|A) &= \frac{P(H_i \cap A)}{P(A)} \\
 $$
 
 まとめる。ベイズの定理：
+
 $$
 P(H_i|A) = \frac{P(H_i) P(A|H_i)}{\displaystyle \sum_{j=1}^n P(H_j)P(A|H_j)}
 $$
