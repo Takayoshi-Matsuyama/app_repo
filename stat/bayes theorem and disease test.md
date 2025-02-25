@@ -4,7 +4,8 @@
 
 本稿は、個人的に勉強した内容を技術論文としてまとめたものである。
 
-本稿を書くために使用したpythonコードをフリーウェアとして公開する。
+本稿を書くために使用したpythonコードをフリーウェアとして公開する。  
+https://github.com/Takayoshi-Matsuyama/app_repo/blob/main/stat/bayes%20theorem%20and%20disease%20test.ipynb
 
 本稿には、以下について記す。
 

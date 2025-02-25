@@ -212,4 +212,4 @@ $n = \dfrac{(z_{\alpha/2}+z_{\beta})^2 (\sigma_1^2 + \sigma_2^2)}{(\delta_1 - \d
 # 著者
 
 2025/2/11 松山 貴佳  
-www.linkedin.com/in/takayoshi-matsuyama-055381a5
+https://www.linkedin.com/in/takayoshi-matsuyama-055381a5
