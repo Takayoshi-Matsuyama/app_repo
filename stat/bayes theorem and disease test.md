@@ -33,7 +33,7 @@ https://github.com/Takayoshi-Matsuyama/app_repo/blob/main/stat/bayes%20theorem%2
 # 理論の確認
 
 ## 条件付き確率
-事象 $A$ が起こるという条件の下で事象 $B$ が起こる確率は、それぞれの事象の要素数 $N_A$ 、$N_{A \cap B}$ の比。その分子分母を全事象 $\Omega$ の数で割る。
+事象 $A$ が起こるという条件の下で事象 $B$ が起こる確率は、それぞれの事象の要素数 $N_A$ , $N_{A \cap B}$ の比。その分子分母を全事象 $\Omega$ の数で割る。
 
 $$
 P(B|A) = \dfrac{N_{A \cap B}}{N_A} = \dfrac{\dfrac{N_{A \cap B}}{N_\Omega}}{\dfrac{N_A}{N_\Omega}} = \frac{P(A \cap B)}{P(A)}
