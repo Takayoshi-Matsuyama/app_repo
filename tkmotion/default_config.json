@@ -1,0 +1,23 @@
+[
+    {
+        "version" : "0.0.1",
+        "motor" : [
+            {
+                "type" : "linear",
+                "max_force" : 5.0
+            }
+        ],
+        "encoder" : [
+            {
+                "type1" : "abosolute",
+                "type2" : "linear",
+                "resolution_m" : 1e-9
+            }
+        ],
+        "physical_object" : [
+            {
+                "mass" : 1.0
+            }
+        ]
+    }
+]
