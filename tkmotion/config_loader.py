@@ -8,10 +8,8 @@ class ConfigLoader:
     def load(self):
         """Load configuration from a JSON file."""
         import json
-        import os
 
         print("Loading configuration...")
-        print(f"{os.getcwd()=}")
 
         try:
             with open(self.config_path, "r") as f:

@@ -1,0 +1,13 @@
+[
+    {
+        "version": "0.0.1",
+        "motion_profile": [
+            {
+                "type": "trapezoidal",
+                "max_velocity_m_s": 0.01,
+                "acceleration_m_s2": 0.005,
+                "length_m": 0.1
+            }
+        ]
+    }
+]
