@@ -1,6 +1,10 @@
 [
     {
         "version" : "0.0.1",
+        "discrete_time" : {
+            "time_step_us" : 10,
+            "duration_s" : 3.0
+        },
         "motor" : [
             {
                 "type" : "linear",
