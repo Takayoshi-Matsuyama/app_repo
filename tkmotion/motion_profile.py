@@ -37,9 +37,9 @@ class MotionProfile:
         """Returns the motion profile type."""
         return self.profile["motion_profile"][0]["type"]
 
-    def cmd_pos(self, t: float) -> float:
-        """Calculate command position at time t."""
-        return 0.0  # Default implementation for base class
+    def cmd_vel_pos(self, t: float) -> tuple[float, float]:
+        """Returns a tuple of (velocity, position)."""
+        return 0.0, 0.0  # Default implementation for base class
 
 
 class TrapezoidalMotionProfile(MotionProfile):
@@ -74,7 +74,13 @@ class TrapezoidalMotionProfile(MotionProfile):
             self.T = 2 * self.Ta
 
     def cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """Calculate command position at time t."""
+        """Returns a tuple of (velocity, position).
+
+        Args:
+            t (float): Time in seconds.
+        Returns:
+            tuple[float, float]: (velocity in m/s, position in m)
+        """
 
         # 加速
         if t < self.Ta:
