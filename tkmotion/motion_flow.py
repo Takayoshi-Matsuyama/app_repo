@@ -9,20 +9,30 @@ class MotionFlow:
 
     def __init__(self) -> None:
         """Initialize the MotionFlow."""
-        self.config: MotionFlowConfig | None = None
-        self.motion_profile: MotionProfile | None = None
+        self._motion_flow_config: MotionFlowConfig | None = None
+        self._motion_profile: MotionProfile | None = None
+
+    @property
+    def config(self) -> MotionFlowConfig | None:
+        """Returns the motion flow configuration."""
+        return self._motion_flow_config
+
+    @property
+    def mprof(self) -> MotionProfile | None:
+        """Returns the motion profile."""
+        return self._motion_profile
 
     def load_config(self) -> None:
         """Load configuration using ConfigLoader."""
 
         loader = ConfigLoader()
-        self.config = loader.load()
+        self._motion_flow_config = loader.load()
 
     def load_motion_profile(self) -> None:
         """Load motion profile using MotionProfileLoader."""
 
         profile_loader = MotionProfileLoader()
-        self.motion_profile = profile_loader.load()
+        self._motion_profile = profile_loader.load()
 
     def execute(self) -> None:
         print("Executing motion flow...")
