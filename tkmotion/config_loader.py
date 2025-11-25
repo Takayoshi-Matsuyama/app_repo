@@ -15,7 +15,8 @@ class ConfigLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
-                return MotionFlowConfig(config)
+                # リスト先頭のディクショナリを渡す
+                return MotionFlowConfig(config[0])
         except Exception as e:
             print(f"Error loading configuration: {e}")
         return None

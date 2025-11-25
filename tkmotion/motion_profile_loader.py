@@ -15,7 +15,8 @@ class MotionProfileLoader:
         try:
             with open(filepath, "r") as f:
                 profile = json.load(f)
-                return MotionProfile(profile)
+                # リスト先頭のディクショナリを渡す
+                return MotionProfile(profile[0])
         except Exception as e:
             print(f"Error loading motion profile: {e}")
         return None
