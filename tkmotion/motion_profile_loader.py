@@ -1,12 +1,16 @@
+import json
 from tkmotion.motion_profile import MotionProfile
 
 
 class MotionProfileLoader:
+    """Loader for MotionProfile from a JSON file."""
+
     def __init__(self):
+        """Initialize the MotionProfileLoader."""
         pass
 
     def load(self, filepath="tkmotion/default_motion_prof.json"):
-        import json
+        """Load motion profile from a JSON file."""
 
         try:
             with open(filepath, "r") as f:
