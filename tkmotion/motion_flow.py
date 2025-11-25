@@ -1,3 +1,4 @@
+import pandas as pd
 from tkmotion.motion_flow_config import MotionFlowConfig
 from tkmotion.motion_profile import MotionProfile
 from tkmotion.config_loader import ConfigLoader
@@ -34,13 +35,50 @@ class MotionFlow:
         profile_loader = MotionProfileLoader()
         self._motion_profile = profile_loader.load()
 
-    def execute(self) -> None:
+    def execute(self) -> pd.DataFrame:
         print("Executing motion flow...")
 
-        # TODO: 時系列を進める逐次処理
+        if self._motion_flow_config is None:
+            raise ValueError(
+                "Motion flow configuration not loaded. Call load_config() first."
+            )
 
-        # TODO: 目標位置生成
+        if self._motion_flow_config.discrete_time is None:
+            raise ValueError("Discrete time configuration not available.")
+
+        if self._motion_profile is None:
+            raise ValueError(
+                "Motion profile not loaded. Call load_motion_profile() first."
+            )
+
+        motion_profile = self._motion_profile
+
+        time_steps_gen = (
+            self._motion_flow_config.discrete_time.get_time_step_generator()
+        )
+        time_list = []
+        vel_list = []
+        pos_list = []
+        for t in time_steps_gen:
+            time_list.append(t)
+
+            # Get velocity and position from motion profile
+            vel, pos = motion_profile.cmd_vel_pos(t)
+            vel_list.append(vel)
+            pos_list.append(pos)
+
+        df = pd.DataFrame(
+            {
+                "time_s": time_list,
+                "velocity_m_s": vel_list,
+                "position_m": pos_list,
+            }
+        )
+
+        print(f"Generated {len(time_list)} time steps.")
 
         # TODO: サーボ推力計算 (PID制御)
 
         # TODO: 力 --> 速度 --> 位置変換 (仮想現在位置 更新)
+
+        return df

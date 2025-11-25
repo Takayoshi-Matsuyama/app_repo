@@ -30,6 +30,13 @@ class DiscreteTime:
         """Returns the configuration dictionary."""
         return self.config
 
+    def get_time_step_generator(self):
+        """Generator that yields time steps from 0 to duration with step dt."""
+        t = 0.0
+        while t <= self._duration_s:
+            yield t
+            t += self._dt
+
     def step(self, state, control):
         # Implement the discrete time step logic here
         new_state = state + control * self.dt

@@ -3,7 +3,7 @@
         "version" : "0.0.1",
         "discrete_time" : {
             "time_step_us" : 10,
-            "duration_s" : 3.0
+            "duration_s" : 6.0
         },
         "motor" : [
             {
