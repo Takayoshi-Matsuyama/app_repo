@@ -1,9 +1,13 @@
+from tkmotion.motion_flow_config import MotionFlowConfig
+from tkmotion.motion_profile import MotionProfile
+
+
 class MotionFlow:
     """A class to handle motion flow operations."""
 
     def __init__(self):
-        self.config = []
-        self.motion_profile = []
+        self.config: MotionFlowConfig = None
+        self.motion_profile: MotionProfile = None
 
     def load_config(self):
         from tkmotion.config_loader import ConfigLoader
