@@ -1,5 +1,6 @@
 import json
 from tkmotion.motion_profile import MotionProfile
+from tkmotion.motion_profile import TrapezoidalMotionProfile
 
 
 class MotionProfileLoader:
@@ -16,7 +17,10 @@ class MotionProfileLoader:
             with open(filepath, "r") as f:
                 profile = json.load(f)
                 # リスト先頭のディクショナリを渡す
-                return MotionProfile(profile[0])
+                if profile[0]["motion_profile"][0]["type"] == "trapezoid":
+                    return TrapezoidalMotionProfile(profile[0])
+                else:
+                    return MotionProfile(profile[0])
         except Exception as e:
             print(f"Error loading motion profile: {e}")
         return None
