@@ -2,7 +2,7 @@
     {
         "version" : "0.0.1",
         "discrete_time" : {
-            "time_step_us" : 10,
+            "time_step_us" : 100,
             "duration_s" : 6.0
         },
         "motor" : [
