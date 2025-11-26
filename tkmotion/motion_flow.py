@@ -106,6 +106,10 @@ class MotionFlow:
         obj_vel_list = []
         obj_pos_list = []
 
+        # 累積情報 初期値 (cumulative information initial value)
+        vel_error_cumsum = 0.0
+        pos_error_cumsum = 0.0
+
         # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
             time_list.append(t)
@@ -116,31 +120,52 @@ class MotionFlow:
             cmd_pos_list.append(cmd_pos)
 
             # サーボ推力計算 (servo force calculation)
-            # 位置偏差 (指令が先行) (position error, command leads)
-            pos_error = cmd_pos - target_system.physical_object.pos
-            pos_error_list.append(pos_error)
 
             # 速度偏差 (指令が先行) (velocity error, command leads)
             vel_error = cmd_vel - target_system.physical_object.vel
             vel_error_list.append(vel_error)
+            vel_error_cumsum += vel_error
+
+            # 位置偏差 (指令が先行) (position error, command leads)
+            pos_error = cmd_pos - target_system.physical_object.pos
+            pos_error_list.append(pos_error)
+            pos_error_cumsum += pos_error
 
             # 速度比例制御 (velocity proportional control)
             kvp = 10000.0  # [N/(m/s)] 比例ゲイン (proportional gain)
             force = kvp * vel_error
 
+            # 速度積分制御 (velocity integral control)
+            kvi = 1000.0  # [N/(m/s)] 積分ゲイン (integral gain)
+            force += kvi * vel_error_cumsum
+
             # 位置比例制御 (position proportional control)
             kpp = 1000.0  # [N/m] 比例ゲイン (proportional gain)
             force += kpp * pos_error
+
+            # 位置積分制御 (position integral control)
+            kpi = 500.0  # [N/m] 積分ゲイン (integral gain)
+            force += kpi * pos_error_cumsum
+
             force_list.append(force)
 
             # 力 --> 速度 --> 位置変換 (仮想現在位置 更新) (force --> velocity --> position conversion, update virtual current position)
+
+            # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a なので a = F/m) (since F = m*a, a = F/m)
             acc = force / target_system.physical_object.mass
+
+            # 加速度aが生じると、速度vが変化 (v = u + a*t) (when acceleration a occurs, velocity v changes)
             target_system.physical_object.vel += acc * (
                 self._motion_flow_config.discrete_time.dt
             )
-            target_system.physical_object.pos += (
-                0.5 * acc * (self._motion_flow_config.discrete_time.dt**2)
+
+            # 速度vが変化すると、位置xが変化 (x = x0 + v*t) (when velocity v changes, position x changes)
+            target_system.physical_object.pos += target_system.physical_object.vel * (
+                self._motion_flow_config.discrete_time.dt
             )
+            # (
+            #     0.5 * acc * (self._motion_flow_config.discrete_time.dt**2)  # これは、速度変化分
+            # )
             obj_acc_list.append(acc)
             obj_vel_list.append(target_system.physical_object.vel)
             obj_pos_list.append(target_system.physical_object.pos)
