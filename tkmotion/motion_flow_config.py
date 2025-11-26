@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from tkmotion.discrete_time import DiscreteTime
-from tkmotion.physical_object import PhysicalObject
 
 
 class MotionFlowConfig:
@@ -23,9 +22,6 @@ class MotionFlowConfig:
         """Initialize MotionFlowConfig with given configuration."""
         self.config: dict = config
         self.discrete_time: DiscreteTime | None = DiscreteTime(config["discrete_time"])
-        self.physical_object: PhysicalObject | None = PhysicalObject(
-            config["physical_object"]
-        )
 
     @property
     def version(self):

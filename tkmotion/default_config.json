@@ -17,11 +17,6 @@
                 "type2" : "linear",
                 "resolution_m" : 1e-9
             }
-        ],
-        "physical_object" : [
-            {
-                "mass" : 2.0
-            }
         ]
     }
 ]
