@@ -21,7 +21,7 @@ class DiscreteTime:
         try:
             self._dt: float = float(config["time_step_us"]) / 1000000.0  # 秒単位
         except KeyError:
-            raise ValueError("Missing 'time_step_us' in configuration")
+            raise KeyError("Missing 'time_step_us' in configuration")
         except ValueError:
             raise ValueError("'time_step_us' must be a number")
         try:
