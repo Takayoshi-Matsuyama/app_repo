@@ -27,6 +27,7 @@ class MotionFlow:
     def __init__(self) -> None:
         """Initialize the MotionFlow."""
         self._motion_flow_config: MotionFlowConfig | None = None
+        self._target_system: TargetSystem | None = None
         self._motion_profile: MotionProfile | None = None
 
     @property
@@ -81,34 +82,83 @@ class MotionFlow:
                 "Motion profile not loaded. Call load_motion_profile() first."
             )
 
-        motion_profile = self._motion_profile
+        if self._target_system is None:
+            raise ValueError(
+                "Target system not loaded. Call load_target_system() first."
+            )
 
+        motion_profile = self._motion_profile
+        target_system = self._target_system
+
+        # 時間ステップ生成器 (time step generator)
         time_steps_gen = (
             self._motion_flow_config.discrete_time.get_time_step_generator()
         )
+
+        # データ収集リスト (lists for data acquisition)
         time_list = []
-        vel_list = []
-        pos_list = []
+        cmd_vel_list = []
+        cmd_pos_list = []
+        pos_error_list = []
+        vel_error_list = []
+        force_list = []
+        obj_acc_list = []
+        obj_vel_list = []
+        obj_pos_list = []
+
+        # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
             time_list.append(t)
 
-            # Get velocity and position from motion profile
-            vel, pos = motion_profile.cmd_vel_pos(t)
-            vel_list.append(vel)
-            pos_list.append(pos)
+            # 指令速度と位置 (command velocity and position)
+            cmd_vel, cmd_pos = motion_profile.cmd_vel_pos(t)
+            cmd_vel_list.append(cmd_vel)
+            cmd_pos_list.append(cmd_pos)
+
+            # サーボ推力計算 (servo force calculation)
+            # 位置偏差 (指令が先行) (position error, command leads)
+            pos_error = cmd_pos - target_system.physical_object.pos
+            pos_error_list.append(pos_error)
+
+            # 速度偏差 (指令が先行) (velocity error, command leads)
+            vel_error = cmd_vel - target_system.physical_object.vel
+            vel_error_list.append(vel_error)
+
+            # 速度比例制御 (velocity proportional control)
+            kvp = 10000.0  # [N/(m/s)] 比例ゲイン (proportional gain)
+            force = kvp * vel_error
+
+            # 位置比例制御 (position proportional control)
+            kpp = 1000.0  # [N/m] 比例ゲイン (proportional gain)
+            force += kpp * pos_error
+            force_list.append(force)
+
+            # 力 --> 速度 --> 位置変換 (仮想現在位置 更新) (force --> velocity --> position conversion, update virtual current position)
+            acc = force / target_system.physical_object.mass
+            target_system.physical_object.vel += acc * (
+                self._motion_flow_config.discrete_time.dt
+            )
+            target_system.physical_object.pos += (
+                0.5 * acc * (self._motion_flow_config.discrete_time.dt**2)
+            )
+            obj_acc_list.append(acc)
+            obj_vel_list.append(target_system.physical_object.vel)
+            obj_pos_list.append(target_system.physical_object.pos)
 
         df = pd.DataFrame(
             {
                 "time_s": time_list,
-                "velocity_m_s": vel_list,
-                "position_m": pos_list,
+                "cmd_velocity_m_s": cmd_vel_list,
+                "cmd_position_m": cmd_pos_list,
+                "position_error_m": pos_error_list,
+                "velocity_error_m_s": vel_error_list,
+                "force_N": force_list,
+                "obj_acceleration_m_s2": obj_acc_list,
+                "obj_velocity_m_s": obj_vel_list,
+                "obj_position_m": obj_pos_list,
             }
         )
 
         print(f"Generated {len(time_list)} time steps.")
-
-        # TODO: サーボ推力計算 (PID制御)
-
-        # TODO: 力 --> 速度 --> 位置変換 (仮想現在位置 更新)
 
         return df

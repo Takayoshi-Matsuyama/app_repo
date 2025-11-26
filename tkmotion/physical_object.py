@@ -26,7 +26,8 @@ class PhysicalObject:
         except ValueError:
             raise ValueError("'mass' must be a number")
 
-        self.potison = 0.0
+        self.vel = 0.0
+        self.pos = 0.0
 
     def get_config(self) -> dict:
         """Return the configuration dictionary."""
