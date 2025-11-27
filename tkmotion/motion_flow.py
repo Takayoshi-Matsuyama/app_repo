@@ -122,7 +122,7 @@ class MotionFlow:
             time_list.append(t)
 
             # 指令速度と位置 (command velocity and position)
-            cmd_vel, cmd_pos = motion_profile.cmd_vel_pos(t)
+            cmd_vel, cmd_pos = motion_profile.calculate_cmd_vel_pos(t)
             cmd_vel_list.append(cmd_vel)
             cmd_pos_list.append(cmd_pos)
 

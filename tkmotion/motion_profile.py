@@ -59,7 +59,7 @@ class MotionProfile:
         (Returns the motion profile type)"""
         return self.profile["motion_profile"][0]["type"]
 
-    def cmd_vel_pos(self, t: float) -> tuple[float, float]:
+    def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
         """速度と位置のタプルを返す
         (Return a tuple of velocity and position)"""
         # ベースクラスのデフォルト実装 (Default implementation for base class)
@@ -118,7 +118,7 @@ class TrapezoidalMotionProfile(MotionProfile):
             self.Tc = 0.0
             self.T = 2 * self.Ta
 
-    def cmd_vel_pos(self, t: float) -> tuple[float, float]:
+    def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
         """速度と位置のタプルを返す
         (Return a tuple of velocity and position)
 
