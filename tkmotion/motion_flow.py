@@ -110,6 +110,12 @@ class MotionFlow:
         vel_error_cumsum = 0.0
         pos_error_cumsum = 0.0
 
+        # 微分情報 初期値 (derivative information initial value)
+        prev_vel_error = 0.0
+        vel_error_diff = 0.0
+        prev_pos_error = 0.0
+        pos_error_diff = 0.0
+
         # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
             time_list.append(t)
@@ -139,11 +145,15 @@ class MotionFlow:
             vel_error = cmd_vel - target_system.physical_object.vel
             vel_error_list.append(vel_error)
             vel_error_cumsum += vel_error
+            vel_error_diff = vel_error - prev_vel_error
+            prev_vel_error = vel_error
 
             # 位置偏差 (指令が先行) (position error, command leads)
             pos_error = cmd_pos - target_system.physical_object.pos
             pos_error_list.append(pos_error)
             pos_error_cumsum += pos_error
+            pos_error_diff = pos_error - prev_pos_error
+            prev_pos_error = pos_error
 
             # 速度比例制御 (velocity proportional control)
             kvp = 10000.0  # [N/(m/s)] 比例ゲイン (proportional gain)
@@ -153,6 +163,10 @@ class MotionFlow:
             kvi = 1000.0  # [N/(m/s)] 積分ゲイン (integral gain)
             force += kvi * vel_error_cumsum
 
+            # 速度微分制御 (velocity derivative control)
+            kvd = 100.0  # [N/(m/s)] 微分ゲイン (derivative gain)
+            force += kvd * vel_error_diff
+
             # 位置比例制御 (position proportional control)
             kpp = 1000.0  # [N/m] 比例ゲイン (proportional gain)
             force += kpp * pos_error
@@ -160,6 +174,10 @@ class MotionFlow:
             # 位置積分制御 (position integral control)
             kpi = 500.0  # [N/m] 積分ゲイン (integral gain)
             force += kpi * pos_error_cumsum
+
+            # 位置微分制御 (position derivative control)
+            kpd = 10.0  # [N/m] 微分ゲイン (derivative gain)
+            force += kpd * pos_error_diff
 
             force_list.append(force)
 
