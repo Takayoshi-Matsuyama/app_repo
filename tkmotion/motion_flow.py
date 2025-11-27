@@ -14,10 +14,10 @@
 
 import pandas as pd
 from tkmotion.motion_flow_config import MotionFlowConfig
-from tkmotion.target_system import TargetSystem
+from tkmotion.plant import Plant
 from tkmotion.motion_profile import MotionProfile
 from tkmotion.config_loader import ConfigLoader
-from tkmotion.target_system_loader import TargetSystemLoader
+from tkmotion.plant_loader import PlantLoader
 from tkmotion.motion_profile_loader import MotionProfileLoader
 
 
@@ -27,7 +27,7 @@ class MotionFlow:
     def __init__(self) -> None:
         """Initialize the MotionFlow."""
         self._motion_flow_config: MotionFlowConfig | None = None
-        self._target_system: TargetSystem | None = None
+        self._plant: Plant | None = None
         self._motion_profile: MotionProfile | None = None
 
     @property
@@ -36,9 +36,9 @@ class MotionFlow:
         return self._motion_flow_config
 
     @property
-    def target_system(self) -> TargetSystem | None:
-        """Returns the target system."""
-        return self._target_system
+    def plant(self) -> Plant | None:
+        """Returns the plant."""
+        return self._plant
 
     @property
     def mprof(self) -> MotionProfile | None:
@@ -51,13 +51,13 @@ class MotionFlow:
         loader = ConfigLoader()
         self._motion_flow_config = loader.load()
 
-    def load_target_system(self, filepath="tkmotion/default_target.json") -> None:
-        """Load target system configuration into motion flow config."""
+    def load_plant(self, filepath="tkmotion/default_target.json") -> None:
+        """Load plant configuration into motion flow config."""
 
-        loader = TargetSystemLoader()
-        self._target_system = loader.load(filepath)
+        loader = PlantLoader()
+        self._plant = loader.load(filepath)
 
-        if self._target_system is None:
+        if self._plant is None:
             raise ValueError("Failed to load target system.")
 
     def load_motion_profile(self) -> None:
@@ -82,13 +82,13 @@ class MotionFlow:
                 "Motion profile not loaded. Call load_motion_profile() first."
             )
 
-        if self._target_system is None:
+        if self._plant is None:
             raise ValueError(
                 "Target system not loaded. Call load_target_system() first."
             )
 
         motion_profile = self._motion_profile
-        target_system = self._target_system
+        target_system = self._plant
 
         # 時間ステップ生成器 (time step generator)
         time_steps_gen = (
