@@ -197,12 +197,17 @@ class MotionFlow:
 
             # 速度vが変化すると、位置xが変化 (x = x0 + v*t)
             # (when velocity v changes, position x changes)
-            target_system.physical_object.pos += target_system.physical_object.vel * (
-                self._motion_flow_config.discrete_time.dt
+            # 前回速度による変化分 + 今回加速度による変化分
+            # (position changes due to previous velocity
+            #  + position changes due to current acceleration)
+            target_system.physical_object.pos += (
+                target_system.physical_object.prev_vel
+                * (self._motion_flow_config.discrete_time.dt)
+                + 0.5
+                * target_system.physical_object.acc
+                * (self._motion_flow_config.discrete_time.dt**2)
             )
-            # (
-            #     0.5 * acc * (self._motion_flow_config.discrete_time.dt**2)
-            # )
+
             obj_acc_list.append(target_system.physical_object.acc)
             obj_vel_list.append(target_system.physical_object.vel)
             obj_pos_list.append(target_system.physical_object.pos)
