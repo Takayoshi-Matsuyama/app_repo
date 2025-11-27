@@ -181,24 +181,27 @@ class MotionFlow:
 
             force_list.append(force)
 
-            # 力 --> 速度 --> 位置変換 (仮想現在位置 更新) (force --> velocity --> position conversion, update virtual current position)
+            # 物理オブジェクト状態更新 (physical object state update)
 
-            # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a なので a = F/m) (since F = m*a, a = F/m)
+            # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
+            # (when force F is applied, acceleration a occurs in mass m object)
             target_system.physical_object.acc = (
                 force / target_system.physical_object.mass
             )
 
-            # 加速度aが生じると、速度vが変化 (v = u + a*t) (when acceleration a occurs, velocity v changes)
+            # 加速度aが生じると、速度vが変化 (v = u + a*t)
+            # (when acceleration a occurs, velocity v changes)
             target_system.physical_object.vel += target_system.physical_object.acc * (
                 self._motion_flow_config.discrete_time.dt
             )
 
-            # 速度vが変化すると、位置xが変化 (x = x0 + v*t) (when velocity v changes, position x changes)
+            # 速度vが変化すると、位置xが変化 (x = x0 + v*t)
+            # (when velocity v changes, position x changes)
             target_system.physical_object.pos += target_system.physical_object.vel * (
                 self._motion_flow_config.discrete_time.dt
             )
             # (
-            #     0.5 * acc * (self._motion_flow_config.discrete_time.dt**2)  # これは、速度変化分
+            #     0.5 * acc * (self._motion_flow_config.discrete_time.dt**2)
             # )
             obj_acc_list.append(target_system.physical_object.acc)
             obj_vel_list.append(target_system.physical_object.vel)

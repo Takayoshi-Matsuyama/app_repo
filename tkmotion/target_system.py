@@ -21,9 +21,7 @@ class TargetSystem:
     def __init__(self, config: dict) -> None:
         """Initialize TargetSystem with given configuration."""
         self.config: dict = config
-        self.physical_object: PhysicalObject | None = PhysicalObject(
-            config["physical_object"]
-        )
+        self.physical_object: PhysicalObject = PhysicalObject(config["physical_object"])
 
     def get_config(self) -> dict:
         """Return the configuration dictionary."""
