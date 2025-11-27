@@ -51,14 +51,13 @@ class MotionFlow:
         loader = ConfigLoader()
         self._motion_flow_config = loader.load()
 
-    def load_plant(self, filepath="tkmotion/default_target.json") -> None:
-        """Load plant configuration into motion flow config."""
+    def load_plant(self, filepath="tkmotion/default_plant.json") -> None:
+        """プラント設定をロードする
+        (Load plant configuration)"""
 
-        loader = PlantLoader()
-        self._plant = loader.load(filepath)
-
+        self._plant = PlantLoader().load(filepath)
         if self._plant is None:
-            raise ValueError("Failed to load target system.")
+            raise ValueError("Failed to load plant.")
 
     def load_motion_profile(self) -> None:
         """Load motion profile using MotionProfileLoader."""
@@ -88,7 +87,7 @@ class MotionFlow:
             )
 
         motion_profile = self._motion_profile
-        target_system = self._plant
+        plant = self._plant
 
         # 時間ステップ生成器 (time step generator)
         time_steps_gen = (
@@ -142,14 +141,14 @@ class MotionFlow:
             # 偏差が変化する方向を予測する (偏差が拡大しそうなら早めに操作量を大きくする)。
 
             # 速度偏差 (指令が先行) (velocity error, command leads)
-            vel_error = cmd_vel - target_system.physical_object.vel
+            vel_error = cmd_vel - plant.physical_obj.vel
             vel_error_list.append(vel_error)
             vel_error_cumsum += vel_error
             vel_error_diff = vel_error - prev_vel_error
             prev_vel_error = vel_error
 
             # 位置偏差 (指令が先行) (position error, command leads)
-            pos_error = cmd_pos - target_system.physical_object.pos
+            pos_error = cmd_pos - plant.physical_obj.pos
             pos_error_list.append(pos_error)
             pos_error_cumsum += pos_error
             pos_error_diff = pos_error - prev_pos_error
@@ -185,13 +184,11 @@ class MotionFlow:
 
             # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
             # (when force F is applied, acceleration a occurs in mass m object)
-            target_system.physical_object.acc = (
-                force / target_system.physical_object.mass
-            )
+            plant.physical_obj.acc = force / plant.physical_obj.mass
 
             # 加速度aが生じると、速度vが変化 (v = u + a*t)
             # (when acceleration a occurs, velocity v changes)
-            target_system.physical_object.vel += target_system.physical_object.acc * (
+            plant.physical_obj.vel += plant.physical_obj.acc * (
                 self._motion_flow_config.discrete_time.dt
             )
 
@@ -200,17 +197,15 @@ class MotionFlow:
             # 前回速度による変化分 + 今回加速度による変化分
             # (position changes due to previous velocity
             #  + position changes due to current acceleration)
-            target_system.physical_object.pos += (
-                target_system.physical_object.prev_vel
-                * (self._motion_flow_config.discrete_time.dt)
-                + 0.5
-                * target_system.physical_object.acc
-                * (self._motion_flow_config.discrete_time.dt**2)
+            plant.physical_obj.pos += plant.physical_obj.prev_vel * (
+                self._motion_flow_config.discrete_time.dt
+            ) + 0.5 * plant.physical_obj.acc * (
+                self._motion_flow_config.discrete_time.dt**2
             )
 
-            obj_acc_list.append(target_system.physical_object.acc)
-            obj_vel_list.append(target_system.physical_object.vel)
-            obj_pos_list.append(target_system.physical_object.pos)
+            obj_acc_list.append(plant.physical_obj.acc)
+            obj_vel_list.append(plant.physical_obj.vel)
+            obj_pos_list.append(plant.physical_obj.pos)
 
         df = pd.DataFrame(
             {

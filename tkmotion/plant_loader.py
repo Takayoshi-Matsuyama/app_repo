@@ -17,14 +17,16 @@ from tkmotion.plant import Plant
 
 
 class PlantLoader:
-    """Plant Loader Class"""
+    """プラント読込クラス (Plant Loader Class)"""
 
     def __init__(self):
-        """Initialize the PlantLoader."""
+        """PlantLoaderを初期化する
+        (Initialize the PlantLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_target.json"):
-        """Load Plant from a JSON file."""
+    def load(self, filepath="tkmotion/default_plant.json"):
+        """プラント設定をJSONファイルから読み込む
+        (Load Plant settings from a JSON file)"""
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)

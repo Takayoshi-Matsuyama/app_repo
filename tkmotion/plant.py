@@ -30,7 +30,7 @@ class Plant:
             raise ValueError(f"Missing 'physical_object' in configuration: {e}")
 
     @property
-    def physical_object(self) -> PhysicalObject:
+    def physical_obj(self) -> PhysicalObject:
         """プラントの物理オブジェクトを返す
         (Return the physical object of the plant)"""
         return self._physical_object

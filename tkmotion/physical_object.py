@@ -17,7 +17,8 @@ class PhysicalObject:
     """物理オブジェクトクラス (Physical Object Class)"""
 
     def __init__(self, config: dict) -> None:
-        """PhysicalObjectを初期化する (Initialize PhysicalObject)"""
+        """PhysicalObjectを初期化する
+        (Initialize PhysicalObject)"""
         self._config: dict = config
         try:
             self._mass: float = float(config[0]["mass"])
