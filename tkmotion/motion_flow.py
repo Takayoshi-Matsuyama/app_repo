@@ -14,6 +14,9 @@
 
 import pandas as pd
 from tkmotion.motion_flow_config import MotionFlowConfig
+from tkmotion.controller_loader import ControllerLoader
+from tkmotion.controller import Controller
+from tkmotion.controller import PIDController
 from tkmotion.plant import Plant
 from tkmotion.motion_profile import MotionProfile
 from tkmotion.config_loader import ConfigLoader
@@ -27,6 +30,7 @@ class MotionFlow:
     def __init__(self) -> None:
         """Initialize the MotionFlow."""
         self._motion_flow_config: MotionFlowConfig | None = None
+        self._controller: Controller | None = None
         self._plant: Plant | None = None
         self._motion_profile: MotionProfile | None = None
 
@@ -34,6 +38,11 @@ class MotionFlow:
     def config(self) -> MotionFlowConfig | None:
         """Returns the motion flow configuration."""
         return self._motion_flow_config
+
+    @property
+    def controller(self) -> Controller | None:
+        """Returns the controller."""
+        return self._controller
 
     @property
     def plant(self) -> Plant | None:
@@ -50,6 +59,14 @@ class MotionFlow:
 
         loader = ConfigLoader()
         self._motion_flow_config = loader.load()
+
+    def load_controller(self, filepath="tkmotion/default_controller.json") -> None:
+        """コントローラ設定をロードする
+        (Load controller configuration)"""
+
+        self._controller = ControllerLoader().load(filepath)
+        if self._controller is None:
+            raise ValueError("Failed to load controller.")
 
     def load_plant(self, filepath="tkmotion/default_plant.json") -> None:
         """プラント設定をロードする

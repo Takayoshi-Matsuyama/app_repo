@@ -37,27 +37,27 @@ class MovingLengthZeroOrMinusError(Exception):
 class MotionProfile:
     """モーションプロファイルの基底クラス (A base class for motion profiles)"""
 
-    def __init__(self, profile: dict):
+    def __init__(self, config: dict):
         """モーションプロファイルを初期化する
         (Initialize the MotionProfile)."""
-        self.profile: dict = profile
-
-    def get_profile(self) -> dict:
-        """プロファイルソースの辞書を返す
-        Returns the profile source dictionary."""
-        return self.profile
+        self._config: dict = config
 
     @property
     def version(self) -> str:
         """モーションプロファイルのバージョンを返す
         (Returns the motion profile version)"""
-        return self.profile["version"]
+        return self._config["version"]
 
     @property
     def type(self) -> str:
         """モーションプロファイルタイプを返す
         (Returns the motion profile type)"""
-        return self.profile["motion_profile"][0]["type"]
+        return self._config["motion_profile"][0]["type"]
+
+    def get_config(self) -> dict:
+        """プロファイルソースの辞書を返す
+        Returns the profile source dictionary."""
+        return self._config
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
         """速度と位置のタプルを返す
@@ -69,14 +69,14 @@ class MotionProfile:
 class TrapezoidalMotionProfile(MotionProfile):
     """台形モーションプロファイルのクラス (A class for trapezoidal motion profiles)"""
 
-    def __init__(self, profile: dict):
+    def __init__(self, config: dict):
         """TrapezoidalMotionProfileを初期化する
         (Initialize the TrapezoidalMotionProfile)"""
-        super().__init__(profile)
+        super().__init__(config)
 
         # 最大速度 (maximum velocity)
         try:
-            _V: float = self.profile["motion_profile"][0]["max_velocity_m_s"]
+            _V: float = self._config["motion_profile"][0]["max_velocity_m_s"]
         except KeyError:
             raise KeyError("Missing 'max_velocity_m_s' in motion profile configuration")
 
@@ -86,7 +86,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 加速度 (acceleration)
         try:
-            _A: float = self.profile["motion_profile"][0]["acceleration_m_s2"]
+            _A: float = self._config["motion_profile"][0]["acceleration_m_s2"]
         except KeyError:
             raise KeyError(
                 "Missing 'acceleration_m_s2' in motion profile configuration"
@@ -98,7 +98,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 移動距離 (moving length)
         try:
-            _L: float = self.profile["motion_profile"][0]["length_m"]
+            _L: float = self._config["motion_profile"][0]["length_m"]
         except KeyError:
             raise KeyError("Missing 'length_m' in motion profile configuration")
 

@@ -12,30 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from tkmotion.controller import Controller
+from tkmotion.controller import PIDController
+
 import json
-from tkmotion.motion_profile import MotionProfile
-from tkmotion.motion_profile import TrapezoidalMotionProfile
 
 
-class MotionProfileLoader:
-    """モーションプロファイル読込クラス (Loader for MotionProfile)"""
+class ControllerLoader:
+    """コントローラ読込クラス (Controller Loader Class)"""
 
     def __init__(self):
-        """MotionProfileLoaderを初期化する
-        (Initialize the MotionProfileLoader)"""
+        """ControllerLoaderを初期化する
+        (Initialize the ControllerLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_motion_prof.json"):
-        """JSONファイルからモーションプロファイルを読み込む
-        (Load motion profile from a JSON file)"""
+    def load(self, filepath="tkmotion/default_controller.json"):
+        """コントローラ設定をJSONファイルから読み込む
+        (Load Controller settings from a JSON file)"""
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
                 # リスト先頭のディクショナリを渡す
-                if config[0]["motion_profile"][0]["type"] == "trapezoid":
-                    return TrapezoidalMotionProfile(config[0])
+                if config[0]["controller"][0]["type"] == "PID":
+                    return PIDController(config[0])
                 else:
-                    return MotionProfile(config[0])
+                    return Controller(config[0])
         except Exception as e:
-            print(f"Error loading motion profile: {e}")
+            print(f"Error loading controller: {e}")
         return None
