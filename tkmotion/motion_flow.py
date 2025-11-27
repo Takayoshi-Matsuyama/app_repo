@@ -121,6 +121,20 @@ class MotionFlow:
 
             # サーボ推力計算 (servo force calculation)
 
+            # PID制御
+
+            # P (比例 Proportional)
+            # 瞬間的に偏差を比例倍した操作量を出力する。
+            # 目標値に近づくと操作量自体も徐々に小さくなる。定常偏差が残りやすい。
+
+            # I (積分 Integral)
+            # 偏差を累積し、継続的に偏差をなくすような操作量を出力する。
+            # 積分により位相が全周波数域で90度遅れる。
+
+            # D (微分 Derivative)
+            # 偏差の変化率に比例した操作量を出力する。
+            # 偏差が変化する方向を予測する (偏差が拡大しそうなら早めに操作量を大きくする)。
+
             # 速度偏差 (指令が先行) (velocity error, command leads)
             vel_error = cmd_vel - target_system.physical_object.vel
             vel_error_list.append(vel_error)
