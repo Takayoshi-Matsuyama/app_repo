@@ -59,11 +59,13 @@ class MotionFlow:
         if self._plant is None:
             raise ValueError("Failed to load plant.")
 
-    def load_motion_profile(self) -> None:
-        """Load motion profile using MotionProfileLoader."""
+    def load_motion_profile(self, filepath="tkmotion/default_motion_prof.json") -> None:
+        """モーションプロファイルをロードする
+        (Load motion profile)"""
 
-        profile_loader = MotionProfileLoader()
-        self._motion_profile = profile_loader.load()
+        self._motion_profile = MotionProfileLoader().load(filepath)
+        if self._motion_profile is None:
+            raise ValueError("Failed to load motion profile.")
 
     def execute(self) -> pd.DataFrame:
         print("Executing motion flow...")

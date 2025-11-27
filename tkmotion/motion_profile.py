@@ -14,100 +14,131 @@
 
 
 class VelocityZeroOrMinusError(Exception):
-    """Exception raised for zero or negative velocity."""
+    """速度がゼロまたは負の値の場合に発生する例外
+    (Exception raised for zero or negative velocity)"""
 
     pass
 
 
 class AccelerationZeroOrMinusError(Exception):
-    """Exception raised for zero or negative acceleration."""
+    """加速度がゼロまたは負の値の場合に発生する例外
+    (Exception raised for zero or negative acceleration)"""
 
     pass
 
 
 class MovingLengthZeroOrMinusError(Exception):
-    """Exception raised for zero or negative moving length."""
+    """移動距離がゼロまたは負の値の場合に発生する例外
+    (Exception raised for zero or negative moving length)"""
 
     pass
 
 
 class MotionProfile:
-    """A base class for motion profiles."""
+    """モーションプロファイルの基底クラス (A base class for motion profiles)"""
 
     def __init__(self, profile: dict):
-        """Initialize the MotionProfile."""
+        """モーションプロファイルを初期化する
+        (Initialize the MotionProfile)."""
         self.profile: dict = profile
 
     def get_profile(self) -> dict:
-        """Returns the profile source object."""
+        """プロファイルソースの辞書を返す
+        Returns the profile source dictionary."""
         return self.profile
 
     @property
     def version(self) -> str:
-        """Returns the motion profile version."""
+        """モーションプロファイルのバージョンを返す
+        (Returns the motion profile version)"""
         return self.profile["version"]
 
     @property
     def type(self) -> str:
-        """Returns the motion profile type."""
+        """モーションプロファイルタイプを返す
+        (Returns the motion profile type)"""
         return self.profile["motion_profile"][0]["type"]
 
     def cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """Returns a tuple of (velocity, position)."""
-        return 0.0, 0.0  # Default implementation for base class
+        """速度と位置のタプルを返す
+        (Return a tuple of velocity and position)"""
+        # ベースクラスのデフォルト実装 (Default implementation for base class)
+        return 0.0, 0.0
 
 
 class TrapezoidalMotionProfile(MotionProfile):
+    """台形モーションプロファイルのクラス (A class for trapezoidal motion profiles)"""
+
     def __init__(self, profile: dict):
-        """Initialize the MotionProfile."""
+        """TrapezoidalMotionProfileを初期化する
+        (Initialize the TrapezoidalMotionProfile)"""
         super().__init__(profile)
-        _V: float = self.profile["motion_profile"][0]["max_velocity_m_s"]
+
+        # 最大速度 (maximum velocity)
+        try:
+            _V: float = self.profile["motion_profile"][0]["max_velocity_m_s"]
+        except KeyError:
+            raise KeyError("Missing 'max_velocity_m_s' in motion profile configuration")
+
         if _V <= 0.0:
             raise VelocityZeroOrMinusError("Velocity must be positive.")
         self.V: float = _V
 
-        _A: float = self.profile["motion_profile"][0]["acceleration_m_s2"]
+        # 加速度 (acceleration)
+        try:
+            _A: float = self.profile["motion_profile"][0]["acceleration_m_s2"]
+        except KeyError:
+            raise KeyError(
+                "Missing 'acceleration_m_s2' in motion profile configuration"
+            )
+
         if _A <= 0.0:
             raise AccelerationZeroOrMinusError("Acceleration must be positive.")
         self.A: float = _A
 
-        _L: float = self.profile["motion_profile"][0]["length_m"]
+        # 移動距離 (moving length)
+        try:
+            _L: float = self.profile["motion_profile"][0]["length_m"]
+        except KeyError:
+            raise KeyError("Missing 'length_m' in motion profile configuration")
+
         if _L <= 0.0:
             raise MovingLengthZeroOrMinusError("Moving length must be positive.")
         self.L: float = _L
 
-        # Acceleration / Deceleration time
+        # 加減速時間 (Acceleration / Deceleration time)
         self.Ta: float = self.V / self.A
-        # Moving time
+        # 移動時間 (Moving time)
         self.T: float = self.L / self.V + self.Ta
-        # Constant velocity time
+        # 等速時間 (Constant velocity time)
         self.Tc: float = self.T - 2 * self.Ta
         if self.Tc < 0:
-            # 三角形の場合の補正
+            # 三角形の場合の補正 (Correction for triangular case)
             self.Ta = (self.L / self.A) ** 0.5
             self.Tc = 0.0
             self.T = 2 * self.Ta
 
     def cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """Returns a tuple of (velocity, position).
+        """速度と位置のタプルを返す
+        (Return a tuple of velocity and position)
 
         Args:
-            t (float): Time in seconds.
+            t (float): [s] 時間 (Time)
         Returns:
-            tuple[float, float]: (velocity in m/s, position in m)
+            tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
         """
 
-        # 加速
+        # 加速 (acceleration)
         if t < self.Ta:
             vel = self.A * t
             pos = 0.5 * self.A * t**2
             return vel, pos
-        # 等速
+        # 等速 (constant velocity)
         elif t < (self.Ta + self.Tc):
             vel = self.A * self.Ta
             pos = 0.5 * self.A * self.Ta**2 + self.V * (t - self.Ta)
             return vel, pos
-        # 減速
+        # 減速 (deceleration)
         elif t <= self.T:
             td = t - self.Ta - self.Tc
             vel = self.A * (self.T - t)
@@ -118,6 +149,7 @@ class TrapezoidalMotionProfile(MotionProfile):
                 - 0.5 * self.A * td**2
             )
             return vel, pos
+        # 停止 (stop)
         else:
             vel = 0.0
             pos = self.L
