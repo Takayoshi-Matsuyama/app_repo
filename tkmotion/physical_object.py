@@ -14,11 +14,11 @@
 
 
 class PhysicalObject:
-    """Physical Object Class"""
+    """物理オブジェクトクラス (Physical Object Class)"""
 
     def __init__(self, config: dict) -> None:
-        """Initialize PhysicalObject with mass."""
-        self.config: dict = config
+        """PhysicalObjectを初期化する (Initialize PhysicalObject)"""
+        self._config: dict = config
         try:
             self._mass: float = float(config[0]["mass"])
         except KeyError:
@@ -35,56 +35,57 @@ class PhysicalObject:
 
     @property
     def mass(self) -> float:
-        """Return the mass of the physical object."""
+        """物理オブジェクトの質量 [kg] (Return the mass of the physical object)"""
         return self._mass
 
     @property
     def acc(self) -> float:
-        """Return the acceleration of the physical object."""
+        """物理オブジェクトの加速度 [m/s^2] (Return the acceleration of the physical object)"""
         return self._acc
 
     @acc.setter
     def acc(self, value: float) -> None:
-        """Set the acceleration of the physical object."""
+        """物理オブジェクトの加速度を設定 [m/s^2] (Set the acceleration of the physical object)"""
         self._prev_acc = self._acc  # 前の値を保存
         self._acc = value
 
     @property
     def prev_acc(self) -> float:
-        """Return the previous acceleration of the physical object."""
+        """物理オブジェクトの前回の加速度 [m/s^2] (Return the previous acceleration of the physical object)"""
         return self._prev_acc
 
     @property
     def vel(self) -> float:
-        """Return the velocity of the physical object."""
+        """物理オブジェクトの速度 [m/s] (Return the velocity of the physical object)"""
         return self._vel
 
     @vel.setter
     def vel(self, value: float) -> None:
-        """Set the velocity of the physical object."""
+        """物理オブジェクトの速度を設定 [m/s] (Set the velocity of the physical object)"""
         self._prev_vel = self._vel  # 前の値を保存
         self._vel = value
 
     @property
     def prev_vel(self) -> float:
-        """Return the previous velocity of the physical object."""
+        """物理オブジェクトの前回の速度 [m/s] (Return the previous velocity of the physical object)"""
         return self._prev_vel
 
     @property
     def pos(self) -> float:
-        """Return the position of the physical object."""
+        """物理オブジェクトの位置 [m] (Return the position of the physical object)"""
         return self._pos
 
     @pos.setter
     def pos(self, value: float) -> None:
-        """Set the position of the physical object."""
+        """物理オブジェクトの位置を設定 [m] (Set the position of the physical object)"""
+        self._prev_pos = self._pos  # 前の値を保存
         self._pos = value
 
     @property
     def prev_pos(self) -> float:
-        """Return the previous position of the physical object."""
+        """物理オブジェクトの前回の位置 [m] (Return the previous position of the physical object)"""
         return self._prev_pos
 
     def get_config(self) -> dict:
-        """Return the configuration dictionary."""
-        return self.config
+        """設定辞書を返す (Return the configuration dictionary)"""
+        return self._config
