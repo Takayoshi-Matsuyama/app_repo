@@ -26,6 +26,7 @@ class PhysicalObject:
         except ValueError:
             raise ValueError("'mass' must be a number")
 
+        self.acc = 0.0
         self.vel = 0.0
         self.pos = 0.0
 
