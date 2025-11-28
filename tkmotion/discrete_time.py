@@ -61,14 +61,14 @@ class DiscreteTime:
         self._config: dict = config
         try:
             self._dt: float = (
-                float(config["discrete_time"]["time_step_us"]) / 1000000.0
+                float(config["discrete_time"][0]["time_step_us"]) / 1000000.0
             )  # 秒単位
         except KeyError:
             raise KeyError("Missing 'time_step_us' in configuration")
         except ValueError:
             raise ValueError("'time_step_us' must be a number")
         try:
-            self._duration_s: float = float(config["discrete_time"]["duration_s"])
+            self._duration_s: float = float(config["discrete_time"][0]["duration_s"])
         except KeyError:
             raise ValueError("Missing 'duration_s' in configuration")
         except ValueError:
@@ -84,7 +84,7 @@ class DiscreteTime:
     def config_version(self):
         """離散時間設定のバージョンを返す
         (Returns the version of the discrete time configurations)"""
-        return self._config["discrete_time"]["version"]
+        return self._config["discrete_time"][0]["version"]
 
     @property
     def dt(self) -> float:
