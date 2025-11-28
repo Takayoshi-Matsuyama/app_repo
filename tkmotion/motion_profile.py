@@ -93,13 +93,19 @@ class MotionProfile:
     def config_version(self) -> str:
         """モーションプロファイル設定のバージョンを返す
         (Returns the motion profile configuration version)"""
-        return self._config[0]["version"]
+        try:
+            return self._config[0]["version"]
+        except KeyError:
+            raise KeyError("Missing 'version' in motion profile configuration")
 
     @property
     def type(self) -> str:
         """モーションプロファイルタイプを返す
         (Returns the motion profile type)"""
-        return self._config[0]["type"]
+        try:
+            return self._config[0]["type"]
+        except KeyError:
+            raise KeyError("Missing 'type' in motion profile configuration")
 
     def get_config(self) -> dict:
         """プロファイルソースの辞書を返す

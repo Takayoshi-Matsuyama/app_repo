@@ -83,7 +83,10 @@ class DiscreteTime:
     def config_version(self):
         """離散時間設定のバージョンを返す
         (Returns the version of the discrete time configurations)"""
-        return self._config[0]["version"]
+        try:
+            return self._config[0]["version"]
+        except KeyError:
+            raise KeyError("Missing 'version' in discrete time configuration")
 
     @property
     def dt(self) -> float:

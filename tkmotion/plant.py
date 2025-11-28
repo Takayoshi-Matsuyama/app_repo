@@ -73,7 +73,10 @@ class Plant:
     def config_version(self) -> str:
         """プラント設定のバージョンを返す
         (Returns the plant configuration version)"""
-        return self._config[0]["version"]
+        try:
+            return self._config[0]["version"]
+        except KeyError:
+            raise KeyError("Missing 'version' in plant configuration")
 
     @property
     def physical_obj(self) -> PhysicalObject:

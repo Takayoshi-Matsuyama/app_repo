@@ -48,7 +48,10 @@ class PhysicalObject:
     def config_version(self) -> str:
         """物理オブジェクト設定のバージョンを返す
         (Returns the physical object configuration version)"""
-        return self._config[0]["version"]
+        try:
+            return self._config[0]["version"]
+        except KeyError:
+            raise KeyError("Missing 'version' in physical object configuration")
 
     @property
     def mass(self) -> float:

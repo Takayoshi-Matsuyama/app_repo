@@ -77,13 +77,19 @@ class Controller:
     def config_version(self) -> str:
         """コントローラ設定のバージョンを返す
         (Returns the controller configuration version)"""
-        return self._config[0]["version"]
+        try:
+            return self._config[0]["version"]
+        except KeyError:
+            raise KeyError("Missing 'version' in controller configuration")
 
     @property
     def type(self) -> str:
         """コントローラタイプを返す
         (Returns the controller type)"""
-        return self._config[0]["type"]
+        try:
+            return self._config[0]["type"]
+        except KeyError:
+            raise KeyError("Missing 'type' in controller configuration")
 
     @property
     def vel_error(self) -> float:

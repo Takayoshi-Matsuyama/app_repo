@@ -76,6 +76,8 @@ class MotionFlow:
         (Load discrete time configuration)"""
 
         self._discrete_time = DiscreteTimeLoader().load()
+        if self._discrete_time is None:
+            raise ValueError("Failed to load discrete time configuration.")
 
     def load_controller(self, filepath="tkmotion/default_controller.json") -> None:
         """コントローラ設定をロードする
@@ -116,16 +118,13 @@ class MotionFlow:
         if self._controller is None:
             raise ValueError("Controller not loaded. Call load_controller() first.")
 
+        if self._plant is None:
+            raise ValueError("Plant not loaded. Call load_plant() first.")
+
         if self._motion_profile is None:
             raise ValueError(
                 "Motion profile not loaded. Call load_motion_profile() first."
             )
-
-        if self._plant is None:
-            raise ValueError("Plant not loaded. Call load_plant() first.")
-
-        motion_profile = self._motion_profile
-        plant = self._plant
 
         # 時間ステップ生成器 (time step generator)
         time_steps_gen = self._discrete_time.get_time_step_generator()
@@ -145,20 +144,23 @@ class MotionFlow:
         self._controller.reset()
 
         # 物理オブジェクト状態初期化 (initialize physical object state)
-        plant.physical_obj.reset()
+        self._plant.physical_obj.reset()
 
         # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
             time_list.append(t)
 
             # 指令速度と位置 (command velocity and position)
-            cmd_vel, cmd_pos = motion_profile.calculate_cmd_vel_pos(t)
+            cmd_vel, cmd_pos = self._motion_profile.calculate_cmd_vel_pos(t)
             cmd_vel_list.append(cmd_vel)
             cmd_pos_list.append(cmd_pos)
 
             # サーボ推力計算 (servo force calculation)
             force = self._controller.calculate_force(
-                cmd_vel, cmd_pos, plant.physical_obj.vel, plant.physical_obj.pos
+                cmd_vel,
+                cmd_pos,
+                self._plant.physical_obj.vel,
+                self._plant.physical_obj.pos,
             )
 
             vel_error_list.append(self._controller.vel_error)
@@ -167,13 +169,13 @@ class MotionFlow:
             force_list.append(force)
 
             # 物理オブジェクト状態更新 (physical object state update)
-            plant.physical_obj.apply_force(force, self._discrete_time.dt)
+            self._plant.physical_obj.apply_force(force, self._discrete_time.dt)
+            obj_acc_list.append(self._plant.physical_obj.acc)
+            obj_vel_list.append(self._plant.physical_obj.vel)
+            obj_pos_list.append(self._plant.physical_obj.pos)
 
-            obj_acc_list.append(plant.physical_obj.acc)
-            obj_vel_list.append(plant.physical_obj.vel)
-            obj_pos_list.append(plant.physical_obj.pos)
-
-        df = pd.DataFrame(
+        # シミュレーション結果のデータフレーム作成 (create DataFrame of simulation results)
+        result_df = pd.DataFrame(
             {
                 "time_s": time_list,
                 "cmd_velocity_m_s": cmd_vel_list,
@@ -187,4 +189,4 @@ class MotionFlow:
             }
         )
 
-        return df
+        return result_df
