@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import numpy as np
 import json
 
 
@@ -31,9 +32,9 @@ class AccelerationZeroOrMinusError(Exception):
     pass
 
 
-class MovingLengthZeroOrMinusError(Exception):
-    """移動距離がゼロまたは負の値の場合に発生する例外
-    (Exception raised for zero or negative moving length)"""
+class MovingLengthZeroError(Exception):
+    """移動距離がゼロの場合に発生する例外
+    (Exception raised for zero moving length)"""
 
     pass
 
@@ -132,9 +133,10 @@ class TrapezoidalMotionProfile(MotionProfile):
         except KeyError:
             raise KeyError("Missing 'length_m' in motion profile configuration")
 
-        if _L <= 0.0:
-            raise MovingLengthZeroOrMinusError("Moving length must be positive.")
-        self.L: float = _L
+        if _L == 0.0:
+            raise MovingLengthZeroError("Moving length must be non-zero.")
+        self.L: float = np.abs(_L)
+        self.dir: float = np.sign(_L)
 
         # 加減速時間 (Acceleration / Deceleration time)
         self.Ta: float = self.V / self.A
@@ -160,19 +162,19 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 加速 (acceleration)
         if t < self.Ta:
-            vel = self.A * t
-            pos = 0.5 * self.A * t**2
+            vel = self.dir * self.A * t
+            pos = self.dir * (0.5 * self.A * t**2)
             return vel, pos
         # 等速 (constant velocity)
         elif t < (self.Ta + self.Tc):
-            vel = self.A * self.Ta
-            pos = 0.5 * self.A * self.Ta**2 + self.V * (t - self.Ta)
+            vel = self.dir * self.A * self.Ta
+            pos = self.dir * (0.5 * self.A * self.Ta**2 + self.V * (t - self.Ta))
             return vel, pos
         # 減速 (deceleration)
         elif t <= self.T:
             td = t - self.Ta - self.Tc
-            vel = self.A * (self.T - t)
-            pos = (
+            vel = self.dir * self.A * (self.T - t)
+            pos = self.dir * (
                 0.5 * self.A * self.Ta**2
                 + self.V * self.Tc
                 + self.V * td
@@ -182,5 +184,5 @@ class TrapezoidalMotionProfile(MotionProfile):
         # 停止 (stop)
         else:
             vel = 0.0
-            pos = self.L
+            pos = self.dir * self.L
             return vel, pos
