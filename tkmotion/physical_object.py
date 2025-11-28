@@ -101,3 +101,32 @@ class PhysicalObject:
         """設定辞書を返す
         (Return the configuration dictionary)"""
         return self._config
+
+    def reset(self) -> None:
+        """物理オブジェクトの状態をリセットする
+        (Reset the state of the physical object)"""
+        self._acc = 0.0
+        self._prev_acc = 0.0
+        self._vel = 0.0
+        self._prev_vel = 0.0
+        self._pos = 0.0
+        self._prev_pos = 0.0
+
+    def apply_force(self, force: float, dt: float) -> None:
+        """物理オブジェクトに力を適用し、状態を更新する
+        (Apply force to the physical object and update status)"""
+
+        # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
+        # (when force F is applied, acceleration a occurs in mass m object)
+        self.acc = force / self.mass
+
+        # 加速度aが生じると、速度vが変化 (v = u + a*t)
+        # (when acceleration a occurs, velocity v changes)
+        self.vel += self.acc * dt
+
+        # 速度vが変化すると、位置xが変化 (x = x0 + v*t)
+        # (when velocity v changes, position x changes)
+        # 前回速度による変化分 + 今回加速度による変化分
+        # (position changes due to previous velocity
+        #  + position changes due to current acceleration)
+        self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)

@@ -132,6 +132,9 @@ class MotionFlow:
         # コントローラ状態初期化 (initialize controller state)
         self._controller.reset()
 
+        # 物理オブジェクト状態初期化 (initialize physical object state)
+        plant.physical_obj.reset()
+
         # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
             time_list.append(t)
@@ -152,23 +155,7 @@ class MotionFlow:
             force_list.append(force)
 
             # 物理オブジェクト状態更新 (physical object state update)
-
-            # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
-            # (when force F is applied, acceleration a occurs in mass m object)
-            plant.physical_obj.acc = force / plant.physical_obj.mass
-
-            # 加速度aが生じると、速度vが変化 (v = u + a*t)
-            # (when acceleration a occurs, velocity v changes)
-            plant.physical_obj.vel += plant.physical_obj.acc * (self._discrete_time.dt)
-
-            # 速度vが変化すると、位置xが変化 (x = x0 + v*t)
-            # (when velocity v changes, position x changes)
-            # 前回速度による変化分 + 今回加速度による変化分
-            # (position changes due to previous velocity
-            #  + position changes due to current acceleration)
-            plant.physical_obj.pos += plant.physical_obj.prev_vel * (
-                self._discrete_time.dt
-            ) + 0.5 * plant.physical_obj.acc * (self._discrete_time.dt**2)
+            plant.physical_obj.apply_force(force, self._discrete_time.dt)
 
             obj_acc_list.append(plant.physical_obj.acc)
             obj_vel_list.append(plant.physical_obj.vel)
