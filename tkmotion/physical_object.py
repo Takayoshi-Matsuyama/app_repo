@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# 物理オブジェクトモジュールのバージョン情報
+# (physical object module version information)
+module_version = "0.0.1"
+
 
 class PhysicalObject:
     """物理オブジェクトクラス (Physical Object Class)"""
@@ -33,6 +37,12 @@ class PhysicalObject:
         self._prev_vel = 0.0
         self._pos = 0.0
         self._prev_pos = 0.0
+
+    @property
+    def module_version(self) -> str:
+        """物理オブジェクトモジュールのバージョンを返す
+        (Returns the physical object module version)"""
+        return module_version
 
     @property
     def mass(self) -> float:

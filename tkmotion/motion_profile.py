@@ -17,6 +17,10 @@ from __future__ import annotations
 import numpy as np
 import json
 
+# モーションプロファイルモジュールのバージョン情報
+# (motion profile module version information)
+module_version = "0.0.1"
+
 
 class VelocityZeroOrMinusError(Exception):
     """速度がゼロまたは負の値の場合に発生する例外
@@ -64,6 +68,12 @@ class MotionProfileLoader:
             print(f"Error loading motion profile: {e}")
         return None
 
+    @property
+    def module_version(self) -> str:
+        """モーションプロファイルモジュールのバージョンを返す
+        (Returns the motion profile module version)"""
+        return module_version
+
 
 class MotionProfile:
     """モーションプロファイルの基底クラス (A base class for motion profiles)"""
@@ -72,6 +82,12 @@ class MotionProfile:
         """モーションプロファイルを初期化する
         (Initialize the MotionProfile)."""
         self._config: dict = config
+
+    @property
+    def module_version(self) -> str:
+        """モーションプロファイルモジュールのバージョンを返す
+        (Returns the motion profile module version)"""
+        return module_version
 
     @property
     def config_version(self) -> str:

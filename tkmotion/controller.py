@@ -16,6 +16,10 @@ from __future__ import annotations
 
 import json
 
+# コントローラモジュールのバージョン情報
+# (Controller module version information)
+module_version = "0.0.1"
+
 
 class ControllerLoader:
     """コントローラ読込クラス (Controller Loader Class)"""
@@ -49,6 +53,12 @@ class ControllerLoader:
             print(f"Error loading controller: {e}")
         return None
 
+    @property
+    def module_version(self) -> str:
+        """コントローラモジュールのバージョンを返す
+        (Returns the controller module version)"""
+        return module_version
+
 
 class Controller:
     """コントローラクラス (Controller Class)"""
@@ -57,6 +67,12 @@ class Controller:
         """コントローラを初期化する
         (Initialize Controller with given configuration)"""
         self._config: dict = config
+
+    @property
+    def module_version(self) -> str:
+        """コントローラモジュールのバージョンを返す
+        (Returns the controller module version)"""
+        return module_version
 
     @property
     def config_version(self) -> str:

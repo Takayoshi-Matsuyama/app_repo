@@ -16,6 +16,10 @@ from __future__ import annotations
 
 import json
 
+# 離散時間モジュールのバージョン情報
+# (discrete time module version information)
+module_version = "0.0.1"
+
 
 class DiscreteTimeLoader:
     """離散時間設定の読込クラス (Loader for DiscreteTime)"""
@@ -40,6 +44,12 @@ class DiscreteTimeLoader:
             print(f"Error loading discrete time configuration: {e}")
         return None
 
+    @property
+    def module_version(self) -> str:
+        """離散時間モジュールのバージョンを返す
+        (Returns the discrete time module version)"""
+        return module_version
+
 
 class DiscreteTime:
     """離散時間クラス (Discrete Time Class)"""
@@ -63,6 +73,12 @@ class DiscreteTime:
             raise ValueError("Missing 'duration_s' in configuration")
         except ValueError:
             raise ValueError("'duration_s' must be a number")
+
+    @property
+    def module_version(self) -> str:
+        """離散時間モジュールのバージョンを返す
+        (Returns the discrete time module version)"""
+        return module_version
 
     @property
     def config_version(self):

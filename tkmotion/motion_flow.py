@@ -24,6 +24,11 @@ from tkmotion.motion_profile import MotionProfileLoader
 from tkmotion.motion_profile import MotionProfile
 
 
+# モーションフローモジュールのバージョン情報
+# (motion flow module version information)
+module_version = "0.0.1"
+
+
 class MotionFlow:
     """モーションフロー操作を扱うクラス
     (A class to handle motion flow operations)"""
@@ -35,6 +40,12 @@ class MotionFlow:
         self._controller: Controller | None = None
         self._plant: Plant | None = None
         self._motion_profile: MotionProfile | None = None
+
+    @property
+    def module_version(self) -> str:
+        """モーションフローモジュールのバージョンを返す
+        (Returns the motion flow module version)"""
+        return module_version
 
     @property
     def discrete_time(self) -> DiscreteTime | None:

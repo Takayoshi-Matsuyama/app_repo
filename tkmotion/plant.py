@@ -18,6 +18,10 @@ import json
 
 from tkmotion.physical_object import PhysicalObject
 
+# プラントモジュールのバージョン情報
+# (plant module version information)
+module_version = "0.0.1"
+
 
 class PlantLoader:
     """プラント読込クラス (Plant Loader Class)"""
@@ -39,6 +43,12 @@ class PlantLoader:
             print(f"Error loading plant: {e}")
         return None
 
+    @property
+    def module_version(self) -> str:
+        """プラントモジュールのバージョンを返す
+        (Returns the plant module version)"""
+        return module_version
+
 
 class Plant:
     """プラント (制御対象) (Plant (Target System)) Class"""
@@ -53,6 +63,12 @@ class Plant:
             )
         except KeyError as e:
             raise ValueError(f"Missing 'physical_object' in configuration: {e}")
+
+    @property
+    def module_version(self) -> str:
+        """プラントモジュールのバージョンを返す
+        (Returns the plant module version)"""
+        return module_version
 
     @property
     def config_version(self) -> str:
