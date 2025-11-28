@@ -38,8 +38,7 @@ class DiscreteTimeLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
-                # リスト先頭のディクショナリを渡す
-                return DiscreteTime(config[0])
+                return DiscreteTime(config[0]["discrete_time"])
         except Exception as e:
             print(f"Error loading discrete time configuration: {e}")
         return None
@@ -61,14 +60,14 @@ class DiscreteTime:
         self._config: dict = config
         try:
             self._dt: float = (
-                float(config["discrete_time"][0]["time_step_us"]) / 1000000.0
+                float(self._config[0]["time_step_us"]) / 1000000.0
             )  # 秒単位
         except KeyError:
             raise KeyError("Missing 'time_step_us' in configuration")
         except ValueError:
             raise ValueError("'time_step_us' must be a number")
         try:
-            self._duration_s: float = float(config["discrete_time"][0]["duration_s"])
+            self._duration_s: float = float(self._config[0]["duration_s"])
         except KeyError:
             raise ValueError("Missing 'duration_s' in configuration")
         except ValueError:
@@ -84,7 +83,7 @@ class DiscreteTime:
     def config_version(self):
         """離散時間設定のバージョンを返す
         (Returns the version of the discrete time configurations)"""
-        return self._config["discrete_time"][0]["version"]
+        return self._config[0]["version"]
 
     @property
     def dt(self) -> float:

@@ -61,9 +61,9 @@ class MotionProfileLoader:
                 config = json.load(f)
                 # リスト先頭のディクショナリを渡す
                 if config[0]["motion_profile"][0]["type"] == "trapezoid":
-                    return TrapezoidalMotionProfile(config[0])
+                    return TrapezoidalMotionProfile(config[0]["motion_profile"])
                 else:
-                    return MotionProfile(config[0])
+                    return MotionProfile(config[0]["motion_profile"])
         except Exception as e:
             print(f"Error loading motion profile: {e}")
         return None
@@ -93,13 +93,13 @@ class MotionProfile:
     def config_version(self) -> str:
         """モーションプロファイル設定のバージョンを返す
         (Returns the motion profile configuration version)"""
-        return self._config["motion_profile"][0]["version"]
+        return self._config[0]["version"]
 
     @property
     def type(self) -> str:
         """モーションプロファイルタイプを返す
         (Returns the motion profile type)"""
-        return self._config["motion_profile"][0]["type"]
+        return self._config[0]["type"]
 
     def get_config(self) -> dict:
         """プロファイルソースの辞書を返す
@@ -123,7 +123,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 最大速度 (maximum velocity)
         try:
-            _V: float = self._config["motion_profile"][0]["max_velocity_m_s"]
+            _V: float = self._config[0]["max_velocity_m_s"]
         except KeyError:
             raise KeyError("Missing 'max_velocity_m_s' in motion profile configuration")
 
@@ -133,7 +133,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 加速度 (acceleration)
         try:
-            _A: float = self._config["motion_profile"][0]["acceleration_m_s2"]
+            _A: float = self._config[0]["acceleration_m_s2"]
         except KeyError:
             raise KeyError(
                 "Missing 'acceleration_m_s2' in motion profile configuration"
@@ -145,7 +145,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 移動距離 (moving length)
         try:
-            _L: float = self._config["motion_profile"][0]["length_m"]
+            _L: float = self._config[0]["length_m"]
         except KeyError:
             raise KeyError("Missing 'length_m' in motion profile configuration")
 
