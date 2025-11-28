@@ -44,11 +44,10 @@ class ControllerLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
-                # リスト先頭のディクショナリを渡す
                 if config[0]["controller"][0]["type"] == "PID":
-                    return PIDController(config[0])
+                    return PIDController(config[0]["controller"])
                 else:
-                    return Controller(config[0])
+                    return Controller(config[0]["controller"])
         except Exception as e:
             print(f"Error loading controller: {e}")
         return None
@@ -78,13 +77,13 @@ class Controller:
     def config_version(self) -> str:
         """コントローラ設定のバージョンを返す
         (Returns the controller configuration version)"""
-        return self._config["controller"][0]["version"]
+        return self._config[0]["version"]
 
     @property
     def type(self) -> str:
         """コントローラタイプを返す
         (Returns the controller type)"""
-        return self._config["controller"][0]["type"]
+        return self._config[0]["type"]
 
     @property
     def vel_error(self) -> float:
@@ -157,17 +156,17 @@ class PIDController(Controller):
         super().__init__(config)
         try:
             # Kvp [N/(m/s)] 速度比例ゲイン (velocity proportional gain)
-            self._kvp: float = float(config["controller"][0]["kvp_N_(m_s)"])
+            self._kvp: float = float(self._config[0]["kvp_N_(m_s)"])
             # Kvi [N/(m/s)] 速度積分ゲイン (velocity integral gain)
-            self._kvi: float = float(config["controller"][0]["kvi_N_(m_s)"])
+            self._kvi: float = float(self._config[0]["kvi_N_(m_s)"])
             # Kvd [N/(m/s)] 速度微分ゲイン (velocityderivative gain)
-            self._kvd: float = float(config["controller"][0]["kvd_N_(m_s)"])
+            self._kvd: float = float(self._config[0]["kvd_N_(m_s)"])
             # Kpp [N/m] 位置比例ゲイン (position proportional gain)
-            self._kpp: float = float(config["controller"][0]["kpp_N_m"])
+            self._kpp: float = float(self._config[0]["kpp_N_m"])
             # Kpi [N/m] 位置積分ゲイン (position integral gain)
-            self._kpi: float = float(config["controller"][0]["kpi_N_m"])
+            self._kpi: float = float(self._config[0]["kpi_N_m"])
             # Kpd [N/m] 位置微分ゲイン (position derivative gain)
-            self._kpd: float = float(config["controller"][0]["kpd_N_m"])
+            self._kpd: float = float(self._config[0]["kpd_N_m"])
         except KeyError as e:
             raise KeyError(f"Missing PID parameter in configuration: {e}")
         except ValueError:
