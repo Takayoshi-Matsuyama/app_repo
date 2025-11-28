@@ -65,7 +65,7 @@ class DiscreteTime:
             raise ValueError("'duration_s' must be a number")
 
     @property
-    def version(self):
+    def config_version(self):
         """離散時間設定のバージョンを返す
         (Returns the version of the discrete time configurations)"""
         return self._config["version"]

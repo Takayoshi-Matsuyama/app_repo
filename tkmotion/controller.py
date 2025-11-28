@@ -59,9 +59,9 @@ class Controller:
         self._config: dict = config
 
     @property
-    def version(self) -> str:
-        """コントローラのバージョンを返す
-        (Returns the controller version)"""
+    def config_version(self) -> str:
+        """コントローラ設定のバージョンを返す
+        (Returns the controller configuration version)"""
         return self._config["version"]
 
     @property

@@ -74,9 +74,9 @@ class MotionProfile:
         self._config: dict = config
 
     @property
-    def version(self) -> str:
-        """モーションプロファイルのバージョンを返す
-        (Returns the motion profile version)"""
+    def config_version(self) -> str:
+        """モーションプロファイル設定のバージョンを返す
+        (Returns the motion profile configuration version)"""
         return self._config["version"]
 
     @property

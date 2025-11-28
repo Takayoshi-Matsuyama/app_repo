@@ -55,9 +55,9 @@ class Plant:
             raise ValueError(f"Missing 'physical_object' in configuration: {e}")
 
     @property
-    def version(self) -> str:
-        """プラントのバージョンを返す
-        (Returns the plant version)"""
+    def config_version(self) -> str:
+        """プラント設定のバージョンを返す
+        (Returns the plant configuration version)"""
         return self._config["version"]
 
     @property
