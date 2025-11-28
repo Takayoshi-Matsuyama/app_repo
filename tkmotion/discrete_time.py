@@ -17,33 +17,44 @@ class DiscreteTime:
     """離散時間クラス"""
 
     def __init__(self, config: dict):
-        self.config: dict = config
+        self._config: dict = config
         try:
-            self._dt: float = float(config["time_step_us"]) / 1000000.0  # 秒単位
+            self._dt: float = (
+                float(config["discrete_time"]["time_step_us"]) / 1000000.0
+            )  # 秒単位
         except KeyError:
             raise KeyError("Missing 'time_step_us' in configuration")
         except ValueError:
             raise ValueError("'time_step_us' must be a number")
         try:
-            self._duration_s: float = float(config["duration_s"])
+            self._duration_s: float = float(config["discrete_time"]["duration_s"])
         except KeyError:
             raise ValueError("Missing 'duration_s' in configuration")
         except ValueError:
             raise ValueError("'duration_s' must be a number")
 
     @property
+    def version(self):
+        """離散時間設定のバージョンを返す
+        (Returns the version of the discrete time configurations)"""
+        return self._config["version"]
+
+    @property
     def dt(self) -> float:
-        """Returns the discrete time step in seconds."""
+        """離散時間ステップを秒単位で返す
+        (Returns the discrete time step in seconds)"""
         return self._dt
 
     @property
     def duration(self) -> float:
-        """Returns the duration in seconds."""
+        """離散時間の継続時間を秒単位で返す
+        (Returns the duration of the discrete time in seconds)"""
         return self._duration_s
 
     def get_config(self) -> dict:
-        """Returns the configuration dictionary."""
-        return self.config
+        """設定辞書を返す
+        (Return the configuration dictionary)"""
+        return self._config
 
     def get_time_step_generator(self):
         """Generator that yields time steps from 0 to duration with step dt."""

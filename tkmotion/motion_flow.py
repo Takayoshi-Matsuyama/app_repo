@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import pandas as pd
-from tkmotion.config_loader import ConfigLoader
-from tkmotion.motion_flow_config import MotionFlowConfig
+from tkmotion.discrete_time_loader import DiscreteTimeLoader
+from tkmotion.discrete_time import DiscreteTime
 from tkmotion.controller_loader import ControllerLoader
 from tkmotion.controller import Controller
+from tkmotion.controller import PIDController
 from tkmotion.plant_loader import PlantLoader
 from tkmotion.plant import Plant
 from tkmotion.motion_profile_loader import MotionProfileLoader
@@ -24,19 +25,22 @@ from tkmotion.motion_profile import MotionProfile
 
 
 class MotionFlow:
-    """A class to handle motion flow operations."""
+    """モーションフロー操作を扱うクラス
+    (A class to handle motion flow operations)"""
 
     def __init__(self) -> None:
-        """Initialize the MotionFlow."""
-        self._motion_flow_config: MotionFlowConfig | None = None
-        self._controller: Controller | None = None
+        """モーションフローを初期化する
+        (Initialize the MotionFlow)"""
+        self._discrete_time: DiscreteTime | None = None
+        self._controller: Controller | PIDController | None = None
         self._plant: Plant | None = None
         self._motion_profile: MotionProfile | None = None
 
     @property
-    def config(self) -> MotionFlowConfig | None:
-        """Returns the motion flow configuration."""
-        return self._motion_flow_config
+    def discrete_time(self) -> DiscreteTime | None:
+        """離散時間設定を返す
+        (Returns the discrete time configuration)"""
+        return self._discrete_time
 
     @property
     def controller(self) -> Controller | None:
@@ -53,11 +57,11 @@ class MotionFlow:
         """Returns the motion profile."""
         return self._motion_profile
 
-    def load_config(self) -> None:
-        """Load configuration using ConfigLoader."""
+    def load_discrete_time(self) -> None:
+        """離散時間設定をロードする
+        (Load discrete time configuration)"""
 
-        loader = ConfigLoader()
-        self._motion_flow_config = loader.load()
+        self._discrete_time = DiscreteTimeLoader().load()
 
     def load_controller(self, filepath="tkmotion/default_controller.json") -> None:
         """コントローラ設定をロードする
@@ -89,12 +93,12 @@ class MotionFlow:
 
         print("Executing motion flow...")
 
-        if self._motion_flow_config is None:
+        if self._discrete_time is None:
             raise ValueError(
                 "Motion flow configuration not loaded. Call load_config() first."
             )
 
-        if self._motion_flow_config.discrete_time is None:
+        if self._discrete_time is None:
             raise ValueError("Discrete time configuration not available.")
 
         if self._controller is None:
@@ -112,9 +116,7 @@ class MotionFlow:
         plant = self._plant
 
         # 時間ステップ生成器 (time step generator)
-        time_steps_gen = (
-            self._motion_flow_config.discrete_time.get_time_step_generator()
-        )
+        time_steps_gen = self._discrete_time.get_time_step_generator()
 
         # データ収集リスト (lists for data acquisition)
         time_list = []
@@ -157,9 +159,7 @@ class MotionFlow:
 
             # 加速度aが生じると、速度vが変化 (v = u + a*t)
             # (when acceleration a occurs, velocity v changes)
-            plant.physical_obj.vel += plant.physical_obj.acc * (
-                self._motion_flow_config.discrete_time.dt
-            )
+            plant.physical_obj.vel += plant.physical_obj.acc * (self._discrete_time.dt)
 
             # 速度vが変化すると、位置xが変化 (x = x0 + v*t)
             # (when velocity v changes, position x changes)
@@ -167,10 +167,8 @@ class MotionFlow:
             # (position changes due to previous velocity
             #  + position changes due to current acceleration)
             plant.physical_obj.pos += plant.physical_obj.prev_vel * (
-                self._motion_flow_config.discrete_time.dt
-            ) + 0.5 * plant.physical_obj.acc * (
-                self._motion_flow_config.discrete_time.dt**2
-            )
+                self._discrete_time.dt
+            ) + 0.5 * plant.physical_obj.acc * (self._discrete_time.dt**2)
 
             obj_acc_list.append(plant.physical_obj.acc)
             obj_vel_list.append(plant.physical_obj.vel)
