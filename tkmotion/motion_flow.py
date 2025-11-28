@@ -44,17 +44,20 @@ class MotionFlow:
 
     @property
     def controller(self) -> Controller | None:
-        """Returns the controller."""
+        """コントローラを返す
+        (Returns the controller)"""
         return self._controller
 
     @property
     def plant(self) -> Plant | None:
-        """Returns the plant."""
+        """プラントを返す
+        (Returns the plant)"""
         return self._plant
 
     @property
     def mprof(self) -> MotionProfile | None:
-        """Returns the motion profile."""
+        """モーションプロファイルを返す
+        (Returns the motion profile)"""
         return self._motion_profile
 
     def load_discrete_time(self) -> None:
@@ -89,14 +92,12 @@ class MotionFlow:
 
     def execute(self) -> pd.DataFrame:
         """モーションシミュレーションを実行する
-        (Execute motion simulation)"""
+        (Execute motion simulation)
 
-        print("Executing motion flow...")
-
-        if self._discrete_time is None:
-            raise ValueError(
-                "Motion flow configuration not loaded. Call load_config() first."
-            )
+        Returns:
+            pd.DataFrame: シミュレーション結果のデータフレーム
+            (DataFrame of simulation results)
+        """
 
         if self._discrete_time is None:
             raise ValueError("Discrete time configuration not available.")
@@ -174,7 +175,5 @@ class MotionFlow:
                 "obj_position_m": obj_pos_list,
             }
         )
-
-        print(f"Generated {len(time_list)} time steps.")
 
         return df

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import json
 
 
@@ -44,7 +46,9 @@ class MotionProfileLoader:
         (Initialize the MotionProfileLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_motion_prof.json"):
+    def load(
+        self, filepath="tkmotion/default_motion_prof.json"
+    ) -> MotionProfile | None:
         """JSONファイルからモーションプロファイルを読み込む
         (Load motion profile from a JSON file)"""
         try:

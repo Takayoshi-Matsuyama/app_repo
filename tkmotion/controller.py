@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import json
 
 
@@ -23,9 +25,18 @@ class ControllerLoader:
         (Initialize the ControllerLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_controller.json"):
+    def load(self, filepath="tkmotion/default_controller.json") -> Controller | None:
         """コントローラ設定をJSONファイルから読み込む
-        (Load Controller settings from a JSON file)"""
+        (Load Controller settings from a JSON file)
+
+        Args:
+            filepath (str): コントローラ設定のJSONファイルパス
+            (Path to the JSON file for controller settings)
+
+        Returns:
+            Controller: 読み込まれたコントローラオブジェクト
+            (Loaded controller object)
+        """
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
@@ -242,7 +253,18 @@ class PIDController(Controller):
         self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
     ) -> float:
         """制御力を計算する
-        (Calculate the control force)"""
+        (Calculate the control force)
+
+        Args:
+            cmd_vel (float): 指令速度 [m/s] (command velocity)
+            cmd_pos (float): 指令位置 [m] (command position)
+            plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
+            plant_pos (float): プラントの現在位置 [m] (current position of the plant)
+
+        Returns:
+            float: 計算された制御力 [N] (calculated control force)
+        """
+
         # サーボ推力計算 (servo force calculation)
 
         # PID制御

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import json
 
 
@@ -23,7 +25,9 @@ class DiscreteTimeLoader:
         (Initialize the DiscreteTimeLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_discrete_time.json"):
+    def load(
+        self, filepath="tkmotion/default_discrete_time.json"
+    ) -> DiscreteTime | None:
         """離散時間設定をJSONファイルから読み込む
         (Load configuration from a JSON file)"""
 
@@ -38,9 +42,12 @@ class DiscreteTimeLoader:
 
 
 class DiscreteTime:
-    """離散時間クラス"""
+    """離散時間クラス (Discrete Time Class)"""
 
     def __init__(self, config: dict):
+        """離散時間設定を初期化する
+        (Initialize DiscreteTime with given configuration)"""
+
         self._config: dict = config
         try:
             self._dt: float = (
@@ -81,13 +88,9 @@ class DiscreteTime:
         return self._config
 
     def get_time_step_generator(self):
-        """Generator that yields time steps from 0 to duration with step dt."""
+        """時間ステップ生成器を返す (時間ステップを0からdurationまでdt刻みで生成する)
+        (Generator that yields time steps from 0 to duration with step dt.)"""
         t = 0.0
         while t <= self._duration_s:
             yield t
             t += self._dt
-
-    def step(self, state, control):
-        # Implement the discrete time step logic here
-        new_state = state + control * self.dt
-        return new_state

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import json
 
 from tkmotion.physical_object import PhysicalObject
@@ -25,7 +27,7 @@ class PlantLoader:
         (Initialize the PlantLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_plant.json"):
+    def load(self, filepath="tkmotion/default_plant.json") -> Plant | None:
         """プラント設定をJSONファイルから読み込む
         (Load Plant settings from a JSON file)"""
         try:
