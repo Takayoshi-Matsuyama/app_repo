@@ -4,19 +4,6 @@
         "discrete_time" : {
             "time_step_us" : 100,
             "duration_s" : 6.0
-        },
-        "motor" : [
-            {
-                "type" : "linear",
-                "max_force" : 5.0
-            }
-        ],
-        "encoder" : [
-            {
-                "type1" : "abosolute",
-                "type2" : "linear",
-                "resolution_m" : 1e-9
-            }
-        ]
+        }
     }
 ]
