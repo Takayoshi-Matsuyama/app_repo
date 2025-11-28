@@ -38,6 +38,20 @@ class Controller:
         (Return the configuration dictionary)"""
         return self._config
 
+    def reset(self) -> None:
+        """コントローラの状態をリセットする
+        (Reset the controller state)"""
+        # 基本的なコントローラでは何もしない
+        pass
+
+    def calculate_force(
+        self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
+    ) -> float:
+        """制御力を計算する
+        (Calculate the control force)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
 
 class PIDController(Controller):
     """PIDコントローラクラス (PID Controller Class)"""
@@ -47,16 +61,25 @@ class PIDController(Controller):
         (Initialize PIDController with given configuration)"""
         super().__init__(config)
         try:
+            # Kvp [N/(m/s)] 速度比例ゲイン (velocity proportional gain)
             self._kvp: float = float(config["controller"][0]["kvp_N_(m_s)"])
+            # Kvi [N/(m/s)] 速度積分ゲイン (velocity integral gain)
             self._kvi: float = float(config["controller"][0]["kvi_N_(m_s)"])
+            # Kvd [N/(m/s)] 速度微分ゲイン (velocityderivative gain)
             self._kvd: float = float(config["controller"][0]["kvd_N_(m_s)"])
+            # Kpp [N/m] 位置比例ゲイン (position proportional gain)
             self._kpp: float = float(config["controller"][0]["kpp_N_m"])
+            # Kpi [N/m] 位置積分ゲイン (position integral gain)
             self._kpi: float = float(config["controller"][0]["kpi_N_m"])
+            # Kpd [N/m] 位置微分ゲイン (position derivative gain)
             self._kpd: float = float(config["controller"][0]["kpd_N_m"])
         except KeyError as e:
             raise KeyError(f"Missing PID parameter in configuration: {e}")
         except ValueError:
             raise ValueError("PID parameters must be numbers")
+
+        # コントローラの状態をリセットする
+        self.reset()
 
     @property
     def kvp(self) -> float:
@@ -93,3 +116,109 @@ class PIDController(Controller):
         """位置微分ゲインを返す
         (Return the position derivative gain)"""
         return self._kpd
+
+    @property
+    def vel_error(self) -> float:
+        """現在の速度偏差を返す
+        (Return the current velocity error)"""
+        return self._vel_error
+
+    @property
+    def pos_error(self) -> float:
+        """現在の位置偏差を返す
+        (Return the current position error)"""
+        return self._pos_error
+
+    @property
+    def vel_error_cumsum(self) -> float:
+        """現在の速度偏差の累積値を返す
+        (Return the current cumulative velocity error)"""
+        return self._vel_error_cumsum
+
+    @property
+    def pos_error_cumsum(self) -> float:
+        """現在の位置偏差の累積値を返す
+        (Return the current cumulative position error)"""
+        return self._pos_error_cumsum
+
+    @property
+    def vel_error_diff(self) -> float:
+        """現在の速度偏差の微分値を返す
+        (Return the current derivative of velocity error)"""
+        return self._vel_error_diff
+
+    @property
+    def pos_error_diff(self) -> float:
+        """現在の位置偏差の微分値を返す
+        (Return the current derivative of position error)"""
+        return self._pos_error_diff
+
+    def reset(self) -> None:
+        """コントローラの状態をリセットする
+        (Reset the controller state)"""
+        # 偏差情報 初期値 (error information initial value)
+        self._vel_error = 0.0
+        self._pos_error = 0.0
+
+        # 累積情報 初期値 (cumulative information initial value)
+        self._vel_error_cumsum = 0.0
+        self._pos_error_cumsum = 0.0
+
+        # 微分情報 初期値 (derivative information initial value)
+        self._prev_vel_error = 0.0
+        self._vel_error_diff = 0.0
+        self._prev_pos_error = 0.0
+        self._pos_error_diff = 0.0
+
+    def calculate_force(
+        self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
+    ) -> float:
+        """制御力を計算する
+        (Calculate the control force)"""
+        # サーボ推力計算 (servo force calculation)
+
+        # PID制御
+
+        # P (比例 Proportional)
+        # 瞬間的に偏差を比例倍した操作量を出力する。
+        # 目標値に近づくと操作量自体も徐々に小さくなる。定常偏差が残りやすい。
+
+        # I (積分 Integral)
+        # 偏差を累積し、継続的に偏差をなくすような操作量を出力する。
+        # 積分により位相が全周波数域で90度遅れる。
+
+        # D (微分 Derivative)
+        # 偏差の変化率に比例した操作量を出力する。
+        # 偏差が変化する方向を予測する (偏差が拡大しそうなら早めに操作量を大きくする)。
+
+        # 速度偏差 (指令が先行) (velocity error, command leads)
+        self._vel_error = cmd_vel - plant_vel
+        self._vel_error_cumsum += self._vel_error
+        self._vel_error_diff = self._vel_error - self._prev_vel_error
+        self._prev_vel_error = self._vel_error
+
+        # 位置偏差 (指令が先行) (position error, command leads)
+        self._pos_error = cmd_pos - plant_pos
+        self._pos_error_cumsum += self._pos_error
+        self._pos_error_diff = self._pos_error - self._prev_pos_error
+        self._prev_pos_error = self._pos_error
+
+        # 速度比例制御 (velocity proportional control)
+        force = self._kvp * self._vel_error
+
+        # 速度積分制御 (velocity integral control)
+        force += self._kvi * self._vel_error_cumsum
+
+        # 速度微分制御 (velocity derivative control)
+        force += self._kvd * self._vel_error_diff
+
+        # 位置比例制御 (position proportional control)
+        force += self._kpp * self._pos_error
+
+        # 位置積分制御 (position integral control)
+        force += self._kpi * self._pos_error_cumsum
+
+        # 位置微分制御 (position derivative control)
+        force += self._kpd * self._pos_error_diff
+
+        return force

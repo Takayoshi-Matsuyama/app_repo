@@ -13,15 +13,14 @@
 # limitations under the License.
 
 import pandas as pd
+from tkmotion.config_loader import ConfigLoader
 from tkmotion.motion_flow_config import MotionFlowConfig
 from tkmotion.controller_loader import ControllerLoader
 from tkmotion.controller import Controller
-from tkmotion.controller import PIDController
-from tkmotion.plant import Plant
-from tkmotion.motion_profile import MotionProfile
-from tkmotion.config_loader import ConfigLoader
 from tkmotion.plant_loader import PlantLoader
+from tkmotion.plant import Plant
 from tkmotion.motion_profile_loader import MotionProfileLoader
+from tkmotion.motion_profile import MotionProfile
 
 
 class MotionFlow:
