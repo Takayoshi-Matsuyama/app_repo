@@ -1,8 +1,8 @@
 [
     {
-        "version": "0.0.1",
         "controller": [
             {
+                "version": "0.0.1",
                 "type": "PID",
                 "kvp_N_(m_s)": 10000.0,
                 "kvi_N_(m_s)": 1000.0,

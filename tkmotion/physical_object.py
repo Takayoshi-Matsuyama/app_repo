@@ -45,6 +45,12 @@ class PhysicalObject:
         return module_version
 
     @property
+    def config_version(self) -> str:
+        """物理オブジェクト設定のバージョンを返す
+        (Returns the physical object configuration version)"""
+        return self._config[0]["version"]
+
+    @property
     def mass(self) -> float:
         """物理オブジェクトの質量 [kg]
         (Return the mass of the physical object)"""

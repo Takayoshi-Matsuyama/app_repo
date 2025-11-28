@@ -93,7 +93,7 @@ class MotionProfile:
     def config_version(self) -> str:
         """モーションプロファイル設定のバージョンを返す
         (Returns the motion profile configuration version)"""
-        return self._config["version"]
+        return self._config["motion_profile"][0]["version"]
 
     @property
     def type(self) -> str:

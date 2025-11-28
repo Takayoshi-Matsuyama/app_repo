@@ -84,7 +84,7 @@ class DiscreteTime:
     def config_version(self):
         """離散時間設定のバージョンを返す
         (Returns the version of the discrete time configurations)"""
-        return self._config["version"]
+        return self._config["discrete_time"]["version"]
 
     @property
     def dt(self) -> float:

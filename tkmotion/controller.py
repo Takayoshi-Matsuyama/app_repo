@@ -78,7 +78,7 @@ class Controller:
     def config_version(self) -> str:
         """コントローラ設定のバージョンを返す
         (Returns the controller configuration version)"""
-        return self._config["version"]
+        return self._config["controller"][0]["version"]
 
     @property
     def type(self) -> str:

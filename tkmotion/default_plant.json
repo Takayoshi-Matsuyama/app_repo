@@ -3,6 +3,7 @@
         "version" : "0.0.1",
         "physical_object" : [
             {
+                "version" : "0.0.1",
                 "mass_kg" : 2.0
             }
         ]

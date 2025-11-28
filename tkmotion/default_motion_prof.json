@@ -1,8 +1,8 @@
 [
     {
-        "version": "0.0.1",
         "motion_profile": [
             {
+                "version": "0.0.1",
                 "type": "trapezoid",
                 "max_velocity_m_s": 0.01,
                 "acceleration_m_s2": 0.005,
