@@ -25,7 +25,7 @@ class PhysicalObject:
         (Initialize PhysicalObject)"""
         self._config: dict = config
         try:
-            self._mass: float = float(config[0]["mass_kg"])
+            self._mass: float = float(self._config[0]["mass_kg"])
         except KeyError:
             raise KeyError("Missing 'mass' in configuration")
         except ValueError:

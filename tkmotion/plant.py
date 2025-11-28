@@ -37,8 +37,7 @@ class PlantLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
-                # リスト先頭のディクショナリを渡す
-                return Plant(config[0])
+                return Plant(config[0]["plant"])
         except Exception as e:
             print(f"Error loading plant: {e}")
         return None
@@ -59,7 +58,7 @@ class Plant:
         self._config: dict = config
         try:
             self._physical_object: PhysicalObject = PhysicalObject(
-                config["physical_object"]
+                self._config[0]["physical_object"]
             )
         except KeyError as e:
             raise ValueError(f"Missing 'physical_object' in configuration: {e}")
@@ -74,7 +73,7 @@ class Plant:
     def config_version(self) -> str:
         """プラント設定のバージョンを返す
         (Returns the plant configuration version)"""
-        return self._config["version"]
+        return self._config[0]["version"]
 
     @property
     def physical_obj(self) -> PhysicalObject:
