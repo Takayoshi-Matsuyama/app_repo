@@ -12,6 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+
+
+class DiscreteTimeLoader:
+    """離散時間設定の読込クラス (Loader for DiscreteTime)"""
+
+    def __init__(self):
+        """DiscreteTimeLoaderを初期化する
+        (Initialize the DiscreteTimeLoader)"""
+        pass
+
+    def load(self, filepath="tkmotion/default_discrete_time.json"):
+        """離散時間設定をJSONファイルから読み込む
+        (Load configuration from a JSON file)"""
+
+        try:
+            with open(filepath, "r") as f:
+                config = json.load(f)
+                # リスト先頭のディクショナリを渡す
+                return DiscreteTime(config[0])
+        except Exception as e:
+            print(f"Error loading discrete time configuration: {e}")
+        return None
+
 
 class DiscreteTime:
     """離散時間クラス"""

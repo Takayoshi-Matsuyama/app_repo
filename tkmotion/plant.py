@@ -12,7 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+
 from tkmotion.physical_object import PhysicalObject
+
+
+class PlantLoader:
+    """プラント読込クラス (Plant Loader Class)"""
+
+    def __init__(self):
+        """PlantLoaderを初期化する
+        (Initialize the PlantLoader)"""
+        pass
+
+    def load(self, filepath="tkmotion/default_plant.json"):
+        """プラント設定をJSONファイルから読み込む
+        (Load Plant settings from a JSON file)"""
+        try:
+            with open(filepath, "r") as f:
+                config = json.load(f)
+                # リスト先頭のディクショナリを渡す
+                return Plant(config[0])
+        except Exception as e:
+            print(f"Error loading plant: {e}")
+        return None
 
 
 class Plant:

@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import pandas as pd
-from tkmotion.discrete_time_loader import DiscreteTimeLoader
+
+from tkmotion.discrete_time import DiscreteTimeLoader
 from tkmotion.discrete_time import DiscreteTime
-from tkmotion.controller_loader import ControllerLoader
+from tkmotion.controller import ControllerLoader
 from tkmotion.controller import Controller
-from tkmotion.plant_loader import PlantLoader
+from tkmotion.plant import PlantLoader
 from tkmotion.plant import Plant
-from tkmotion.motion_profile_loader import MotionProfileLoader
+from tkmotion.motion_profile import MotionProfileLoader
 from tkmotion.motion_profile import MotionProfile
 
 

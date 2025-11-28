@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+
 
 class VelocityZeroOrMinusError(Exception):
     """速度がゼロまたは負の値の場合に発生する例外
@@ -32,6 +34,30 @@ class MovingLengthZeroOrMinusError(Exception):
     (Exception raised for zero or negative moving length)"""
 
     pass
+
+
+class MotionProfileLoader:
+    """モーションプロファイル読込クラス (Loader for MotionProfile)"""
+
+    def __init__(self):
+        """MotionProfileLoaderを初期化する
+        (Initialize the MotionProfileLoader)"""
+        pass
+
+    def load(self, filepath="tkmotion/default_motion_prof.json"):
+        """JSONファイルからモーションプロファイルを読み込む
+        (Load motion profile from a JSON file)"""
+        try:
+            with open(filepath, "r") as f:
+                config = json.load(f)
+                # リスト先頭のディクショナリを渡す
+                if config[0]["motion_profile"][0]["type"] == "trapezoid":
+                    return TrapezoidalMotionProfile(config[0])
+                else:
+                    return MotionProfile(config[0])
+        except Exception as e:
+            print(f"Error loading motion profile: {e}")
+        return None
 
 
 class MotionProfile:

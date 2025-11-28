@@ -12,6 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+
+
+class ControllerLoader:
+    """コントローラ読込クラス (Controller Loader Class)"""
+
+    def __init__(self):
+        """ControllerLoaderを初期化する
+        (Initialize the ControllerLoader)"""
+        pass
+
+    def load(self, filepath="tkmotion/default_controller.json"):
+        """コントローラ設定をJSONファイルから読み込む
+        (Load Controller settings from a JSON file)"""
+        try:
+            with open(filepath, "r") as f:
+                config = json.load(f)
+                # リスト先頭のディクショナリを渡す
+                if config[0]["controller"][0]["type"] == "PID":
+                    return PIDController(config[0])
+                else:
+                    return Controller(config[0])
+        except Exception as e:
+            print(f"Error loading controller: {e}")
+        return None
+
 
 class Controller:
     """コントローラクラス (Controller Class)"""
