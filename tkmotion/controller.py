@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import json
+from tkmotion.utility import Utility
 
 # コントローラモジュールのバージョン情報
 # (Controller module version information)
@@ -44,6 +45,16 @@ class ControllerLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                is_compatible = Utility.is_config_compatible(
+                    module_version, config[0]["controller"][0]["version"]
+                )
+                if not is_compatible:
+                    raise ValueError(
+                        f"Incompatible controller config version: "
+                        f"module_version={module_version}, "
+                        f"config_version={config[0]['controller'][0]['version']}"
+                    )
+
                 if config[0]["controller"][0]["type"] == "PID":
                     return PIDController(config[0]["controller"])
                 else:
