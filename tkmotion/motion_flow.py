@@ -17,7 +17,6 @@ from tkmotion.discrete_time_loader import DiscreteTimeLoader
 from tkmotion.discrete_time import DiscreteTime
 from tkmotion.controller_loader import ControllerLoader
 from tkmotion.controller import Controller
-from tkmotion.controller import PIDController
 from tkmotion.plant_loader import PlantLoader
 from tkmotion.plant import Plant
 from tkmotion.motion_profile_loader import MotionProfileLoader
@@ -32,7 +31,7 @@ class MotionFlow:
         """モーションフローを初期化する
         (Initialize the MotionFlow)"""
         self._discrete_time: DiscreteTime | None = None
-        self._controller: Controller | PIDController | None = None
+        self._controller: Controller | None = None
         self._plant: Plant | None = None
         self._motion_profile: MotionProfile | None = None
 

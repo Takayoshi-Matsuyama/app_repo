@@ -33,6 +33,48 @@ class Controller:
         (Returns the controller type)"""
         return self._config["controller"][0]["type"]
 
+    @property
+    def vel_error(self) -> float:
+        """現在の速度偏差を返す
+        (Return the current velocity error)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
+    @property
+    def pos_error(self) -> float:
+        """現在の位置偏差を返す
+        (Return the current position error)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
+    @property
+    def vel_error_cumsum(self) -> float:
+        """現在の速度偏差の累積値を返す
+        (Return the current cumulative velocity error)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
+    @property
+    def pos_error_cumsum(self) -> float:
+        """現在の位置偏差の累積値を返す
+        (Return the current cumulative position error)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
+    @property
+    def vel_error_diff(self) -> float:
+        """現在の速度偏差の微分値を返す
+        (Return the current derivative of velocity error)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
+    @property
+    def pos_error_diff(self) -> float:
+        """現在の位置偏差の微分値を返す
+        (Return the current derivative of position error)"""
+        # 基本的なコントローラでは0を返す
+        return 0.0
+
     def get_config(self) -> dict:
         """設定辞書を返す
         (Return the configuration dictionary)"""
