@@ -84,6 +84,9 @@ class MotionFlow:
             raise ValueError("Failed to load motion profile.")
 
     def execute(self) -> pd.DataFrame:
+        """モーションシミュレーションを実行する
+        (Execute motion simulation)"""
+
         print("Executing motion flow...")
 
         if self._motion_flow_config is None:
@@ -94,15 +97,16 @@ class MotionFlow:
         if self._motion_flow_config.discrete_time is None:
             raise ValueError("Discrete time configuration not available.")
 
+        if self._controller is None:
+            raise ValueError("Controller not loaded. Call load_controller() first.")
+
         if self._motion_profile is None:
             raise ValueError(
                 "Motion profile not loaded. Call load_motion_profile() first."
             )
 
         if self._plant is None:
-            raise ValueError(
-                "Target system not loaded. Call load_target_system() first."
-            )
+            raise ValueError("Plant not loaded. Call load_plant() first.")
 
         motion_profile = self._motion_profile
         plant = self._plant
@@ -123,15 +127,8 @@ class MotionFlow:
         obj_vel_list = []
         obj_pos_list = []
 
-        # 累積情報 初期値 (cumulative information initial value)
-        vel_error_cumsum = 0.0
-        pos_error_cumsum = 0.0
-
-        # 微分情報 初期値 (derivative information initial value)
-        prev_vel_error = 0.0
-        vel_error_diff = 0.0
-        prev_pos_error = 0.0
-        pos_error_diff = 0.0
+        # コントローラ状態初期化 (initialize controller state)
+        self._controller.reset()
 
         # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
@@ -143,58 +140,12 @@ class MotionFlow:
             cmd_pos_list.append(cmd_pos)
 
             # サーボ推力計算 (servo force calculation)
+            force = self._controller.calculate_force(
+                cmd_vel, cmd_pos, plant.physical_obj.vel, plant.physical_obj.pos
+            )
 
-            # PID制御
-
-            # P (比例 Proportional)
-            # 瞬間的に偏差を比例倍した操作量を出力する。
-            # 目標値に近づくと操作量自体も徐々に小さくなる。定常偏差が残りやすい。
-
-            # I (積分 Integral)
-            # 偏差を累積し、継続的に偏差をなくすような操作量を出力する。
-            # 積分により位相が全周波数域で90度遅れる。
-
-            # D (微分 Derivative)
-            # 偏差の変化率に比例した操作量を出力する。
-            # 偏差が変化する方向を予測する (偏差が拡大しそうなら早めに操作量を大きくする)。
-
-            # 速度偏差 (指令が先行) (velocity error, command leads)
-            vel_error = cmd_vel - plant.physical_obj.vel
-            vel_error_list.append(vel_error)
-            vel_error_cumsum += vel_error
-            vel_error_diff = vel_error - prev_vel_error
-            prev_vel_error = vel_error
-
-            # 位置偏差 (指令が先行) (position error, command leads)
-            pos_error = cmd_pos - plant.physical_obj.pos
-            pos_error_list.append(pos_error)
-            pos_error_cumsum += pos_error
-            pos_error_diff = pos_error - prev_pos_error
-            prev_pos_error = pos_error
-
-            # 速度比例制御 (velocity proportional control)
-            kvp = 10000.0  # [N/(m/s)] 比例ゲイン (proportional gain)
-            force = kvp * vel_error
-
-            # 速度積分制御 (velocity integral control)
-            kvi = 1000.0  # [N/(m/s)] 積分ゲイン (integral gain)
-            force += kvi * vel_error_cumsum
-
-            # 速度微分制御 (velocity derivative control)
-            kvd = 100.0  # [N/(m/s)] 微分ゲイン (derivative gain)
-            force += kvd * vel_error_diff
-
-            # 位置比例制御 (position proportional control)
-            kpp = 1000.0  # [N/m] 比例ゲイン (proportional gain)
-            force += kpp * pos_error
-
-            # 位置積分制御 (position integral control)
-            kpi = 500.0  # [N/m] 積分ゲイン (integral gain)
-            force += kpi * pos_error_cumsum
-
-            # 位置微分制御 (position derivative control)
-            kpd = 10.0  # [N/m] 微分ゲイン (derivative gain)
-            force += kpd * pos_error_diff
+            vel_error_list.append(self._controller.vel_error)
+            pos_error_list.append(self._controller.pos_error)
 
             force_list.append(force)
 
