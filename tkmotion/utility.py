@@ -17,6 +17,13 @@
 module_version = "0.0.1"
 
 
+class ConfigVersionIncompatibleError(Exception):
+    """設定バージョンが互換性のない場合に発生する例外
+    (Exception raised for incompatible configuration version)"""
+
+    pass
+
+
 class Utility:
     """ユーティリティクラス (Utility class)"""
 

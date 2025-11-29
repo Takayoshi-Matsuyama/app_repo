@@ -14,6 +14,7 @@
 
 
 from tkmotion.utility import Utility
+from tkmotion.utility import ConfigVersionIncompatibleError
 
 # 物理オブジェクトモジュールのバージョン情報
 # (physical object module version information)
@@ -32,7 +33,7 @@ class PhysicalObject:
                 module_version, self._config[0]["version"]
             )
             if not is_compatible:
-                raise ValueError(
+                raise ConfigVersionIncompatibleError(
                     f"Incompatible physical object config version: "
                     f"module_version={module_version}, "
                     f"config_version={self._config[0]['version']}"
@@ -46,7 +47,7 @@ class PhysicalObject:
             self._pos = 0.0
             self._prev_pos = 0.0
         except Exception as e:
-            print(f"Error initializing physical object: {e}")
+            print(f"Error initializing physical object: {type(e)} {e}")
             raise e
 
     @property
@@ -61,8 +62,10 @@ class PhysicalObject:
         (Returns the physical object configuration version)"""
         try:
             return self._config[0]["version"]
-        except KeyError:
-            raise KeyError("Missing 'version' in physical object configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'version' in physical object configuration: {type(e)} {e}"
+            )
 
     @property
     def mass(self) -> float:

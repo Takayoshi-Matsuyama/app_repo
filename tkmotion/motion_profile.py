@@ -18,6 +18,7 @@ import numpy as np
 import json
 
 from tkmotion.utility import Utility
+from tkmotion.utility import ConfigVersionIncompatibleError
 
 # モーションプロファイルモジュールのバージョン情報
 # (motion profile module version information)
@@ -65,7 +66,7 @@ class MotionProfileLoader:
                     module_version, config[0]["motion_profile"][0]["version"]
                 )
                 if not is_compatible:
-                    raise ValueError(
+                    raise ConfigVersionIncompatibleError(
                         f"Incompatible motion profile config version: "
                         f"module_version={module_version}, "
                         f"config_version={config[0]['motion_profile'][0]['version']}"
@@ -75,7 +76,7 @@ class MotionProfileLoader:
                 else:
                     return MotionProfile(config[0]["motion_profile"])
         except Exception as e:
-            print(f"Error loading motion profile: {e}")
+            print(f"Error loading motion profile: {type(e)} {e}")
         return None
 
     @property
@@ -105,8 +106,10 @@ class MotionProfile:
         (Returns the motion profile configuration version)"""
         try:
             return self._config[0]["version"]
-        except KeyError:
-            raise KeyError("Missing 'version' in motion profile configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'version' in motion profile configuration: {type(e)} {e}"
+            )
 
     @property
     def type(self) -> str:
@@ -114,8 +117,10 @@ class MotionProfile:
         (Returns the motion profile type)"""
         try:
             return self._config[0]["type"]
-        except KeyError:
-            raise KeyError("Missing 'type' in motion profile configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'type' in motion profile configuration: {type(e)} {e}"
+            )
 
     def get_config(self) -> dict:
         """プロファイルソースの辞書を返す
@@ -140,8 +145,11 @@ class TrapezoidalMotionProfile(MotionProfile):
         # 最大速度 (maximum velocity)
         try:
             _V: float = self._config[0]["max_velocity_m_s"]
-        except KeyError:
-            raise KeyError("Missing 'max_velocity_m_s' in motion profile configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'max_velocity_m_s' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
 
         if _V <= 0.0:
             raise VelocityZeroOrMinusError("Velocity must be positive.")
@@ -150,9 +158,10 @@ class TrapezoidalMotionProfile(MotionProfile):
         # 加速度 (acceleration)
         try:
             _A: float = self._config[0]["acceleration_m_s2"]
-        except KeyError:
+        except KeyError as e:
             raise KeyError(
-                "Missing 'acceleration_m_s2' in motion profile configuration"
+                f"Missing 'acceleration_m_s2' in motion profile "
+                f"configuration: {type(e)} {e}"
             )
 
         if _A <= 0.0:
@@ -162,8 +171,10 @@ class TrapezoidalMotionProfile(MotionProfile):
         # 移動距離 (moving length)
         try:
             _L: float = self._config[0]["length_m"]
-        except KeyError:
-            raise KeyError("Missing 'length_m' in motion profile configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'length_m' in motion profile configuration: {type(e)} {e}"
+            )
 
         if _L == 0.0:
             raise MovingLengthZeroError("Moving length must be non-zero.")

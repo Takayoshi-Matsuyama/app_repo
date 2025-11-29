@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 
 from tkmotion.utility import Utility
+from tkmotion.utility import ConfigVersionIncompatibleError
+
 
 # 離散時間モジュールのバージョン情報
 # (discrete time module version information)
@@ -44,14 +46,14 @@ class DiscreteTimeLoader:
                     module_version, config[0]["discrete_time"][0]["version"]
                 )
                 if not is_compatible:
-                    raise ValueError(
+                    raise ConfigVersionIncompatibleError(
                         f"Incompatible discrete time config version: "
                         f"module_version={module_version}, "
                         f"config_version={config[0]['discrete_time'][0]['version']}"
                     )
                 return DiscreteTime(config[0]["discrete_time"])
         except Exception as e:
-            print(f"Error loading discrete time configuration: {e}")
+            print(f"Error loading discrete time configuration: {type(e)} {e}")
         return None
 
     @property
@@ -73,16 +75,16 @@ class DiscreteTime:
             self._dt: float = (
                 float(self._config[0]["time_step_us"]) / 1000000.0
             )  # 秒単位
-        except KeyError:
-            raise KeyError("Missing 'time_step_us' in configuration")
-        except ValueError:
-            raise ValueError("'time_step_us' must be a number")
+        except KeyError as e:
+            raise KeyError(f"Missing 'time_step_us' in configuration: {type(e)} {e}")
+        except ValueError as e:
+            raise ValueError(f"'time_step_us' must be a number: {type(e)} {e}")
         try:
             self._duration_s: float = float(self._config[0]["duration_s"])
-        except KeyError:
-            raise ValueError("Missing 'duration_s' in configuration")
-        except ValueError:
-            raise ValueError("'duration_s' must be a number")
+        except KeyError as e:
+            raise ValueError(f"Missing 'duration_s' in configuration: {type(e)} {e}")
+        except ValueError as e:
+            raise ValueError(f"'duration_s' must be a number: {type(e)} {e}")
 
     @property
     def module_version(self) -> str:
@@ -96,8 +98,10 @@ class DiscreteTime:
         (Returns the version of the discrete time configurations)"""
         try:
             return self._config[0]["version"]
-        except KeyError:
-            raise KeyError("Missing 'version' in discrete time configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'version' in discrete time configuration: {type(e)} {e}"
+            )
 
     @property
     def dt(self) -> float:

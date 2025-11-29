@@ -18,6 +18,7 @@ import json
 
 from tkmotion.physical_object import PhysicalObject
 from tkmotion.utility import Utility
+from tkmotion.utility import ConfigVersionIncompatibleError
 
 # プラントモジュールのバージョン情報
 # (plant module version information)
@@ -42,14 +43,14 @@ class PlantLoader:
                     module_version, config[0]["plant"][0]["version"]
                 )
                 if not is_compatible:
-                    raise ValueError(
+                    raise ConfigVersionIncompatibleError(
                         f"Incompatible plant config version: "
                         f"module_version={module_version}, "
                         f"config_version={config[0]['plant'][0]['version']}"
                     )
                 return Plant(config[0]["plant"])
         except Exception as e:
-            print(f"Error loading plant: {e}")
+            print(f"Error loading plant: {type(e)} {e}")
         return None
 
     @property
@@ -71,7 +72,9 @@ class Plant:
                 self._config[0]["physical_object"]
             )
         except KeyError as e:
-            raise ValueError(f"Missing 'physical_object' in configuration: {e}")
+            raise ValueError(
+                f"Missing 'physical_object' in configuration: {type(e)} {e}"
+            )
 
     @property
     def module_version(self) -> str:
@@ -85,8 +88,8 @@ class Plant:
         (Returns the plant configuration version)"""
         try:
             return self._config[0]["version"]
-        except KeyError:
-            raise KeyError("Missing 'version' in plant configuration")
+        except KeyError as e:
+            raise KeyError(f"Missing 'version' in plant configuration: {type(e)} {e}")
 
     @property
     def physical_obj(self) -> PhysicalObject:

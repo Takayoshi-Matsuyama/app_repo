@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 from tkmotion.utility import Utility
+from tkmotion.utility import ConfigVersionIncompatibleError
 
 # コントローラモジュールのバージョン情報
 # (Controller module version information)
@@ -49,7 +50,7 @@ class ControllerLoader:
                     module_version, config[0]["controller"][0]["version"]
                 )
                 if not is_compatible:
-                    raise ValueError(
+                    raise ConfigVersionIncompatibleError(
                         f"Incompatible controller config version: "
                         f"module_version={module_version}, "
                         f"config_version={config[0]['controller'][0]['version']}"
@@ -60,7 +61,7 @@ class ControllerLoader:
                 else:
                     return Controller(config[0]["controller"])
         except Exception as e:
-            print(f"Error loading controller: {e}")
+            print(f"Error loading controller: {type(e)} {e}")
         return None
 
     @property
@@ -90,8 +91,10 @@ class Controller:
         (Returns the controller configuration version)"""
         try:
             return self._config[0]["version"]
-        except KeyError:
-            raise KeyError("Missing 'version' in controller configuration")
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'version' in controller configuration: {type(e)} {e}"
+            )
 
     @property
     def type(self) -> str:
@@ -99,8 +102,8 @@ class Controller:
         (Returns the controller type)"""
         try:
             return self._config[0]["type"]
-        except KeyError:
-            raise KeyError("Missing 'type' in controller configuration")
+        except KeyError as e:
+            raise KeyError(f"Missing 'type' in controller configuration: {type(e)} {e}")
 
     @property
     def vel_error(self) -> float:
@@ -185,9 +188,9 @@ class PIDController(Controller):
             # Kpd [N/m] 位置微分ゲイン (position derivative gain)
             self._kpd: float = float(self._config[0]["kpd_N_m"])
         except KeyError as e:
-            raise KeyError(f"Missing PID parameter in configuration: {e}")
-        except ValueError:
-            raise ValueError("PID parameters must be numbers")
+            raise KeyError(f"Missing PID parameter in configuration: {type(e)} {e}")
+        except ValueError as e:
+            raise ValueError(f"PID parameters must be numbers: {type(e)} {e}")
 
         # コントローラの状態をリセットする
         self.reset()
