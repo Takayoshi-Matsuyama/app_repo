@@ -17,6 +17,8 @@ from __future__ import annotations
 import numpy as np
 import json
 
+from tkmotion.utility import Utility
+
 # モーションプロファイルモジュールのバージョン情報
 # (motion profile module version information)
 module_version = "0.0.1"
@@ -59,7 +61,15 @@ class MotionProfileLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
-                # リスト先頭のディクショナリを渡す
+                is_compatible = Utility.is_config_compatible(
+                    module_version, config[0]["motion_profile"][0]["version"]
+                )
+                if not is_compatible:
+                    raise ValueError(
+                        f"Incompatible motion profile config version: "
+                        f"module_version={module_version}, "
+                        f"config_version={config[0]['motion_profile'][0]['version']}"
+                    )
                 if config[0]["motion_profile"][0]["type"] == "trapezoid":
                     return TrapezoidalMotionProfile(config[0]["motion_profile"])
                 else:

@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+from tkmotion.utility import Utility
+
 # 物理オブジェクトモジュールのバージョン情報
 # (physical object module version information)
 module_version = "0.0.1"
@@ -25,18 +28,26 @@ class PhysicalObject:
         (Initialize PhysicalObject)"""
         self._config: dict = config
         try:
+            is_compatible = Utility.is_config_compatible(
+                module_version, self._config[0]["version"]
+            )
+            if not is_compatible:
+                raise ValueError(
+                    f"Incompatible physical object config version: "
+                    f"module_version={module_version}, "
+                    f"config_version={self._config[0]['version']}"
+                )
             self._mass: float = float(self._config[0]["mass_kg"])
-        except KeyError:
-            raise KeyError("Missing 'mass' in configuration")
-        except ValueError:
-            raise ValueError("'mass' must be a number")
 
-        self._acc = 0.0
-        self._prev_acc = 0.0
-        self._vel = 0.0
-        self._prev_vel = 0.0
-        self._pos = 0.0
-        self._prev_pos = 0.0
+            self._acc = 0.0
+            self._prev_acc = 0.0
+            self._vel = 0.0
+            self._prev_vel = 0.0
+            self._pos = 0.0
+            self._prev_pos = 0.0
+        except Exception as e:
+            print(f"Error initializing physical object: {e}")
+            raise e
 
     @property
     def module_version(self) -> str:

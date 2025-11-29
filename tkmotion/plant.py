@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 
 from tkmotion.physical_object import PhysicalObject
+from tkmotion.utility import Utility
 
 # プラントモジュールのバージョン情報
 # (plant module version information)
@@ -37,6 +38,15 @@ class PlantLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                is_compatible = Utility.is_config_compatible(
+                    module_version, config[0]["plant"][0]["version"]
+                )
+                if not is_compatible:
+                    raise ValueError(
+                        f"Incompatible plant config version: "
+                        f"module_version={module_version}, "
+                        f"config_version={config[0]['plant'][0]['version']}"
+                    )
                 return Plant(config[0]["plant"])
         except Exception as e:
             print(f"Error loading plant: {e}")

@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import json
 
+from tkmotion.utility import Utility
+
 # 離散時間モジュールのバージョン情報
 # (discrete time module version information)
 module_version = "0.0.1"
@@ -38,6 +40,15 @@ class DiscreteTimeLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                is_compatible = Utility.is_config_compatible(
+                    module_version, config[0]["discrete_time"][0]["version"]
+                )
+                if not is_compatible:
+                    raise ValueError(
+                        f"Incompatible discrete time config version: "
+                        f"module_version={module_version}, "
+                        f"config_version={config[0]['discrete_time'][0]['version']}"
+                    )
                 return DiscreteTime(config[0]["discrete_time"])
         except Exception as e:
             print(f"Error loading discrete time configuration: {e}")
