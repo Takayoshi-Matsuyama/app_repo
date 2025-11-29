@@ -20,6 +20,7 @@ import json
 from tkmotion.utility import Utility
 from tkmotion.utility import ConfigVersionIncompatibleError
 
+
 # モーションプロファイルモジュールのバージョン情報
 # (motion profile module version information)
 module_version = "0.0.1"

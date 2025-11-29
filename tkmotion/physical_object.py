@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from tkmotion.utility import Utility
 from tkmotion.utility import ConfigVersionIncompatibleError
+
 
 # 物理オブジェクトモジュールのバージョン情報
 # (physical object module version information)
