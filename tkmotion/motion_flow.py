@@ -14,8 +14,8 @@
 
 import pandas as pd
 
-from tkmotion.discrete_time import DiscreteTimeLoader
-from tkmotion.discrete_time import DiscreteTime
+from tkmotion.time.discrete_time import DiscreteTimeLoader
+from tkmotion.time.discrete_time import DiscreteTime
 from tkmotion.controller import ControllerLoader
 from tkmotion.controller import Controller
 from tkmotion.plant.plant import PlantLoader

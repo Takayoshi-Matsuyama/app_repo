@@ -14,6 +14,6 @@
 
 from tkmotion.mprof.motion_profile import MotionProfileLoader  # noqa: F401
 from tkmotion.mprof.motion_profile import MotionProfile  # noqa: F401
-from tkmotion.mprof.motion_profile import (
+from tkmotion.mprof.motion_profile import (  # noqa: F401
     TrapezoidalMotionProfile,
-)  # noqa: F401
+)
