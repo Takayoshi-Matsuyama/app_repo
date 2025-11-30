@@ -30,8 +30,8 @@ module_version = "0.0.1"
 
 
 class MotionFlow:
-    """モーションフロー操作を扱うクラス
-    (A class to handle motion flow operations)"""
+    """モーション制御指令の流れを司るクラス
+    (Class that manages the flow of motion control commands)"""
 
     def __init__(self) -> None:
         """モーションフローを初期化する
@@ -72,7 +72,7 @@ class MotionFlow:
         return self._motion_profile
 
     def load_discrete_time(
-        self, filepath="tkmotion/defconfig/default_discrete_time.json"
+        self, filepath="tkmotion/time/default_discrete_time.json"
     ) -> None:
         """離散時間設定をロードする
         (Load discrete time configuration)"""
@@ -82,7 +82,7 @@ class MotionFlow:
             raise ValueError("Failed to load discrete time configuration.")
 
     def load_controller(
-        self, filepath="tkmotion/defconfig/default_controller.json"
+        self, filepath="tkmotion/mcontrol/default_controller.json"
     ) -> None:
         """コントローラ設定をロードする
         (Load controller configuration)"""
@@ -91,7 +91,7 @@ class MotionFlow:
         if self._controller is None:
             raise ValueError("Failed to load controller.")
 
-    def load_plant(self, filepath="tkmotion/defconfig/default_plant.json") -> None:
+    def load_plant(self, filepath="tkmotion/plant/default_plant.json") -> None:
         """プラント設定をロードする
         (Load plant configuration)"""
 
@@ -100,7 +100,7 @@ class MotionFlow:
             raise ValueError("Failed to load plant.")
 
     def load_motion_profile(
-        self, filepath="tkmotion/defconfig/default_motion_prof.json"
+        self, filepath="tkmotion/mprof/default_motion_prof.json"
     ) -> None:
         """モーションプロファイルをロードする
         (Load motion profile)"""

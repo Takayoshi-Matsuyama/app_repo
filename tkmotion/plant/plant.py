@@ -34,7 +34,7 @@ class PlantLoader:
         (Initialize the PlantLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/defconfig/default_plant.json") -> Plant | None:
+    def load(self, filepath="tkmotion/plant/default_plant.json") -> Plant | None:
         """プラント設定をJSONファイルから読み込む
         (Load Plant settings from a JSON file)"""
         try:
