@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tkmotion.utility import Utility
-from tkmotion.utility import ConfigVersionIncompatibleError
+from tkmotion.util.utility import Utility
+from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 
 # 物理オブジェクトモジュールのバージョン情報

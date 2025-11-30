@@ -17,8 +17,8 @@ from __future__ import annotations
 import json
 
 from tkmotion.plant.physical_object import PhysicalObject
-from tkmotion.utility import Utility
-from tkmotion.utility import ConfigVersionIncompatibleError
+from tkmotion.util.utility import Utility
+from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 
 # プラントモジュールのバージョン情報

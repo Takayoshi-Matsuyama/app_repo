@@ -17,8 +17,8 @@ from __future__ import annotations
 import numpy as np
 import json
 
-from tkmotion.utility import Utility
-from tkmotion.utility import ConfigVersionIncompatibleError
+from tkmotion.util.utility import Utility
+from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 
 # モーションプロファイルモジュールのバージョン情報

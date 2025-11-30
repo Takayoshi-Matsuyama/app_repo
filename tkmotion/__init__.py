@@ -13,4 +13,4 @@
 # limitations under the License.
 
 from tkmotion.motion_flow import MotionFlow  # noqa: F401
-from tkmotion.utility import Utility  # noqa: F401
+from tkmotion.util.utility import Utility  # noqa: F401
