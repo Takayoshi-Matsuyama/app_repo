@@ -42,7 +42,7 @@ Jupyter Notebookで実行する例を示す。
 ## 3.1 シミュレーション実行
 
 ```
-import pandas ad pd         # パッケージのインポート (pandas 表形式データ処理)
+import pandas as pd         # パッケージのインポート (pandas 表形式データ処理)
 import tkmotion as tkm      # パッケージのインポート (モーションシミュレータ)
 
 flow = tkm.MotionFlow()     # モーション制御フローのインスタンスを作成
