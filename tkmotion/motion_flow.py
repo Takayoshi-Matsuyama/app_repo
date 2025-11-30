@@ -20,8 +20,8 @@ from tkmotion.controller import ControllerLoader
 from tkmotion.controller import Controller
 from tkmotion.plant.plant import PlantLoader
 from tkmotion.plant.plant import Plant
-from tkmotion.motion_profile import MotionProfileLoader
-from tkmotion.motion_profile import MotionProfile
+from tkmotion.mprof.motion_profile import MotionProfileLoader
+from tkmotion.mprof.motion_profile import MotionProfile
 
 
 # モーションフローモジュールのバージョン情報
