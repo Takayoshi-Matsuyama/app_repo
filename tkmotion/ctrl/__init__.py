@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tkmotion.mprof.motion_profile import MotionProfileLoader  # noqa: F401
-from tkmotion.mprof.motion_profile import MotionProfile  # noqa: F401
-from tkmotion.mprof.motion_profile import (  # noqa: F401
-    TrapezoidalMotionProfile,
-)
+from tkmotion.ctrl.controller import ControllerLoader  # noqa: F401
+from tkmotion.ctrl.controller import Controller  # noqa: F401
+from tkmotion.ctrl.controller import PIDController  # noqa: F401

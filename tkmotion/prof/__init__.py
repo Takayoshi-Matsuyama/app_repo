@@ -12,4 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tkmotion.mflow.motion_flow import MotionFlow  # noqa: F401
+from tkmotion.prof.motion_profile import MotionProfileLoader  # noqa: F401
+from tkmotion.prof.motion_profile import MotionProfile  # noqa: F401
+from tkmotion.prof.motion_profile import (  # noqa: F401
+    TrapezoidalMotionProfile,
+)

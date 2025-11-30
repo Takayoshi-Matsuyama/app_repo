@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tkmotion.mflow.motion_flow import MotionFlow  # noqa: F401
+from tkmotion.flow.motion_flow import MotionFlow  # noqa: F401
 from tkmotion.util.utility import Utility  # noqa: F401

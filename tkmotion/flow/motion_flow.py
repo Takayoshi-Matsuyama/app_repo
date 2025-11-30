@@ -16,12 +16,12 @@ import pandas as pd
 
 from tkmotion.time.discrete_time import DiscreteTimeLoader
 from tkmotion.time.discrete_time import DiscreteTime
-from tkmotion.mcontrol.controller import ControllerLoader
-from tkmotion.mcontrol.controller import Controller
+from tkmotion.ctrl.controller import ControllerLoader
+from tkmotion.ctrl.controller import Controller
 from tkmotion.plant.plant import PlantLoader
 from tkmotion.plant.plant import Plant
-from tkmotion.mprof.motion_profile import MotionProfileLoader
-from tkmotion.mprof.motion_profile import MotionProfile
+from tkmotion.prof.motion_profile import MotionProfileLoader
+from tkmotion.prof.motion_profile import MotionProfile
 
 
 # モーションフローモジュールのバージョン情報
@@ -82,7 +82,7 @@ class MotionFlow:
             raise ValueError("Failed to load discrete time configuration.")
 
     def load_motion_profile(
-        self, filepath="tkmotion/mprof/default_motion_prof.json"
+        self, filepath="tkmotion/prof/default_motion_prof.json"
     ) -> None:
         """モーションプロファイルをロードする
         (Load motion profile)"""
@@ -91,9 +91,7 @@ class MotionFlow:
         if self._motion_profile is None:
             raise ValueError("Failed to load motion profile.")
 
-    def load_controller(
-        self, filepath="tkmotion/mcontrol/default_controller.json"
-    ) -> None:
+    def load_controller(self, filepath="tkmotion/ctrl/default_controller.json") -> None:
         """コントローラ設定をロードする
         (Load controller configuration)"""
 

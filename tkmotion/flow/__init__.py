@@ -12,6 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tkmotion.mcontrol.controller import ControllerLoader  # noqa: F401
-from tkmotion.mcontrol.controller import Controller  # noqa: F401
-from tkmotion.mcontrol.controller import PIDController  # noqa: F401
+from tkmotion.flow.motion_flow import MotionFlow  # noqa: F401
