@@ -18,8 +18,8 @@ from tkmotion.discrete_time import DiscreteTimeLoader
 from tkmotion.discrete_time import DiscreteTime
 from tkmotion.controller import ControllerLoader
 from tkmotion.controller import Controller
-from tkmotion.plant import PlantLoader
-from tkmotion.plant import Plant
+from tkmotion.plant.plant import PlantLoader
+from tkmotion.plant.plant import Plant
 from tkmotion.motion_profile import MotionProfileLoader
 from tkmotion.motion_profile import MotionProfile
 
