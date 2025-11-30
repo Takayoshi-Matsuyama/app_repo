@@ -32,7 +32,9 @@ class ControllerLoader:
         (Initialize the ControllerLoader)"""
         pass
 
-    def load(self, filepath="tkmotion/default_controller.json") -> Controller | None:
+    def load(
+        self, filepath="tkmotion/defconfig/default_controller.json"
+    ) -> Controller | None:
         """コントローラ設定をJSONファイルから読み込む
         (Load Controller settings from a JSON file)
 

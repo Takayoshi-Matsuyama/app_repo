@@ -34,7 +34,7 @@ class DiscreteTimeLoader:
         pass
 
     def load(
-        self, filepath="tkmotion/default_discrete_time.json"
+        self, filepath="tkmotion/defconfig/default_discrete_time.json"
     ) -> DiscreteTime | None:
         """離散時間設定をJSONファイルから読み込む
         (Load configuration from a JSON file)"""

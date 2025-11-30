@@ -56,7 +56,7 @@ class MotionProfileLoader:
         pass
 
     def load(
-        self, filepath="tkmotion/default_motion_prof.json"
+        self, filepath="tkmotion/defconfig/default_motion_prof.json"
     ) -> MotionProfile | None:
         """JSONファイルからモーションプロファイルを読み込む
         (Load motion profile from a JSON file)"""
