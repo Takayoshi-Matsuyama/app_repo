@@ -55,6 +55,12 @@ class MotionProfileLoader:
         (Initialize the MotionProfileLoader)"""
         pass
 
+    @property
+    def module_version(self) -> str:
+        """モーションプロファイルモジュールのバージョンを返す
+        (Returns the motion profile module version)"""
+        return module_version
+
     def load(
         self, filepath="tkmotion/mprof/default_motion_prof.json"
     ) -> MotionProfile | None:
@@ -79,12 +85,6 @@ class MotionProfileLoader:
         except Exception as e:
             print(f"Error loading motion profile: {type(e)} {e}")
         return None
-
-    @property
-    def module_version(self) -> str:
-        """モーションプロファイルモジュールのバージョンを返す
-        (Returns the motion profile module version)"""
-        return module_version
 
 
 class MotionProfile:

@@ -34,6 +34,12 @@ class PlantLoader:
         (Initialize the PlantLoader)"""
         pass
 
+    @property
+    def module_version(self) -> str:
+        """プラントモジュールのバージョンを返す
+        (Returns the plant module version)"""
+        return module_version
+
     def load(self, filepath="tkmotion/plant/default_plant.json") -> Plant | None:
         """プラント設定をJSONファイルから読み込む
         (Load Plant settings from a JSON file)"""
@@ -53,12 +59,6 @@ class PlantLoader:
         except Exception as e:
             print(f"Error loading plant: {type(e)} {e}")
         return None
-
-    @property
-    def module_version(self) -> str:
-        """プラントモジュールのバージョンを返す
-        (Returns the plant module version)"""
-        return module_version
 
 
 class Plant:

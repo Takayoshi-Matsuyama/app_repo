@@ -32,6 +32,12 @@ class ControllerLoader:
         (Initialize the ControllerLoader)"""
         pass
 
+    @property
+    def module_version(self) -> str:
+        """コントローラモジュールのバージョンを返す
+        (Returns the controller module version)"""
+        return module_version
+
     def load(
         self, filepath="tkmotion/mcontrol/default_controller.json"
     ) -> Controller | None:
@@ -66,12 +72,6 @@ class ControllerLoader:
         except Exception as e:
             print(f"Error loading controller: {type(e)} {e}")
         return None
-
-    @property
-    def module_version(self) -> str:
-        """コントローラモジュールのバージョンを返す
-        (Returns the controller module version)"""
-        return module_version
 
 
 class Controller:

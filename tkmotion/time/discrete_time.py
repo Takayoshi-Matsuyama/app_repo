@@ -33,6 +33,12 @@ class DiscreteTimeLoader:
         (Initialize the DiscreteTimeLoader)"""
         pass
 
+    @property
+    def module_version(self) -> str:
+        """離散時間モジュールのバージョンを返す
+        (Returns the discrete time module version)"""
+        return module_version
+
     def load(
         self, filepath="tkmotion/time/default_discrete_time.json"
     ) -> DiscreteTime | None:
@@ -55,12 +61,6 @@ class DiscreteTimeLoader:
         except Exception as e:
             print(f"Error loading discrete time configuration: {type(e)} {e}")
         return None
-
-    @property
-    def module_version(self) -> str:
-        """離散時間モジュールのバージョンを返す
-        (Returns the discrete time module version)"""
-        return module_version
 
 
 class DiscreteTime:
