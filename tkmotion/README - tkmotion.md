@@ -121,14 +121,14 @@ motion flow / モーションフロー
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| motion_flow.py | 0.0.1 | MotionFlow<br>(モーション制御フロー) | モーション指令の流れを司り、<br>シミュレーションを実行 | load_discrete_time()<br>load_motion_profile()<br>load_controller()<br>load_plant()<br>execute() |
+| motion_flow.py | 0.1.0 | MotionFlow<br>(モーション制御フロー) | モーション指令の流れを司り、<br>シミュレーションを実行 | load_discrete_time()<br>load_motion_profile()<br>load_controller()<br>load_plant()<br>execute() |
 
 ### 4.2.2 パッケージ: tkmotion.time
 time series / 時系列
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| discrete_time.py | 0.0.1 | DiscreteTime<br>(離散時間) | 間隔Δtの離散時系列を表現 | get_time_step_generator() |
+| discrete_time.py | 0.1.0 | DiscreteTime<br>(離散時間) | 間隔Δtの離散時系列を表現 | get_time_step_generator() |
 | ↑ | ↑ | DiscreteTimeLoader<br>(離散時間ローダ) | 設定 (jsonファイル) を読み込み、<br>DiscreteTimeクラスのインスタンスを生成 | load() |
 
 ### 4.2.3 パッケージ: tkmotion.prof
@@ -136,7 +136,7 @@ motion profile / モーションプロファイル
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| motion_profile.py | 0.0.1 | MotionProfile<br>(モーションプロファイル) | モーションプロファイルのベースクラス。<br>モーションプロファイルの共通特性を定義 | calculate_cmd_vel_pos() |
+| motion_profile.py | 0.1.0 | MotionProfile<br>(モーションプロファイル) | モーションプロファイルのベースクラス。<br>モーションプロファイルの共通特性を定義 | calculate_cmd_vel_pos() |
 | ↑ | ↑ | TrapezoidalMotionProfile<br>(台形モーションプロファイル) | 台形状に変化する速度（加速・定速・減速）から<br>指令速度・指令位置を計算する | ↑ |
 | ↑ | ↑ | MotionProfileLoader<br>(モーションプロファイルローダ) | 設定 (jsonファイル) を読み込み、<br>MotionProfileクラスのインスタンスを生成 | load() |
 | ↑ | ↑ | VelocityZeroOrMinusError<br>(速度ゼロ・マイナスエラー)  | 設定速度がゼロ、またはマイナスの例外を表す | - |
@@ -148,7 +148,7 @@ motion control / モーション制御
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| controller.py | 0.0.1 | Controller<br>(コントローラ) | コントローラのベースクラス。<br>コントローラの共通特性を定義 | reset()<br>calculate_force() |
+| controller.py | 0.1.0 | Controller<br>(コントローラ) | コントローラのベースクラス。<br>コントローラの共通特性を定義 | reset()<br>calculate_force() |
 | ↑ | ↑ | PIDController<br>(PIDコントローラ) | PID計算を実行するコントローラ<br>・Proportional 比例<br>・Integral 積分<br>・Derivative 微分 | kvp, kvi, kvd<br>kpp, kpi, kpd<br>reset()<br>calculate_force() |
 | ↑ | ↑ | ControllerLoader<br>(コントローラローダ) | 設定 (jsonファイル) を読み込み、<br>Controllerクラスのインスタンスを生成 | load() |
 
@@ -157,7 +157,7 @@ plant (control target)  / プラント (制御対象)
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| plant.py | 0.0.1 | Plant<br>(プラント) | 制御対象を表現する | physical_obj |
+| plant.py | 0.1.0 | Plant<br>(プラント) | 制御対象を表現する | physical_obj |
 | ↑ | ↑ | PlantLoader<br>(プラントローダ) | プラントの設定 (jsonファイル) を読み込み、<br>Plantクラスと、Plantに属する各クラスのインスタンスを生成 | load() |
 | ↑ | ↑ | PhysicalObject<br>(物理オブジェクト) | 現実の物体を表現する | mass<br>acc, vel, pos<br>reset()<br>apply_force() |
 
@@ -166,7 +166,7 @@ utility / ユーティリティ
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| utility.py | 0.0.1 | Utility<br>(ユーティリティ) | 共通の補助機能を定義する | is_config_compatible() |
+| utility.py | 0.1.0 | Utility<br>(ユーティリティ) | 共通の補助機能を定義する | is_config_compatible() |
 | ↑ | ↑ | ConfigVersionIncompatibleError<br>(設定バージョン非互換エラー) | 設定バージョンに互換性がない例外を表す | - |
 
 ## 4.3 クラス図 (概要)

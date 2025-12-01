@@ -2,11 +2,11 @@
     {
         "plant": [
             {
-                "version" : "0.0.1",
-                "physical_object" : [
+                "version": "0.1.0",
+                "physical_object": [
                     {
-                        "version" : "0.0.1",
-                        "mass_kg" : 2.0
+                        "version": "0.1.0",
+                        "mass_kg": 2.0
                     }
                 ]
             }

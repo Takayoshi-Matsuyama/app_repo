@@ -21,7 +21,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # コントローラモジュールのバージョン情報
 # (Controller module version information)
-module_version = "0.0.1"
+module_version = "0.1.0"
 
 
 class ControllerLoader:

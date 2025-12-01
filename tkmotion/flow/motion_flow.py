@@ -26,7 +26,7 @@ from tkmotion.prof.motion_profile import MotionProfile
 
 # モーションフローモジュールのバージョン情報
 # (motion flow module version information)
-module_version = "0.0.1"
+module_version = "0.1.0"
 
 
 class MotionFlow:

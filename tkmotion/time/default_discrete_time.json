@@ -2,7 +2,7 @@
     {
         "discrete_time": [
             {
-                "version": "0.0.1",
+                "version": "0.1.0",
                 "time_step_us": 100,
                 "duration_s": 6.0
             }
