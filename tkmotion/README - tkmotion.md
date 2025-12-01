@@ -340,3 +340,9 @@ webencodings==0.5.1
 websocket-client==1.8.0
 xyzservices==2025.4.0
 ```
+
+# 7. 履歴
+
+| ver | 内容 |
+| -- | -- |
+| 0.1.0 | 初回安定版 |
