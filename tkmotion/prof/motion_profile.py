@@ -76,10 +76,10 @@ class MotionProfileLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                # 設定バージョン互換性確認 (Check configuration version compatibility)
                 is_compatible = Utility.is_config_compatible(
                     module_version, config[0]["motion_profile"][prof_index]["version"]
                 )
-                # 設定バージョン互換性確認 (Check configuration version compatibility)
                 if not is_compatible:
                     raise ConfigVersionIncompatibleError(
                         f"Incompatible motion profile config version: "

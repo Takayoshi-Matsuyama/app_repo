@@ -40,24 +40,32 @@ class DiscreteTimeLoader:
         return module_version
 
     def load(
-        self, filepath="tkmotion/time/default_discrete_time.json"
+        self, filepath="tkmotion/time/default_discrete_time.json", dtime_index=0
     ) -> DiscreteTime | None:
         """離散時間設定をJSONファイルから読み込む
-        (Load configuration from a JSON file)"""
+        (Load configuration from a JSON file)
+
+        Args:
+            filepath (str): JSONファイルのパス (Path to the JSON file)
+            dtime_index (int): 離散時間設定辞書のインデックス (Index of the discrete time setting dictionary)
+        Returns:
+            DiscreteTime | None: 離散時間オブジェクト (DiscreteTime object)
+        """
 
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                # 設定バージョン互換性確認 (Check configuration version compatibility)
                 is_compatible = Utility.is_config_compatible(
-                    module_version, config[0]["discrete_time"][0]["version"]
+                    module_version, config[0]["discrete_time"][dtime_index]["version"]
                 )
                 if not is_compatible:
                     raise ConfigVersionIncompatibleError(
                         f"Incompatible discrete time config version: "
                         f"module_version={module_version}, "
-                        f"config_version={config[0]['discrete_time'][0]['version']}"
+                        f"config_version={config[0]['discrete_time'][dtime_index]['version']}"
                     )
-                return DiscreteTime(config[0]["discrete_time"])
+                return DiscreteTime(config[0]["discrete_time"][dtime_index])
         except Exception as e:
             print(f"Error loading discrete time configuration: {type(e)} {e}")
         return None
@@ -72,15 +80,13 @@ class DiscreteTime:
 
         self._config: dict = config
         try:
-            self._dt: float = (
-                float(self._config[0]["time_step_us"]) / 1000000.0
-            )  # 秒単位
+            self._dt: float = float(self._config["time_step_us"]) / 1000000.0  # 秒単位
         except KeyError as e:
             raise KeyError(f"Missing 'time_step_us' in configuration: {type(e)} {e}")
         except ValueError as e:
             raise ValueError(f"'time_step_us' must be a number: {type(e)} {e}")
         try:
-            self._duration_s: float = float(self._config[0]["duration_s"])
+            self._duration_s: float = float(self._config["duration_s"])
         except KeyError as e:
             raise ValueError(f"Missing 'duration_s' in configuration: {type(e)} {e}")
         except ValueError as e:
@@ -97,7 +103,7 @@ class DiscreteTime:
         """離散時間設定のバージョンを返す
         (Returns the version of the discrete time configurations)"""
         try:
-            return self._config[0]["version"]
+            return self._config["version"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'version' in discrete time configuration: {type(e)} {e}"
