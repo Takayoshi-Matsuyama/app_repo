@@ -64,20 +64,29 @@ class MotionProfileLoader:
     def load(
         self, filepath="tkmotion/prof/default_motion_prof.json", prof_index=0
     ) -> MotionProfile | None:
-        """JSONファイルからモーションプロファイルを読み込む
-        (Load motion profile from a JSON file)"""
+        """JSONファイルからモーションプロファイル設定を読み込む
+        (Load motion profile from a JSON file)
+
+        Args:
+            filepath (str): JSONファイルのパス (Path to the JSON file)
+            prof_index (int): プロファイル設定辞書のインデックス (Index of the profile setting dictionary)
+        Returns:
+            MotionProfile | None: モーションプロファイルオブジェクト (MotionProfile object)
+        """
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
                 is_compatible = Utility.is_config_compatible(
                     module_version, config[0]["motion_profile"][prof_index]["version"]
                 )
+                # 設定バージョン互換性確認 (Check configuration version compatibility)
                 if not is_compatible:
                     raise ConfigVersionIncompatibleError(
                         f"Incompatible motion profile config version: "
                         f"module_version={module_version}, "
                         f"config_version={config[0]['motion_profile'][prof_index]['version']}"
                     )
+                # モーションプロファイルオブジェクト作成 (Create motion profile object)
                 if config[0]["motion_profile"][prof_index]["type"] == "trapezoid":
                     return TrapezoidalMotionProfile(
                         config[0]["motion_profile"][prof_index]
@@ -127,7 +136,7 @@ class MotionProfile:
 
     def get_config(self) -> dict:
         """プロファイルソースの辞書を返す
-        Returns the profile source dictionary."""
+        (Returns the profile source dictionary)"""
         return self._config
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
@@ -243,6 +252,39 @@ class ImpulseMotionProfile(MotionProfile):
         (Initialize the ImpulseMotionProfile)"""
         super().__init__(config)
 
+        # インパルス速度 (impulse velocity)
+        try:
+            _p_vel: float = self._config["impulse_vel_m_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'impulse_vel_m_s' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.p_vel: float = _p_vel
+
+        # インパルス位置 (impulse position)
+        try:
+            _p_pos: float = self._config["impulse_pos_m"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'impulse_pos_m' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.p_pos: float = _p_pos
+
+        # インパルスタイムステップ (impulse time step)
+        try:
+            _t_step: int = self._config["impulse_timestep"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'impulse_timestep' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.t_step: int = _t_step
+
+        # 時間ステップカウンタ (time step counter)
+        self._step_counter: int = 0
+
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
         """速度と位置のタプルを返す
         (Return a tuple of velocity and position)
@@ -253,7 +295,13 @@ class ImpulseMotionProfile(MotionProfile):
             tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
         """
 
-        # インパルスモーションプロファイルの実装はここに追加されます
-        vel = 0.0
-        pos = 0.0
-        return vel, pos
+        # 指定時間ステップの間はインパルス値を返す (return impulse values for specified time steps)
+        if self._step_counter < self.t_step:
+            self._step_counter += 1
+            vel = self.p_vel
+            pos = self.p_pos
+            return vel, pos
+        else:
+            vel = 0.0
+            pos = 0.0
+            return vel, pos
