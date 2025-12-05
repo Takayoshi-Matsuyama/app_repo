@@ -298,10 +298,6 @@ class ImpulseMotionProfile(MotionProfile):
         # 指定時間ステップの間はインパルス値を返す (return impulse values for specified time steps)
         if self._step_counter < self.t_step:
             self._step_counter += 1
-            vel = self.p_vel
-            pos = self.p_pos
-            return vel, pos
+            return self.p_vel, self.p_pos
         else:
-            vel = 0.0
-            pos = 0.0
-            return vel, pos
+            return 0.0, 0.0

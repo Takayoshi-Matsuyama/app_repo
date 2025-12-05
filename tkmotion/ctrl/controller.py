@@ -39,7 +39,7 @@ class ControllerLoader:
         return module_version
 
     def load(
-        self, filepath="tkmotion/ctrl/default_controller.json"
+        self, filepath="tkmotion/ctrl/default_controller.json", ctrl_index=0
     ) -> Controller | None:
         """コントローラ設定をJSONファイルから読み込む
         (Load Controller settings from a JSON file)
@@ -47,6 +47,7 @@ class ControllerLoader:
         Args:
             filepath (str): コントローラ設定のJSONファイルパス
             (Path to the JSON file for controller settings)
+            ctrl_index (int): コントローラ設定辞書のインデックス (index of the controller setting dictionary)
 
         Returns:
             Controller: 読み込まれたコントローラオブジェクト
@@ -55,20 +56,21 @@ class ControllerLoader:
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                # 設定バージョン互換性確認 (Check configuration version compatibility)
                 is_compatible = Utility.is_config_compatible(
-                    module_version, config[0]["controller"][0]["version"]
+                    module_version, config[0]["controller"][ctrl_index]["version"]
                 )
                 if not is_compatible:
                     raise ConfigVersionIncompatibleError(
                         f"Incompatible controller config version: "
                         f"module_version={module_version}, "
-                        f"config_version={config[0]['controller'][0]['version']}"
+                        f"config_version={config[0]['controller'][ctrl_index]['version']}"
                     )
-
-                if config[0]["controller"][0]["type"] == "PID":
-                    return PIDController(config[0]["controller"])
+                # コントローラオブジェクト作成
+                if config[0]["controller"][ctrl_index]["type"] == "PID":
+                    return PIDController(config[0]["controller"][ctrl_index])
                 else:
-                    return Controller(config[0]["controller"])
+                    return Controller(config[0]["controller"][ctrl_index])
         except Exception as e:
             print(f"Error loading controller: {type(e)} {e}")
         return None
@@ -93,7 +95,7 @@ class Controller:
         """コントローラ設定のバージョンを返す
         (Returns the controller configuration version)"""
         try:
-            return self._config[0]["version"]
+            return self._config["version"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'version' in controller configuration: {type(e)} {e}"
@@ -104,7 +106,7 @@ class Controller:
         """コントローラタイプを返す
         (Returns the controller type)"""
         try:
-            return self._config[0]["type"]
+            return self._config["type"]
         except KeyError as e:
             raise KeyError(f"Missing 'type' in controller configuration: {type(e)} {e}")
 
@@ -179,17 +181,17 @@ class PIDController(Controller):
         super().__init__(config)
         try:
             # Kvp [N/(m/s)] 速度比例ゲイン (velocity proportional gain)
-            self._kvp: float = float(self._config[0]["kvp_N_(m_s)"])
+            self._kvp: float = float(self._config["kvp_N_(m_s)"])
             # Kvi [N/(m/s)] 速度積分ゲイン (velocity integral gain)
-            self._kvi: float = float(self._config[0]["kvi_N_(m_s)"])
+            self._kvi: float = float(self._config["kvi_N_(m_s)"])
             # Kvd [N/(m/s)] 速度微分ゲイン (velocityderivative gain)
-            self._kvd: float = float(self._config[0]["kvd_N_(m_s)"])
+            self._kvd: float = float(self._config["kvd_N_(m_s)"])
             # Kpp [N/m] 位置比例ゲイン (position proportional gain)
-            self._kpp: float = float(self._config[0]["kpp_N_m"])
+            self._kpp: float = float(self._config["kpp_N_m"])
             # Kpi [N/m] 位置積分ゲイン (position integral gain)
-            self._kpi: float = float(self._config[0]["kpi_N_m"])
+            self._kpi: float = float(self._config["kpi_N_m"])
             # Kpd [N/m] 位置微分ゲイン (position derivative gain)
-            self._kpd: float = float(self._config[0]["kpd_N_m"])
+            self._kpd: float = float(self._config["kpd_N_m"])
         except KeyError as e:
             raise KeyError(f"Missing PID parameter in configuration: {type(e)} {e}")
         except ValueError as e:
@@ -350,3 +352,63 @@ class PIDController(Controller):
         force += self._kpd * self._pos_error_diff
 
         return force
+
+
+class ImpulseController(Controller):
+    """インパルスコントローラクラス (Impulse Controller Class)"""
+
+    def __init__(self, config: dict) -> None:
+        """ImpulseControllerを初期化する
+        (Initialize ImpulseController with given configuration)"""
+        super().__init__(config)
+
+        # インパルス推力 (impulse force)
+        try:
+            _p_force: float = self._config["impulse_force_N"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'impulse_force_N' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.p_force: float = _p_force
+
+        # インパルスタイムステップ (impulse time step)
+        try:
+            _t_step: int = self._config["impulse_timestep"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'impulse_timestep' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.t_step: int = _t_step
+
+        # 時間ステップカウンタ (time step counter)
+        self._step_counter: int = 0
+
+    def reset(self) -> None:
+        """コントローラの状態をリセットする
+        (Reset the controller state)"""
+        self._step_counter = 0
+
+    def calculate_force(
+        self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
+    ) -> float:
+        """制御力を計算する
+        (Calculate the control force)
+
+        Args:
+            cmd_vel (float): 指令速度 [m/s] (command velocity)
+            cmd_pos (float): 指令位置 [m] (command position)
+            plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
+            plant_pos (float): プラントの現在位置 [m] (current position of the plant)
+
+        Returns:
+            float: 計算された制御力 [N] (calculated control force)
+        """
+
+        # 指定時間ステップの間はインパルス推力を出力する (return impulse force for specified time steps)
+        if self._step_counter < self.t_step:
+            self._step_counter += 1
+            return self.p_force
+        else:
+            return 0.0
