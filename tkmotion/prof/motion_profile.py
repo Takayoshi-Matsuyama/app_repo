@@ -62,7 +62,7 @@ class MotionProfileLoader:
         return module_version
 
     def load(
-        self, filepath="tkmotion/prof/default_motion_prof.json"
+        self, filepath="tkmotion/prof/default_motion_prof.json", prof_index=0
     ) -> MotionProfile | None:
         """JSONファイルからモーションプロファイルを読み込む
         (Load motion profile from a JSON file)"""
@@ -70,18 +70,20 @@ class MotionProfileLoader:
             with open(filepath, "r") as f:
                 config = json.load(f)
                 is_compatible = Utility.is_config_compatible(
-                    module_version, config[0]["motion_profile"][0]["version"]
+                    module_version, config[0]["motion_profile"][prof_index]["version"]
                 )
                 if not is_compatible:
                     raise ConfigVersionIncompatibleError(
                         f"Incompatible motion profile config version: "
                         f"module_version={module_version}, "
-                        f"config_version={config[0]['motion_profile'][0]['version']}"
+                        f"config_version={config[0]['motion_profile'][prof_index]['version']}"
                     )
-                if config[0]["motion_profile"][0]["type"] == "trapezoid":
-                    return TrapezoidalMotionProfile(config[0]["motion_profile"])
+                if config[0]["motion_profile"][prof_index]["type"] == "trapezoid":
+                    return TrapezoidalMotionProfile(
+                        config[0]["motion_profile"][prof_index]
+                    )
                 else:
-                    return MotionProfile(config[0]["motion_profile"])
+                    return MotionProfile(config[0]["motion_profile"][prof_index])
         except Exception as e:
             print(f"Error loading motion profile: {type(e)} {e}")
         return None
@@ -106,7 +108,7 @@ class MotionProfile:
         """モーションプロファイル設定のバージョンを返す
         (Returns the motion profile configuration version)"""
         try:
-            return self._config[0]["version"]
+            return self._config["version"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'version' in motion profile configuration: {type(e)} {e}"
@@ -117,7 +119,7 @@ class MotionProfile:
         """モーションプロファイルタイプを返す
         (Returns the motion profile type)"""
         try:
-            return self._config[0]["type"]
+            return self._config["type"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'type' in motion profile configuration: {type(e)} {e}"
@@ -145,7 +147,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 最大速度 (maximum velocity)
         try:
-            _V: float = self._config[0]["max_velocity_m_s"]
+            _V: float = self._config["max_velocity_m_s"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'max_velocity_m_s' in motion profile "
@@ -158,7 +160,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 加速度 (acceleration)
         try:
-            _A: float = self._config[0]["acceleration_m_s2"]
+            _A: float = self._config["acceleration_m_s2"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'acceleration_m_s2' in motion profile "
@@ -171,7 +173,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
         # 移動距離 (moving length)
         try:
-            _L: float = self._config[0]["length_m"]
+            _L: float = self._config["length_m"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'length_m' in motion profile configuration: {type(e)} {e}"
@@ -230,3 +232,28 @@ class TrapezoidalMotionProfile(MotionProfile):
             vel = 0.0
             pos = self.dir * self.L
             return vel, pos
+
+
+class ImpulseMotionProfile(MotionProfile):
+    """インパルスモーションプロファイルのクラス
+    (A class for impulse motion profiles)"""
+
+    def __init__(self, config: dict):
+        """ImpulseMotionProfileを初期化する
+        (Initialize the ImpulseMotionProfile)"""
+        super().__init__(config)
+
+    def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
+        """速度と位置のタプルを返す
+        (Return a tuple of velocity and position)
+
+        Args:
+            t (float): [s] 時間 (Time)
+        Returns:
+            tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
+        """
+
+        # インパルスモーションプロファイルの実装はここに追加されます
+        vel = 0.0
+        pos = 0.0
+        return vel, pos

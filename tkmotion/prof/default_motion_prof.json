@@ -7,6 +7,13 @@
                 "max_velocity_m_s": 0.01,
                 "acceleration_m_s2": 0.005,
                 "length_m": 0.03
+            },
+            {
+                "version": "0.1.0",
+                "type": "impulse",
+                "impulse_vel_m_s": 0.02,
+                "impulse_pos_m": 0.01,
+                "impulse_timestep": 1
             }
         ]
     }
