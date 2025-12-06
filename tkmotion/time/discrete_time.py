@@ -22,7 +22,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # 離散時間モジュールのバージョン情報
 # (discrete time module version information)
-module_version = "0.1.0"
+module_version = "0.2.0"
 
 
 class DiscreteTimeLoader:

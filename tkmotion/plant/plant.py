@@ -23,7 +23,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # プラントモジュールのバージョン情報
 # (plant module version information)
-module_version = "0.1.0"
+module_version = "0.2.0"
 
 
 class PlantLoader:

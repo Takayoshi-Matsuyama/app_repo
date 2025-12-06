@@ -128,7 +128,7 @@ time series / 時系列
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| discrete_time.py | 0.1.0 | DiscreteTime<br>(離散時間) | 間隔Δtの離散時系列を表現 | get_time_step_generator() |
+| discrete_time.py | 0.2.0 | DiscreteTime<br>(離散時間) | 間隔Δtの離散時系列を表現 | get_time_step_generator() |
 | ↑ | ↑ | DiscreteTimeLoader<br>(離散時間ローダ) | 設定 (jsonファイル) を読み込み、<br>DiscreteTimeクラスのインスタンスを生成 | load() |
 
 ### 4.2.3 パッケージ: tkmotion.prof
@@ -161,9 +161,9 @@ plant (control target)  / プラント (制御対象)
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| plant.py | 0.1.0 | Plant<br>(プラント) | 制御対象を表現する | physical_obj |
+| plant.py | 0.2.0 | Plant<br>(プラント) | 制御対象を表現する | physical_obj |
 | ↑ | ↑ | PlantLoader<br>(プラントローダ) | プラントの設定 (jsonファイル) を読み込み、<br>Plantクラスと、Plantに属する各クラスのインスタンスを生成 | load() |
-| ↑ | ↑ | PhysicalObject<br>(物理オブジェクト) | 現実の物体を表現する | mass<br>acc, vel, pos<br>reset()<br>apply_force() |
+| physical_object.py | 0.2.0 | PhysicalObject<br>(物理オブジェクト) | 現実の物体を表現する | mass<br>acc, vel, pos<br>reset()<br>apply_force() |
 
 ### 4.2.6 パッケージ: tkmotion.util
 utility / ユーティリティ
