@@ -40,22 +40,35 @@ class PlantLoader:
         (Returns the plant module version)"""
         return module_version
 
-    def load(self, filepath="tkmotion/plant/default_plant.json") -> Plant | None:
+    def load(
+        self,
+        filepath="tkmotion/plant/default_plant.json",
+        plant_index=0,
+        phyobj_index=0,
+    ) -> Plant | None:
         """プラント設定をJSONファイルから読み込む
-        (Load Plant settings from a JSON file)"""
+        (Load Plant settings from a JSON file)
+
+        Args:
+            filepath (str): JSONファイルのパス (Path to the JSON file)
+            plant_index (int): プラント設定辞書のインデックス (Index of the plant setting dictionary)
+            phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
+        """
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
+                # 設定バージョン互換性確認 (Check configuration version compatibility)
                 is_compatible = Utility.is_config_compatible(
-                    module_version, config[0]["plant"][0]["version"]
+                    module_version, config[0]["plant"][plant_index]["version"]
                 )
                 if not is_compatible:
                     raise ConfigVersionIncompatibleError(
                         f"Incompatible plant config version: "
                         f"module_version={module_version}, "
-                        f"config_version={config[0]['plant'][0]['version']}"
+                        f"config_version={config[0]['plant'][plant_index]['version']}"
                     )
-                return Plant(config[0]["plant"])
+                # プラントオブジェクト作成 (Create Plant object)
+                return Plant(config[0]["plant"][plant_index], phyobj_index)
         except Exception as e:
             print(f"Error loading plant: {type(e)} {e}")
         return None
@@ -64,13 +77,18 @@ class PlantLoader:
 class Plant:
     """プラント (制御対象) (Plant (Target System)) Class"""
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: dict, phyobj_index=0) -> None:
         """Plantを初期化する
-        (Initialize Plant with given configuration)"""
+        (Initialize Plant with given configuration)
+
+        Args:
+            pyconfig (dict): プラント設定辞書 (Plant configuration dictionary)
+            phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
+        """
         self._config: dict = config
         try:
             self._physical_object: PhysicalObject = PhysicalObject(
-                self._config[0]["physical_object"]
+                self._config["physical_object"][phyobj_index]
             )
         except KeyError as e:
             raise ValueError(
@@ -88,7 +106,7 @@ class Plant:
         """プラント設定のバージョンを返す
         (Returns the plant configuration version)"""
         try:
-            return self._config[0]["version"]
+            return self._config["version"]
         except KeyError as e:
             raise KeyError(f"Missing 'version' in plant configuration: {type(e)} {e}")
 

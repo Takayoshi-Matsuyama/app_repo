@@ -29,16 +29,23 @@ class PhysicalObject:
         (Initialize PhysicalObject)"""
         self._config: dict = config
         try:
+            # 設定バージョン互換性確認 (Check configuration version compatibility)
             is_compatible = Utility.is_config_compatible(
-                module_version, self._config[0]["version"]
+                module_version, self._config["version"]
             )
             if not is_compatible:
                 raise ConfigVersionIncompatibleError(
                     f"Incompatible physical object config version: "
                     f"module_version={module_version}, "
-                    f"config_version={self._config[0]['version']}"
+                    f"config_version={self._config['version']}"
                 )
-            self._mass: float = float(self._config[0]["mass_kg"])
+            # 属性設定 (Set attributes)
+            try:
+                self._mass: float = float(self._config["mass_kg"])
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing 'mass_kg' in physical object configuration: {type(e)} {e}"
+                )
 
             self._acc = 0.0
             self._prev_acc = 0.0
@@ -61,7 +68,7 @@ class PhysicalObject:
         """物理オブジェクト設定のバージョンを返す
         (Returns the physical object configuration version)"""
         try:
-            return self._config[0]["version"]
+            return self._config["version"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'version' in physical object configuration: {type(e)} {e}"
