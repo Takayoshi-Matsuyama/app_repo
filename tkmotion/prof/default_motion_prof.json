@@ -10,6 +10,10 @@
             },
             {
                 "version": "0.1.0",
+                "type": "default"
+            },
+            {
+                "version": "0.1.0",
                 "type": "impulse",
                 "impulse_vel_m_s": 1000,
                 "impulse_pos_m": 1000,
