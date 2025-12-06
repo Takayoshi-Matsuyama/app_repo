@@ -121,7 +121,7 @@ motion flow / モーションフロー
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| motion_flow.py | 0.1.0 | MotionFlow<br>(モーション制御フロー) | モーション指令の流れを司り、<br>シミュレーションを実行 | load_discrete_time()<br>load_motion_profile()<br>load_controller()<br>load_plant()<br>execute() |
+| motion_flow.py | 0.2.0 | MotionFlow<br>(モーション制御フロー) | モーション指令の流れを司り、<br>シミュレーションを実行 | load_discrete_time()<br>load_motion_profile()<br>load_controller()<br>load_plant()<br>execute() |
 
 ### 4.2.2 パッケージ: tkmotion.time
 time series / 時系列
@@ -136,8 +136,10 @@ motion profile / モーションプロファイル
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| motion_profile.py | 0.1.0 | MotionProfile<br>(モーションプロファイル) | モーションプロファイルのベースクラス。<br>モーションプロファイルの共通特性を定義 | calculate_cmd_vel_pos() |
+| motion_profile.py | 0.2.0 | MotionProfile<br>(モーションプロファイル) | モーションプロファイルのベースクラス。<br>モーションプロファイルの共通特性を定義 | calculate_cmd_vel_pos() |
 | ↑ | ↑ | TrapezoidalMotionProfile<br>(台形モーションプロファイル) | 台形状に変化する速度（加速・定速・減速）から<br>指令速度・指令位置を計算する | ↑ |
+| ↑ | ↑ | ImpulseMotionProfile<br>(インパルスモーションプロファイル) | インパルス状の指令値を出力する | ↑ |
+| ↑ | ↑ | StepMotionProfile<br>(ステップモーションプロファイル) | ステップ状の指令値を出力する | ↑ |
 | ↑ | ↑ | MotionProfileLoader<br>(モーションプロファイルローダ) | 設定 (jsonファイル) を読み込み、<br>MotionProfileクラスのインスタンスを生成 | load() |
 | ↑ | ↑ | VelocityZeroOrMinusError<br>(速度ゼロ・マイナスエラー)  | 設定速度がゼロ、またはマイナスの例外を表す | - |
 | ↑ | ↑ | AccelerationZeroOrMinusError<br>(加速度ゼロ・マイナスエラー) | 設定加速度がゼロ、またはマイナスの例外を表す | - |
@@ -148,8 +150,10 @@ motion control / モーション制御
 
 | モジュール | ver | クラス | 責務 | 主要特性 |
 | -- | -- | -- | -- | -- |
-| controller.py | 0.1.0 | Controller<br>(コントローラ) | コントローラのベースクラス。<br>コントローラの共通特性を定義 | reset()<br>calculate_force() |
+| controller.py | 0.2.0 | Controller<br>(コントローラ) | コントローラのベースクラス。<br>コントローラの共通特性を定義 | reset()<br>calculate_force() |
 | ↑ | ↑ | PIDController<br>(PIDコントローラ) | PID計算を実行するコントローラ<br>・Proportional 比例<br>・Integral 積分<br>・Derivative 微分 | kvp, kvi, kvd<br>kpp, kpi, kpd<br>reset()<br>calculate_force() |
+| ↑ | ↑ | ImpulseController<br>(インパルスコントローラ) | インパルス状の操作量を出力する | calculate_force() |
+| ↑ | ↑ | StepController<br>(ステップコントローラ) | ステップ状の操作量を出力する | calculate_force() |
 | ↑ | ↑ | ControllerLoader<br>(コントローラローダ) | 設定 (jsonファイル) を読み込み、<br>Controllerクラスのインスタンスを生成 | load() |
 
 ### 4.2.5 パッケージ: tkmotion.plant
@@ -171,16 +175,21 @@ utility / ユーティリティ
 
 ## 4.3 クラス図 (概要)
 
-![クラス図 (概要)](./img/tkmotion-class-diagram-summary-251130-01.png)
+![クラス図 (概要)](./img/tkmotion-class-diagram-summary-251207-01.png)
 
 # 5. バージョン管理
 
+## 5.1 ポリシー
 Python Packaging User Guide バージョニング (https://packaging.python.org/ja/latest/discussions/versioning/) の「セマンティックバージョニング」を採用する。
 
 バージョン番号変更の規則（上記 Python Packaging User Guide より）
 * APIの変更で互換性を失う時には major 番号、
 * 後方互換性を保ったままで新機能を追加する場合には minor を、そして
 * 後方互換性を維持したままのバグ修正の場合には patch を増加させる。
+
+## 5.2 代表バージョン
+
+tkmotionライブラリ代表バージョン = motion_flowモジュールのバージョン（このライブラリの中心モジュール）
 
 # 6. 開発環境
 
@@ -346,6 +355,4 @@ xyzservices==2025.4.0
 | ver | 内容 |
 | -- | -- |
 | 0.1.0 | 初回安定版 |
-
-確認 - ブランチ251202
-
+| 0.2.0 | 追加：インパルス関数、ステップ関数 |

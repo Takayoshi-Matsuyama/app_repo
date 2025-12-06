@@ -9,21 +9,21 @@
                 "length_m": 0.03
             },
             {
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "type": "default"
             },
             {
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "type": "impulse",
                 "impulse_vel_m_s": 1000,
                 "impulse_pos_m": 1000,
-                "impulse_timestep": 1,
+                "impulse_on_timestep_count": 1,
                 "delay_s": 1.0
             },
             {
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "type": "step",
-                "step_velocity_m_s": 0,
+                "step_velocity_m_s": 0.02,
                 "step_position_m": 0.01,
                 "delay_s": 1.0
             }

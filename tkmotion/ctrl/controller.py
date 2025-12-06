@@ -21,7 +21,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # コントローラモジュールのバージョン情報
 # (Controller module version information)
-module_version = "0.1.0"
+module_version = "0.2.0"
 
 
 class ControllerLoader:
@@ -388,15 +388,15 @@ class ImpulseController(Controller):
             )
         self.p_force: float = _p_force
 
-        # インパルスタイムステップ (impulse time step)
+        # インパルスONタイムステップ数 (impulse on time step count)
         try:
-            _t_step: int = self._config["impulse_timestep"]
+            _on_timestep_count: int = self._config["impulse_on_timestep_count"]
         except KeyError as e:
             raise KeyError(
-                f"Missing 'impulse_timestep' in motion profile "
+                f"Missing 'impulse_on_timestep_count' in motion profile "
                 f"configuration: {type(e)} {e}"
             )
-        self.t_step: int = _t_step
+        self.on_timestep_count: int = _on_timestep_count
 
         # 遅延時間 (delay time)
         try:
@@ -441,7 +441,7 @@ class ImpulseController(Controller):
         if t < self.delay_s:
             return 0.0
         # 指定時間ステップの間はインパルス推力を出力する (return impulse force for specified time steps)
-        elif self._step_counter < self.t_step:
+        elif self._step_counter < self.on_timestep_count:
             self._step_counter += 1
             return self.p_force
         else:

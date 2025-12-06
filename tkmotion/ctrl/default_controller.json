@@ -12,18 +12,18 @@
                 "kpd_N_m": 10.0
             },
             {
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "type": "default"
             },
             {
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "type": "impulse",
                 "impulse_force_N": 1000,
-                "impulse_timestep": 1,
+                "impulse_on_timestep_count": 1,
                 "delay_s": 1.0
             },
             {
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "type": "step",
                 "step_force_N": 2.0,
                 "delay_s": 1.0
