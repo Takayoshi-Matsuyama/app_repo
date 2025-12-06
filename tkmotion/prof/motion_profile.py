@@ -87,12 +87,17 @@ class MotionProfileLoader:
                         f"config_version={config[0]['motion_profile'][prof_index]['version']}"
                     )
                 # モーションプロファイルオブジェクト作成 (Create motion profile object)
-                if config[0]["motion_profile"][prof_index]["type"] == "trapezoid":
-                    return TrapezoidalMotionProfile(
-                        config[0]["motion_profile"][prof_index]
-                    )
-                else:
-                    return MotionProfile(config[0]["motion_profile"][prof_index])
+                match config[0]["motion_profile"][prof_index]["type"]:
+                    case "trapezoid":
+                        return TrapezoidalMotionProfile(
+                            config[0]["motion_profile"][prof_index]
+                        )
+                    case "impulse":
+                        return ImpulseMotionProfile(
+                            config[0]["motion_profile"][prof_index]
+                        )
+                    case _:
+                        return MotionProfile(config[0]["motion_profile"][prof_index])
         except Exception as e:
             print(f"Error loading motion profile: {type(e)} {e}")
         return None

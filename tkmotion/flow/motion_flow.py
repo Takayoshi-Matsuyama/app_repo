@@ -82,28 +82,54 @@ class MotionFlow:
             raise ValueError("Failed to load discrete time configuration.")
 
     def load_motion_profile(
-        self, filepath="tkmotion/prof/default_motion_prof.json"
+        self, filepath="tkmotion/prof/default_motion_prof.json", prof_index=0
     ) -> None:
         """モーションプロファイルをロードする
-        (Load motion profile)"""
+        (Load motion profile)
 
-        self._motion_profile = MotionProfileLoader().load(filepath)
+        Args:
+            filepath (str): モーションプロファイル設定JSONファイルのパス (Path to the motion profile configuration JSON file)
+            prof_index (int): プロファイル設定辞書のインデックス (Index of the profile setting dictionary)
+
+        Returns:
+                None
+        """
+
+        self._motion_profile = MotionProfileLoader().load(filepath, prof_index)
         if self._motion_profile is None:
             raise ValueError("Failed to load motion profile.")
 
-    def load_controller(self, filepath="tkmotion/ctrl/default_controller.json") -> None:
+    def load_controller(
+        self, filepath="tkmotion/ctrl/default_controller.json", ctrl_index=0
+    ) -> None:
         """コントローラ設定をロードする
-        (Load controller configuration)"""
+        (Load controller configuration)
 
-        self._controller = ControllerLoader().load(filepath)
+        Args:
+            filepath (str): コントローラ設定JSONファイルのパス (Path to the controller configuration JSON file)
+            ctrl_index (int): コントローラ設定辞書のインデックス (Index of the controller setting dictionary)
+        """
+
+        self._controller = ControllerLoader().load(filepath, ctrl_index)
         if self._controller is None:
             raise ValueError("Failed to load controller.")
 
-    def load_plant(self, filepath="tkmotion/plant/default_plant.json") -> None:
+    def load_plant(
+        self,
+        filepath="tkmotion/plant/default_plant.json",
+        plant_index=0,
+        phyobj_index=0,
+    ) -> None:
         """プラント設定をロードする
-        (Load plant configuration)"""
+        (Load plant configuration)
 
-        self._plant = PlantLoader().load(filepath)
+        Args:
+            filepath (str): プラント設定JSONファイルのパス (Path to the plant configuration JSON file)
+            plant_index (int): プラント設定辞書のインデックス (Index of the plant setting dictionary)
+            phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
+        """
+
+        self._plant = PlantLoader().load(filepath, plant_index, phyobj_index)
         if self._plant is None:
             raise ValueError("Failed to load plant.")
 

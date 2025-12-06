@@ -67,10 +67,13 @@ class ControllerLoader:
                         f"config_version={config[0]['controller'][ctrl_index]['version']}"
                     )
                 # コントローラオブジェクト作成
-                if config[0]["controller"][ctrl_index]["type"] == "PID":
-                    return PIDController(config[0]["controller"][ctrl_index])
-                else:
-                    return Controller(config[0]["controller"][ctrl_index])
+                match config[0]["controller"][ctrl_index]["type"]:
+                    case "PID":
+                        return PIDController(config[0]["controller"][ctrl_index])
+                    case "impulse":
+                        return ImpulseController(config[0]["controller"][ctrl_index])
+                    case _:
+                        return Controller(config[0]["controller"][ctrl_index])
         except Exception as e:
             print(f"Error loading controller: {type(e)} {e}")
         return None
