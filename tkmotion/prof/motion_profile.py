@@ -96,6 +96,10 @@ class MotionProfileLoader:
                         return ImpulseMotionProfile(
                             config[0]["motion_profile"][prof_index]
                         )
+                    case "step":
+                        return StepMotionProfile(
+                            config[0]["motion_profile"][prof_index]
+                        )
                     case _:
                         return MotionProfile(config[0]["motion_profile"][prof_index])
         except Exception as e:
@@ -287,6 +291,15 @@ class ImpulseMotionProfile(MotionProfile):
             )
         self.t_step: int = _t_step
 
+        # 遅延時間 (delay time)
+        try:
+            _delay_s: float = self._config["delay_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'delay_s' in motion profile " f"configuration: {type(e)} {e}"
+            )
+        self.delay_s: float = _delay_s
+
         # 時間ステップカウンタ (time step counter)
         self._step_counter: int = 0
 
@@ -300,9 +313,68 @@ class ImpulseMotionProfile(MotionProfile):
             tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
         """
 
+        # 遅延時間中はゼロを返す (return zero during delay time)
+        if t < self.delay_s:
+            return (0.0, 0.0)
         # 指定時間ステップの間はインパルス値を返す (return impulse values for specified time steps)
-        if self._step_counter < self.t_step:
+        elif self._step_counter < self.t_step:
             self._step_counter += 1
             return self.p_vel, self.p_pos
         else:
             return 0.0, 0.0
+
+
+class StepMotionProfile(MotionProfile):
+    """ステップモーションプロファイルのクラス
+    (A class for step motion profiles)"""
+
+    def __init__(self, config: dict):
+        """StepMotionProfileを初期化する
+        (Initialize the StepMotionProfile)"""
+        super().__init__(config)
+
+        # ステップ速度 (step velocity)
+        try:
+            _s_vel: float = self._config["step_velocity_m_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'step_velocity_m_s' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.s_vel: float = _s_vel
+
+        # ステップ位置 (step position)
+        try:
+            _s_pos: float = self._config["step_position_m"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'step_position_m' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.s_pos: float = _s_pos
+
+        # 遅延時間 (delay time)
+        try:
+            _delay_s: float = self._config["delay_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'delay_s' in motion profile " f"configuration: {type(e)} {e}"
+            )
+        self.delay_s: float = _delay_s
+
+    def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
+        """速度と位置のタプルを返す
+        (Return a tuple of velocity and position)
+
+        Args:
+            t (float): [s] 時間 (Time)
+        Returns:
+            tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
+        """
+
+        if t < self.delay_s:
+            # 遅延時間中はゼロを返す (return zero during delay time)
+            return (0.0, 0.0)
+        else:
+            # 遅延時間後はステップ値を返す (return step values after delay time)
+            return (self.s_vel, self.s_pos)

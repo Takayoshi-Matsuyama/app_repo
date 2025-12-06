@@ -187,6 +187,7 @@ class MotionFlow:
 
             # サーボ推力計算 (servo force calculation)
             force = self._controller.calculate_force(
+                t,
                 cmd_vel,
                 cmd_pos,
                 self._plant.physical_obj.vel,

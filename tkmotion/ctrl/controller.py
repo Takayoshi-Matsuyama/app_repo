@@ -72,6 +72,8 @@ class ControllerLoader:
                         return PIDController(config[0]["controller"][ctrl_index])
                     case "impulse":
                         return ImpulseController(config[0]["controller"][ctrl_index])
+                    case "step":
+                        return StepController(config[0]["controller"][ctrl_index])
                     case _:
                         return Controller(config[0]["controller"][ctrl_index])
         except Exception as e:
@@ -167,7 +169,12 @@ class Controller:
         pass
 
     def calculate_force(
-        self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
+        self,
+        t: float,
+        cmd_vel: float,
+        cmd_pos: float,
+        plant_vel: float,
+        plant_pos: float,
     ) -> float:
         """制御力を計算する
         (Calculate the control force)"""
@@ -293,12 +300,18 @@ class PIDController(Controller):
         self._pos_error_diff = 0.0
 
     def calculate_force(
-        self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
+        self,
+        t: float,
+        cmd_vel: float,
+        cmd_pos: float,
+        plant_vel: float,
+        plant_pos: float,
     ) -> float:
         """制御力を計算する
         (Calculate the control force)
 
         Args:
+            t (float): 現在の経過時間 [s] (current elapsed time)
             cmd_vel (float): 指令速度 [m/s] (command velocity)
             cmd_pos (float): 指令位置 [m] (command position)
             plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
@@ -385,6 +398,15 @@ class ImpulseController(Controller):
             )
         self.t_step: int = _t_step
 
+        # 遅延時間 (delay time)
+        try:
+            _delay_s: float = self._config["delay_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'delay_s' in motion profile " f"configuration: {type(e)} {e}"
+            )
+        self.delay_s: float = _delay_s
+
         # 時間ステップカウンタ (time step counter)
         self._step_counter: int = 0
 
@@ -394,12 +416,18 @@ class ImpulseController(Controller):
         self._step_counter = 0
 
     def calculate_force(
-        self, cmd_vel: float, cmd_pos: float, plant_vel: float, plant_pos: float
+        self,
+        t: float,
+        cmd_vel: float,
+        cmd_pos: float,
+        plant_vel: float,
+        plant_pos: float,
     ) -> float:
         """制御力を計算する
         (Calculate the control force)
 
         Args:
+            t (float): 現在の経過時間 [s] (current elapsed time)
             cmd_vel (float): 指令速度 [m/s] (command velocity)
             cmd_pos (float): 指令位置 [m] (command position)
             plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
@@ -409,9 +437,74 @@ class ImpulseController(Controller):
             float: 計算された制御力 [N] (calculated control force)
         """
 
+        # 遅延時間中はゼロを返す (return zero during delay time)
+        if t < self.delay_s:
+            return 0.0
         # 指定時間ステップの間はインパルス推力を出力する (return impulse force for specified time steps)
-        if self._step_counter < self.t_step:
+        elif self._step_counter < self.t_step:
             self._step_counter += 1
             return self.p_force
         else:
             return 0.0
+
+
+class StepController(Controller):
+    """ステップコントローラクラス (Step Controller Class)"""
+
+    def __init__(self, config: dict) -> None:
+        """StepControllerを初期化する
+        (Initialize StepController with given configuration)"""
+        super().__init__(config)
+
+        # ステップ推力 (step force)
+        try:
+            _s_force: float = self._config["step_force_N"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'step_force_N' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.s_force: float = _s_force
+
+        # 遅延時間 (delay time)
+        try:
+            _delay_s: float = self._config["delay_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'delay_s' in motion profile " f"configuration: {type(e)} {e}"
+            )
+        self.delay_s: float = _delay_s
+
+    def reset(self) -> None:
+        """コントローラの状態をリセットする
+        (Reset the controller state)"""
+        pass
+
+    def calculate_force(
+        self,
+        t: float,
+        cmd_vel: float,
+        cmd_pos: float,
+        plant_vel: float,
+        plant_pos: float,
+    ) -> float:
+        """制御力を計算する
+        (Calculate the control force)
+
+        Args:
+            t (float): 現在の経過時間 [s] (current elapsed time)
+            cmd_vel (float): 指令速度 [m/s] (command velocity)
+            cmd_pos (float): 指令位置 [m] (command position)
+            plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
+            plant_pos (float): プラントの現在位置 [m] (current position of the plant)
+
+        Returns:
+            float: 計算された制御力 [N] (calculated control force)
+        """
+
+        if t < self.delay_s:
+            # 遅延時間中はゼロを返す (return zero during delay time)
+            return 0.0
+        else:
+            # 遅延時間後はステップ値を返す (return step value after delay time)
+            return self.s_force

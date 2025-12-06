@@ -17,7 +17,15 @@
                 "type": "impulse",
                 "impulse_vel_m_s": 1000,
                 "impulse_pos_m": 1000,
-                "impulse_timestep": 1
+                "impulse_timestep": 1,
+                "delay_s": 1.0
+            },
+            {
+                "version": "0.1.0",
+                "type": "step",
+                "step_velocity_m_s": 0,
+                "step_position_m": 0.01,
+                "delay_s": 1.0
             }
         ]
     }
