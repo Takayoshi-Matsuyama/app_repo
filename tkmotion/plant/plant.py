@@ -42,7 +42,7 @@ class PlantLoader:
 
     def load(
         self,
-        filepath="tkmotion/plant/default_plant.json",
+        filepath="tkmotion/plant/default_plant_config.json",
         plant_index=0,
         phyobj_index=0,
     ) -> Plant | None:

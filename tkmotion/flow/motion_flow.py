@@ -72,7 +72,7 @@ class MotionFlow:
         return self._plant
 
     def load_discrete_time(
-        self, filepath="tkmotion/time/default_discrete_time.json"
+        self, filepath="tkmotion/time/default_discrete_time_config.json"
     ) -> None:
         """離散時間設定をロードする
         (Load discrete time configuration)"""
@@ -82,7 +82,7 @@ class MotionFlow:
             raise ValueError("Failed to load discrete time configuration.")
 
     def load_motion_profile(
-        self, filepath="tkmotion/prof/default_motion_prof.json", prof_index=0
+        self, filepath="tkmotion/prof/default_motion_prof_config.json", prof_index=0
     ) -> None:
         """モーションプロファイルをロードする
         (Load motion profile)
@@ -100,7 +100,7 @@ class MotionFlow:
             raise ValueError("Failed to load motion profile.")
 
     def load_controller(
-        self, filepath="tkmotion/ctrl/default_controller.json", ctrl_index=0
+        self, filepath="tkmotion/ctrl/default_controller_config.json", ctrl_index=0
     ) -> None:
         """コントローラ設定をロードする
         (Load controller configuration)
@@ -116,7 +116,7 @@ class MotionFlow:
 
     def load_plant(
         self,
-        filepath="tkmotion/plant/default_plant.json",
+        filepath="tkmotion/plant/default_plant_config.json",
         plant_index=0,
         phyobj_index=0,
     ) -> None:

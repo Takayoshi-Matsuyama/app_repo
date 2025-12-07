@@ -39,7 +39,7 @@ class ControllerLoader:
         return module_version
 
     def load(
-        self, filepath="tkmotion/ctrl/default_controller.json", ctrl_index=0
+        self, filepath="tkmotion/ctrl/default_controller_config.json", ctrl_index=0
     ) -> Controller | None:
         """コントローラ設定をJSONファイルから読み込む
         (Load Controller settings from a JSON file)

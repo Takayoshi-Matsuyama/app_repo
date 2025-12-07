@@ -95,20 +95,20 @@ tkmotion/
 	time/  # time series / 時系列
 		__init__.py
 		discrete_time.py
-		default_discrete_time.json  # 離散時系列 デフォルト設定
+		default_discrete_time_config.json  # 離散時系列 デフォルト設定
 	prof/  # motion profile / モーションプロファイル
 		__init__.py
 		motion_profile.py
-		default_motion_prof.json  # モーションプロファイル デフォルト設定
+		default_motion_prof_config.json  # モーションプロファイル デフォルト設定
 	ctrl/  # motion control / モーション制御
 		__init__.py
 		controller.py
-		default_controller.json  # コントローラ デフォルト設定
+		default_controller_config.json  # コントローラ デフォルト設定
 	plant/  # plant (control target) / プラント (制御対象)
 		__init__.py
 		plant.py
 		physical_object.py
-		default_plant.json  # プラント デフォルト設定
+		default_plant_config.json  # プラント デフォルト設定
 	util/  # utility / ユーティリティ
 		__init__.py
 		utility.py
