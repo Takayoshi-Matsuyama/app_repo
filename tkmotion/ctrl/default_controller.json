@@ -2,8 +2,10 @@
     {
         "controller": [
             {
-                "version": "0.1.0",
+                "version": "0.3.0",
                 "type": "PID",
+                "name": "default_pid_controller",
+                "description": "Default PID controller settings for TKMotion simulations.",
                 "kvp_N_(m_s)": 10000.0,
                 "kvi_N_(m_s)": 1000.0,
                 "kvd_N_(m_s)": 100.0,
@@ -12,19 +14,25 @@
                 "kpd_N_m": 10.0
             },
             {
-                "version": "0.2.0",
-                "type": "default"
+                "version": "0.3.0",
+                "type": "default",
+                "name": "default_controller",
+                "description": "Default controller settings for TKMotion simulations."
             },
             {
-                "version": "0.2.0",
+                "version": "0.3.0",
                 "type": "impulse",
+                "name": "impulse_controller",
+                "description": "Impulse controller settings for TKMotion simulations.",
                 "impulse_force_N": 1000,
                 "impulse_on_timestep_count": 1,
                 "delay_s": 1.0
             },
             {
-                "version": "0.2.0",
+                "version": "0.3.0",
                 "type": "step",
+                "name": "step_controller",
+                "description": "Step controller settings for TKMotion simulations.",
                 "step_force_N": 2.0,
                 "delay_s": 1.0
             }

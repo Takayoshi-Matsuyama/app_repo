@@ -2,27 +2,35 @@
     {
         "motion_profile": [
             {
-                "version": "0.1.0",
+                "version": "0.3.0",
                 "type": "trapezoid",
+                "name": "default_trapezoid_motion_profile",
+                "description": "Default trapezoid motion profile settings for TKMotion simulations.",
                 "max_velocity_m_s": 0.01,
                 "acceleration_m_s2": 0.005,
                 "length_m": 0.03
             },
             {
-                "version": "0.2.0",
-                "type": "default"
+                "version": "0.3.0",
+                "type": "default",
+                "name": "default_motion_profile",
+                "description": "Default motion profile settings for TKMotion simulations."
             },
             {
-                "version": "0.2.0",
+                "version": "0.3.0",
                 "type": "impulse",
+                "name": "impulse_motion_profile",
+                "description": "Impulse motion profile settings for TKMotion simulations.",
                 "impulse_vel_m_s": 1000,
                 "impulse_pos_m": 1000,
                 "impulse_on_timestep_count": 1,
                 "delay_s": 1.0
             },
             {
-                "version": "0.2.0",
+                "version": "0.3.0",
                 "type": "step",
+                "name": "step_motion_profile",
+                "description": "Step motion profile settings for TKMotion simulations.",
                 "step_velocity_m_s": 0.02,
                 "step_position_m": 0.01,
                 "delay_s": 1.0

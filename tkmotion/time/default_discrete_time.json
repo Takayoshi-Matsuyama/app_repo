@@ -2,7 +2,9 @@
     {
         "discrete_time": [
             {
-                "version": "0.1.0",
+                "version": "0.3.0",
+                "name": "default_discrete_time",
+                "description": "Default discrete time settings for TKMotion simulations.",
                 "time_step_us": 100,
                 "duration_s": 6.0
             }
