@@ -170,3 +170,89 @@ class PhysicalObject:
         # (position changes due to previous velocity
         #  + position changes due to current acceleration)
         self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)
+
+
+class MDSPhysicalObject(PhysicalObject):
+    """質量・減衰器・ばね 物理オブジェクトクラス
+    (Mass-Damper-Spring Physical Object Class)"""
+
+    def __init__(self, config: dict) -> None:
+        """MDSPhysicalObjectを初期化する
+        (Initialize MDSPhysicalObject)"""
+        super().__init__(config)
+        try:
+            # 属性設定 (Set attributes)
+            try:
+                self._damper: float = float(self._config["damper_Ns_m"])
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing 'damper_Ns_m' in MDS physical object configuration: {type(e)} {e}"
+                )
+
+            try:
+                self._spring: float = float(self._config["spring_N_m"])
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing 'spring_N_m' in MDS physical object configuration: {type(e)} {e}"
+                )
+
+            try:
+                self._spring_balance_pos: float = float(
+                    self._config["spring_balance_pos_m"]
+                )
+            except KeyError:
+                self._spring_balance_pos = (
+                    0.0  # デフォルト値 0.0 m (Default value 0.0 m)
+                )
+
+        except Exception as e:
+            print(f"Error initializing MDS physical object: {type(e)} {e}")
+            raise e
+
+    @property
+    def damper(self) -> float:
+        """物理オブジェクトの減衰器係数 [Ns/m]
+        (Return the damper coefficient of the physical object)"""
+        return self._damper
+
+    @property
+    def spring(self) -> float:
+        """物理オブジェクトのばね係数 [N/m]
+        (Return the spring coefficient of the physical object)"""
+        return self._spring
+
+    @property
+    def spring_balance_pos(self) -> float:
+        """物理オブジェクトのばね平衡位置 [m]
+        (Return the spring balance position of the physical object)"""
+        return self._spring_balance_pos
+
+    def apply_force(self, ex_force: float, dt: float) -> None:
+        """物理オブジェクトに力を適用し、状態を更新する
+        (Apply force to the physical object and update status)"""
+
+        # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
+        # (when force F is applied, acceleration a occurs in mass m object)
+        self.acc = ex_force / self.mass
+
+        # 加速度aが生じると、速度vが変化 (v = u + a*t)
+        # (when acceleration a occurs, velocity v changes)
+        self.vel += self.acc * dt
+
+        # 減衰器による力Fd = -c*v
+        # (force by damper Fd = -c*v)
+        damper_force = -self.damper * self.vel
+
+        # ばねによる力Fs = -k*x
+        # (force by spring Fs = -k*x)
+        spring_force = -self.spring * (self.pos - self.spring_balance_pos)
+
+        # 合力F = 外力 + 減衰器力 + ばね力
+        # (net force F = external force + damper force + spring force)
+        net_force = ex_force + damper_force + spring_force
+
+        # 親クラスのapply_forceを呼び出して状態更新
+        # (call parent class apply_force to update status)
+        super().apply_force(net_force, dt)
+
+    # TODO: 理論特性値（固有振動数、減衰比など）を計算するメソッドを追加
