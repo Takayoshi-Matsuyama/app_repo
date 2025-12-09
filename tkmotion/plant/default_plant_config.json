@@ -3,14 +3,34 @@
         "plant": [
             {
                 "version": "0.3.0",
+                "type": "default",
                 "name": "default_plant",
                 "description": "Default plant settings for TKMotion simulations.",
                 "physical_object": [
                     {
                         "version": "0.3.0",
+                        "type": "mass_point",
                         "name": "default_physical_object",
                         "description": "Default physical object settings for TKMotion simulations.",
                         "mass_kg": 2.0
+                    }
+                ]
+            },
+            {
+                "version": "0.3.0",
+                "type": "default",
+                "name": "MDS_plant",
+                "description": "plant which uses MDS physical object settings.",
+                "physical_object": [
+                    {
+                        "version": "0.3.0",
+                        "type": "MDS",
+                        "name": "mds_physical_object",
+                        "description": "Mass-Damper-Spring physical object settings.",
+                        "mass_kg": 2.0,
+                        "damper_Ns_m": 1.0,
+                        "spring_N_m": 2.0,
+                        "spring_balance_pos_m": 0.0
                     }
                 ]
             }

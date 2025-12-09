@@ -200,9 +200,9 @@ class MDSPhysicalObject(PhysicalObject):
                 self._spring_balance_pos: float = float(
                     self._config["spring_balance_pos_m"]
                 )
-            except KeyError:
-                self._spring_balance_pos = (
-                    0.0  # デフォルト値 0.0 m (Default value 0.0 m)
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing 'spring_balance_pos_m' in MDS physical object configuration: {type(e)} {e}"
                 )
 
         except Exception as e:
