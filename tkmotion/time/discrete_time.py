@@ -111,15 +111,31 @@ class DiscreteTime:
 
     @property
     def dt(self) -> float:
-        """離散時間ステップを秒単位で返す
-        (Returns the discrete time step in seconds)"""
+        """離散時間ステップ [s]
+        (Returns the discrete time step [s])"""
         return self._dt
+
+    @dt.setter
+    def dt(self, value: float):
+        """離散時間ステップ [s]
+        (Set the discrete time step [s])"""
+        if value <= 0:
+            raise ValueError("dt must be a positive number.")
+        self._dt = value
 
     @property
     def duration(self) -> float:
-        """離散時間の継続時間を秒単位で返す
-        (Returns the duration of the discrete time in seconds)"""
+        """離散時間の継続時間 [s]
+        (Returns the duration of the discrete time [s])"""
         return self._duration_s
+
+    @duration.setter
+    def duration(self, value: float):
+        """離散時間の継続時間 [s]
+        (Set the duration of the discrete time [s])"""
+        if value <= 0:
+            raise ValueError("duration must be a positive number.")
+        self._duration_s = value
 
     def get_config(self) -> dict:
         """設定辞書を返す
