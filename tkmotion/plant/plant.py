@@ -17,13 +17,14 @@ from __future__ import annotations
 import json
 
 from tkmotion.plant.physical_object import PhysicalObject
+from tkmotion.plant.physical_object import MDSPhysicalObject
 from tkmotion.util.utility import Utility
 from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 
 # プラントモジュールのバージョン情報
 # (plant module version information)
-module_version = "0.2.0"
+module_version = "0.3.0"
 
 
 class PlantLoader:
@@ -87,9 +88,16 @@ class Plant:
         """
         self._config: dict = config
         try:
-            self._physical_object: PhysicalObject = PhysicalObject(
-                self._config["physical_object"][phyobj_index]
-            )
+            # TODO: 物理オブジェクトを作り分ける
+            match self._config["physical_object"][phyobj_index]["type"]:
+                case "MDS":
+                    self._physical_object: PhysicalObject = MDSPhysicalObject(
+                        self._config["physical_object"][phyobj_index]
+                    )
+                case _:
+                    self._physical_object: PhysicalObject = PhysicalObject(
+                        self._config["physical_object"][phyobj_index]
+                    )
         except KeyError as e:
             raise ValueError(
                 f"Missing 'physical_object' in configuration: {type(e)} {e}"
