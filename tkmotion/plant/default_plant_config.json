@@ -30,7 +30,9 @@
                         "mass_kg": 2.0,
                         "damper_Ns_m": 1.0,
                         "spring_N_m": 2.0,
-                        "spring_balance_pos_m": 0.0
+                        "spring_balance_pos_m": 0.0,
+                        "static_friction_coeff": 0.2,
+                        "dynamic_friction_coeff": 0.1
                     }
                 ]
             }
