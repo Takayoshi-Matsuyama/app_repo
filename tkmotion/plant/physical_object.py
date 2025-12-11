@@ -77,64 +77,70 @@ class PhysicalObject:
     @property
     def mass(self) -> float:
         """物理オブジェクトの質量 [kg]
-        (Return the mass of the physical object)"""
+        (Mass of the physical object)"""
         return self._mass
+
+    @mass.setter
+    def mass(self, value: float) -> None:
+        """物理オブジェクトの質量 [kg]
+        (Mass of the physical object)"""
+        self._mass = value
 
     @property
     def acc(self) -> float:
         """物理オブジェクトの加速度 [m/s^2]
-        (Return the acceleration of the physical object)"""
+        (Acceleration of the physical object)"""
         return self._acc
 
     @acc.setter
     def acc(self, value: float) -> None:
-        """物理オブジェクトの加速度を設定 [m/s^2]
-        (Set the acceleration of the physical object)"""
+        """物理オブジェクトの加速度 [m/s^2]
+        (Acceleration of the physical object)"""
         self._prev_acc = self._acc  # 前の値を保存
         self._acc = value
 
     @property
     def prev_acc(self) -> float:
         """物理オブジェクトの前回の加速度 [m/s^2]
-        (Return the previous acceleration of the physical object)"""
+        (Previous acceleration of the physical object)"""
         return self._prev_acc
 
     @property
     def vel(self) -> float:
         """物理オブジェクトの速度 [m/s]
-        (Return the velocity of the physical object)"""
+        (Velocity of the physical object)"""
         return self._vel
 
     @vel.setter
     def vel(self, value: float) -> None:
-        """物理オブジェクトの速度を設定 [m/s]
-        (Set the velocity of the physical object)"""
+        """物理オブジェクトの速度 [m/s]
+        (Velocity of the physical object)"""
         self._prev_vel = self._vel  # 前の値を保存
         self._vel = value
 
     @property
     def prev_vel(self) -> float:
         """物理オブジェクトの前回の速度 [m/s]
-        (Return the previous velocity of the physical object)"""
+        (Previous velocity of the physical object)"""
         return self._prev_vel
 
     @property
     def pos(self) -> float:
         """物理オブジェクトの位置 [m]
-        (Return the position of the physical object)"""
+        (Position of the physical object)"""
         return self._pos
 
     @pos.setter
     def pos(self, value: float) -> None:
-        """物理オブジェクトの位置を設定 [m]
-        (Set the position of the physical object)"""
+        """物理オブジェクトの位置 [m]
+        (Position of the physical object)"""
         self._prev_pos = self._pos  # 前の値を保存
         self._pos = value
 
     @property
     def prev_pos(self) -> float:
         """物理オブジェクトの前回の位置 [m]
-        (Return the previous position of the physical object)"""
+        (Previous position of the physical object)"""
         return self._prev_pos
 
     def get_config(self) -> dict:
@@ -181,7 +187,7 @@ class MDSPhysicalObject(PhysicalObject):
         (Initialize MDSPhysicalObject)"""
         super().__init__(config)
         try:
-            # 属性設定 (Set attributes)
+            # ダンパ係数 (damper coefficient)
             try:
                 self._damper: float = float(self._config["damper_Ns_m"])
             except KeyError as e:
@@ -189,6 +195,7 @@ class MDSPhysicalObject(PhysicalObject):
                     f"Missing 'damper_Ns_m' in MDS physical object configuration: {type(e)} {e}"
                 )
 
+            # ばね係数 (spring coefficient)
             try:
                 self._spring: float = float(self._config["spring_N_m"])
             except KeyError as e:
@@ -196,6 +203,7 @@ class MDSPhysicalObject(PhysicalObject):
                     f"Missing 'spring_N_m' in MDS physical object configuration: {type(e)} {e}"
                 )
 
+            # ばね平衡位置 (spring balance position)
             try:
                 self._spring_balance_pos: float = float(
                     self._config["spring_balance_pos_m"]
@@ -205,27 +213,89 @@ class MDSPhysicalObject(PhysicalObject):
                     f"Missing 'spring_balance_pos_m' in MDS physical object configuration: {type(e)} {e}"
                 )
 
+            # 静止摩擦係数 (static friction coefficient)
+            try:
+                self._static_friction_coeff: float = float(
+                    self._config["static_friction_coeff"]
+                )
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing 'static_friction_coeff' in MDS physical object configuration: {type(e)} {e}"
+                )
+
+            # 動摩擦係数 (dynamic friction coefficient)
+            try:
+                self._dynamic_friction_coeff: float = float(
+                    self._config["dynamic_friction_coeff"]
+                )
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing 'dynamic_friction_coeff' in MDS physical object configuration: {type(e)} {e}"
+                )
+
         except Exception as e:
             print(f"Error initializing MDS physical object: {type(e)} {e}")
             raise e
 
     @property
     def damper(self) -> float:
-        """物理オブジェクトの減衰器係数 [Ns/m]
-        (Return the damper coefficient of the physical object)"""
+        """物理オブジェクトのダンパ係数 [Ns/m]
+        (Damper coefficient of the physical object)"""
         return self._damper
+
+    @damper.setter
+    def damper(self, value: float):
+        """物理オブジェクトのダンパ係数 [Ns/m]
+        (Damper coefficient of the physical object)"""
+        self._damper = value
 
     @property
     def spring(self) -> float:
         """物理オブジェクトのばね係数 [N/m]
-        (Return the spring coefficient of the physical object)"""
+        (Spring coefficient of the physical object)"""
         return self._spring
+
+    @spring.setter
+    def spring(self, value: float):
+        """物理オブジェクトのばね係数 [N/m]
+        (Spring coefficient of the physical object)"""
+        self._spring = value
 
     @property
     def spring_balance_pos(self) -> float:
         """物理オブジェクトのばね平衡位置 [m]
-        (Return the spring balance position of the physical object)"""
+        (Spring balance position of the physical object)"""
         return self._spring_balance_pos
+
+    @spring_balance_pos.setter
+    def spring_balance_pos(self, value: float):
+        """物理オブジェクトのばね平衡位置 [m]
+        (Spring balance position of the physical object)"""
+        self._spring_balance_pos = value
+
+    @property
+    def static_friction_coeff(self) -> float:
+        """物理オブジェクトの静止摩擦係数
+        (Static friction coefficient of the physical object)"""
+        return self._static_friction_coeff
+
+    @static_friction_coeff.setter
+    def static_friction_coeff(self, value: float):
+        """物理オブジェクトの静止摩擦係数
+        (Static friction coefficient of the physical object)"""
+        self._static_friction_coeff = value
+
+    @property
+    def dynamic_friction_coeff(self) -> float:
+        """物理オブジェクトの動摩擦係数
+        (Dynamic friction coefficient of the physical object)"""
+        return self._dynamic_friction_coeff
+
+    @dynamic_friction_coeff.setter
+    def dynamic_friction_coeff(self, value: float):
+        """物理オブジェクトの動摩擦係数
+        (Dynamic friction coefficient of the physical object)"""
+        self._dynamic_friction_coeff = value
 
     def apply_force(self, ex_force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
