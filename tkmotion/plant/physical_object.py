@@ -176,6 +176,20 @@ class PhysicalObject:
         self.pos = pos
         self._prev_pos = pos
 
+    def get_state(self) -> dict:
+        """物理オブジェクトの状態を取得する
+        (Get the state of the physical object)
+
+        Returns:
+            dict: 物理オブジェクトの状態辞書
+            (Dictionary of the physical object's state)
+        """
+        return {
+            "acc_m_s2": self.acc,
+            "vel_m_s": self.vel,
+            "pos_m": self.pos,
+        }
+
     def apply_force(self, force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
         (Apply force to the physical object and update status)"""
@@ -251,6 +265,10 @@ class MDSPhysicalObject(PhysicalObject):
                     f"Missing 'dynamic_friction_coeff' in MDS physical object configuration: {type(e)} {e}"
                 )
 
+            self._damper_force = 0.0
+            self._spring_force = 0.0
+            self._net_force = 0.0
+
         except Exception as e:
             print(f"Error initializing MDS physical object: {type(e)} {e}")
             raise e
@@ -315,32 +333,61 @@ class MDSPhysicalObject(PhysicalObject):
         (Dynamic friction coefficient of the physical object)"""
         self._dynamic_friction_coeff = value
 
+    def reset(self) -> None:
+        """物理オブジェクトの状態をリセットする
+        (Reset the state of the physical object)"""
+        super().reset()
+        self._damper_force = 0.0
+        self._spring_force = 0.0
+        self._net_force = 0.0
+
+    def get_state(self) -> dict:
+        """物理オブジェクトの状態を取得する
+        (Get the state of the physical object)
+
+        Returns:
+            dict: 物理オブジェクトの状態辞書
+            (Dictionary of the physical object's state)
+        """
+        base_state = super().get_state()
+        base_state.update(
+            {
+                "damper_force_N": self._damper_force,
+                "spring_force_N": self._spring_force,
+                "net_force_N": self._net_force,
+            }
+        )
+        return base_state
+
     def apply_force(self, ex_force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
         (Apply force to the physical object and update status)"""
 
+        # 減衰器による力Fd = -c*v
+        # (force by damper Fd = -c*v)
+        self._damper_force = -self.damper * self.vel
+
+        # ばねによる力Fs = -k*x
+        # (force by spring Fs = -k*x)
+        self._spring_force = -self.spring * (self.pos - self.spring_balance_pos)
+
+        # 合力F = 外力 + 減衰器力 + ばね力
+        # (net force F = external force + damper force + spring force)
+        self._net_force = ex_force + self._damper_force + self._spring_force
+
         # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
         # (when force F is applied, acceleration a occurs in mass m object)
-        self.acc = ex_force / self.mass
+        self.acc = self._net_force / self.mass
 
         # 加速度aが生じると、速度vが変化 (v = u + a*t)
         # (when acceleration a occurs, velocity v changes)
         self.vel += self.acc * dt
 
-        # 減衰器による力Fd = -c*v
-        # (force by damper Fd = -c*v)
-        damper_force = -self.damper * self.vel
-
-        # ばねによる力Fs = -k*x
-        # (force by spring Fs = -k*x)
-        spring_force = -self.spring * (self.pos - self.spring_balance_pos)
-
-        # 合力F = 外力 + 減衰器力 + ばね力
-        # (net force F = external force + damper force + spring force)
-        net_force = ex_force + damper_force + spring_force
-
-        # 親クラスのapply_forceを呼び出して状態更新
-        # (call parent class apply_force to update status)
-        super().apply_force(net_force, dt)
+        # 速度vが変化すると、位置xが変化 (x = x0 + v*t)
+        # (when velocity v changes, position x changes)
+        # 前回速度による変化分 + 今回加速度による変化分
+        # (position changes due to previous velocity
+        #  + position changes due to current acceleration)
+        self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)
 
     # TODO: 理論特性値（固有振動数、減衰比など）を計算するメソッドを追加
