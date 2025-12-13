@@ -3,6 +3,12 @@
         "controller": [
             {
                 "version": "0.3.0",
+                "type": "default",
+                "name": "default_controller",
+                "description": "Default controller settings for TKMotion simulations."
+            },
+            {
+                "version": "0.3.0",
                 "type": "PID",
                 "name": "default_pid_controller",
                 "description": "Default PID controller settings for TKMotion simulations.",
@@ -12,12 +18,6 @@
                 "kpp_N_m": 1000.0,
                 "kpi_N_m": 500.0,
                 "kpd_N_m": 10.0
-            },
-            {
-                "version": "0.3.0",
-                "type": "default",
-                "name": "default_controller",
-                "description": "Default controller settings for TKMotion simulations."
             },
             {
                 "version": "0.3.0",

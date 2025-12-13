@@ -158,6 +158,24 @@ class PhysicalObject:
         self._pos = 0.0
         self._prev_pos = 0.0
 
+    def set_state(self, acc: float, vel: float, pos: float) -> None:
+        """物理オブジェクトの状態を設定する
+        (Set the state of the physical object)
+
+        Args:
+            acc (float): 加速度 [m/s^2] (acceleration)
+            vel (float): 速度 [m/s] (velocity)
+            pos (float): 位置 [m] (position)
+
+        Returns: None
+        """
+        self.acc = acc
+        self._prev_acc = acc
+        self.vel = vel
+        self._prev_vel = vel
+        self.pos = pos
+        self._prev_pos = pos
+
     def apply_force(self, force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
         (Apply force to the physical object and update status)"""
