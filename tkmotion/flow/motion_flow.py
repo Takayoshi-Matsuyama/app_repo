@@ -201,9 +201,10 @@ class MotionFlow:
 
             # 物理オブジェクト状態更新 (physical object state update)
             self._plant.physical_obj.apply_force(force, self._discrete_time.dt)
-            obj_acc_list.append(self._plant.physical_obj.acc)
-            obj_vel_list.append(self._plant.physical_obj.vel)
-            obj_pos_list.append(self._plant.physical_obj.pos)
+            phyobj_state = self._plant.physical_obj.get_state()
+            obj_acc_list.append(phyobj_state["acc_m_s2"])
+            obj_vel_list.append(phyobj_state["vel_m_s"])
+            obj_pos_list.append(phyobj_state["pos_m"])
 
         # シミュレーション結果のデータフレーム作成 (create DataFrame of simulation results)
         result_df = pd.DataFrame(
