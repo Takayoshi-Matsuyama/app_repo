@@ -176,19 +176,15 @@ class PhysicalObject:
         self.pos = pos
         self._prev_pos = pos
 
-    def get_state(self) -> dict:
-        """物理オブジェクトの状態を取得する
-        (Get the state of the physical object)
+    def get_observer(self) -> "PhysicalObjectObserver":
+        """物理オブジェクトの観測者を取得する
+        (Get the observer of the physical object)
 
         Returns:
-            dict: 物理オブジェクトの状態辞書
-            (Dictionary of the physical object's state)
+            PhysicalObjectObserver: 物理オブジェクトの観測者
+            (Observer of the physical object)
         """
-        return {
-            "acc_m_s2": self.acc,
-            "vel_m_s": self.vel,
-            "pos_m": self.pos,
-        }
+        return PhysicalObjectObserver(self)
 
     def apply_force(self, force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
@@ -208,6 +204,53 @@ class PhysicalObject:
         # (position changes due to previous velocity
         #  + position changes due to current acceleration)
         self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)
+
+
+class PhysicalObjectObserver:
+    """物理オブジェクト観測クラス
+    (Physical Object Observer Class)"""
+
+    def __init__(self, physical_obj: PhysicalObject) -> None:
+        """PhysicalObjectObserverを初期化する
+        (Initialize PhysicalObjectObserver)"""
+        self._physical_obj: PhysicalObject = physical_obj
+        self._obj_acc_list: list[float] = []
+        self._obj_vel_list: list[float] = []
+        self._obj_pos_list: list[float] = []
+
+    @property
+    def physical_obj(self) -> PhysicalObject:
+        """観測対象の物理オブジェクトを返す
+        (Return the observed physical object)"""
+        return self._physical_obj
+
+    def reset(self) -> None:
+        """観測データをリセットする
+        (Reset observation data)"""
+        self._obj_acc_list = []
+        self._obj_vel_list = []
+        self._obj_pos_list = []
+
+    def observe(self) -> None:
+        """物理オブジェクトの状態を観測し、データリストに追加する
+        (Observe the state of the physical object and add to data list)"""
+        self._obj_acc_list.append(self._physical_obj.acc)
+        self._obj_vel_list.append(self._physical_obj.vel)
+        self._obj_pos_list.append(self._physical_obj.pos)
+
+    def get_observation_data(self) -> dict:
+        """観測データリストを返す
+        (Return the observation data list)
+
+        Returns:
+            list: 観測データリスト
+            (Observation data list)
+        """
+        return {
+            "obj_acceleration_m_s2": self._obj_acc_list,
+            "obj_velocity_m_s": self._obj_vel_list,
+            "obj_position_m": self._obj_pos_list,
+        }
 
 
 class MDSPhysicalObject(PhysicalObject):
@@ -340,24 +383,6 @@ class MDSPhysicalObject(PhysicalObject):
         self._damper_force = 0.0
         self._spring_force = 0.0
         self._net_force = 0.0
-
-    def get_state(self) -> dict:
-        """物理オブジェクトの状態を取得する
-        (Get the state of the physical object)
-
-        Returns:
-            dict: 物理オブジェクトの状態辞書
-            (Dictionary of the physical object's state)
-        """
-        base_state = super().get_state()
-        base_state.update(
-            {
-                "damper_force_N": self._damper_force,
-                "spring_force_N": self._spring_force,
-                "net_force_N": self._net_force,
-            }
-        )
-        return base_state
 
     def apply_force(self, ex_force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する

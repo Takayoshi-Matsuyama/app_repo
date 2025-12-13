@@ -166,9 +166,7 @@ class MotionFlow:
         pos_error_list = []
         vel_error_list = []
         force_list = []
-        obj_acc_list = []
-        obj_vel_list = []
-        obj_pos_list = []
+        phyobj_observer = self._plant.physical_obj.get_observer()
 
         # コントローラ状態初期化 (initialize controller state)
         self._controller.reset()
@@ -201,10 +199,7 @@ class MotionFlow:
 
             # 物理オブジェクト状態更新 (physical object state update)
             self._plant.physical_obj.apply_force(force, self._discrete_time.dt)
-            phyobj_state = self._plant.physical_obj.get_state()
-            obj_acc_list.append(phyobj_state["acc_m_s2"])
-            obj_vel_list.append(phyobj_state["vel_m_s"])
-            obj_pos_list.append(phyobj_state["pos_m"])
+            phyobj_observer.observe()
 
         # シミュレーション結果のデータフレーム作成 (create DataFrame of simulation results)
         result_df = pd.DataFrame(
@@ -215,10 +210,10 @@ class MotionFlow:
                 "velocity_error_m_s": vel_error_list,
                 "position_error_m": pos_error_list,
                 "force_N": force_list,
-                "obj_acceleration_m_s2": obj_acc_list,
-                "obj_velocity_m_s": obj_vel_list,
-                "obj_position_m": obj_pos_list,
             }
         )
+
+        for key, value in phyobj_observer.get_observation_data().items():
+            result_df[key] = value
 
         return result_df
