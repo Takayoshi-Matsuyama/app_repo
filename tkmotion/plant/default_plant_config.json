@@ -28,8 +28,8 @@
                         "name": "mds_physical_object",
                         "description": "Mass-Damper-Spring physical object settings.",
                         "mass_kg": 2.0,
-                        "damper_Ns_m": 1.0,
-                        "spring_N_m": 2.0,
+                        "damper_Ns_m": 3.0,
+                        "spring_N_m": 80.0,
                         "spring_balance_pos_m": 0.0,
                         "static_friction_coeff": 0,
                         "dynamic_friction_coeff": 0
