@@ -190,8 +190,10 @@ class MotionFlow:
             controller_observer.observe()
 
             # 物理オブジェクト状態更新 (physical object state update)
-            self._plant.physical_obj.apply_force(force, self._discrete_time.dt)
-            phyobj_observer.observe()
+            phyobj_observer.observe()  # 経過時間tでの状態を観測 (observe state at elapsed time t)
+            self._plant.physical_obj.apply_force(
+                force, self._discrete_time.dt
+            )  # 離散時間dtで状態更新 (update state with discrete time dt)
 
         # シミュレーション結果のデータフレーム作成 (create DataFrame of simulation results)
         result_df = pd.DataFrame(
