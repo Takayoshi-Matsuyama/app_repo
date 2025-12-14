@@ -88,6 +88,7 @@ class Controller:
         """コントローラを初期化する
         (Initialize Controller with given configuration)"""
         self._config: dict = config
+        self._force: float = 0.0
 
     @property
     def module_version(self) -> str:
@@ -157,10 +158,21 @@ class Controller:
         # 基本的なコントローラでは0を返す
         return 0.0
 
+    @property
+    def force(self) -> float:
+        """現在の制御力を返す
+        (Return the current control force)"""
+        return self._force
+
     def get_config(self) -> dict:
         """設定辞書を返す
         (Return the configuration dictionary)"""
         return self._config
+
+    def get_observer(self) -> ControllerObserver:
+        """コントローラ観測オブジェクトを返す
+        (Return the controller observer object)"""
+        return ControllerObserver(self)
 
     def reset(self) -> None:
         """コントローラの状態をリセットする
@@ -180,6 +192,44 @@ class Controller:
         (Calculate the control force)"""
         # 基本的なコントローラでは0を返す
         return 0.0
+
+
+class ControllerObserver:
+    """コントローラ観測クラス
+    (Controller Observer Class)"""
+
+    def __init__(self, controller: Controller) -> None:
+        """ControllerObserverを初期化する
+        (Initialize the ControllerObserver)"""
+        self._controller: Controller = controller
+        self._force_list: list[float] = []
+
+    @property
+    def controller(self) -> Controller:
+        """観測対象のコントローラを返す
+        (Return the observing controller)"""
+        return self._controller
+
+    def reset(self) -> None:
+        """観測データをリセットする
+        (Reset the observed data)"""
+        self._force_list.clear()
+
+    def observe(self) -> None:
+        """コントローラの状態を観測し、データリストに追加する
+        (Observe the controller state and add to the data list)"""
+        self._force_list.append(self._controller.force)
+
+    def get_observed_data(self) -> dict:
+        """観測データを辞書形式で返す
+        (Return the observed data in dictionary format)
+
+        Returns:
+            dict: 観測データ辞書
+            (Observed data dictionary)"""
+        return {
+            "force_N": self._force_list,
+        }
 
 
 class PIDController(Controller):
@@ -282,6 +332,11 @@ class PIDController(Controller):
         (Return the current derivative of position error)"""
         return self._pos_error_diff
 
+    def get_observer(self) -> PIDControllerObserver:
+        """PIDコントローラ観測オブジェクトを返す
+        (Return the PID controller observer object)"""
+        return PIDControllerObserver(self)
+
     def reset(self) -> None:
         """コントローラの状態をリセットする
         (Reset the controller state)"""
@@ -367,7 +422,72 @@ class PIDController(Controller):
         # 位置微分制御 (position derivative control)
         force += self._kpd * self._pos_error_diff
 
-        return force
+        # 推力確定
+        self._force = force
+
+        return self._force
+
+
+class PIDControllerObserver(ControllerObserver):
+    """PIDコントローラ観測クラス
+    (PID Controller Observer Class)"""
+
+    def __init__(self, controller: PIDController) -> None:
+        """PIDControllerObserverを初期化する
+        (Initialize the PIDControllerObserver)"""
+        super().__init__(controller)
+        self._controller: PIDController = self._controller
+        self._vel_error_list: list[float] = []
+        self._pos_error_list: list[float] = []
+        self._vel_error_cumsum_list: list[float] = []
+        self._pos_error_cumsum_list: list[float] = []
+        self._vel_error_diff_list: list[float] = []
+        self._pos_error_diff_list: list[float] = []
+
+    @property
+    def controller(self) -> PIDController:
+        """観測対象のPIDコントローラを返す
+        (Return the observing PID controller)"""
+        return self._controller
+
+    def reset(self) -> None:
+        """観測データをリセットする
+        (Reset the observed data)"""
+        super().reset()
+        self._vel_error_list.clear()
+        self._pos_error_list.clear()
+        self._vel_error_cumsum_list.clear()
+        self._pos_error_cumsum_list.clear()
+        self._vel_error_diff_list.clear()
+        self._pos_error_diff_list.clear()
+
+    def observe(self) -> None:
+        """コントローラの状態を観測し、データリストに追加する
+        (Observe the controller state and add to the data list)"""
+        self._vel_error_list.append(self._controller.vel_error)
+        self._pos_error_list.append(self._controller.pos_error)
+        self._vel_error_cumsum_list.append(self._controller.vel_error_cumsum)
+        self._pos_error_cumsum_list.append(self._controller.pos_error_cumsum)
+        self._vel_error_diff_list.append(self._controller.vel_error_diff)
+        self._pos_error_diff_list.append(self._controller.pos_error_diff)
+        self._force_list.append(self._controller.force)
+
+    def get_observed_data(self) -> dict:
+        """観測データを辞書形式で返す
+        (Return the observed data in dictionary format)
+
+        Returns:
+            dict: 観測データ辞書
+            (Observed data dictionary)"""
+        return {
+            "velocity_error_m_s": self._vel_error_list,
+            "position_error_m": self._pos_error_list,
+            "vel_error_cumsum_m_s": self._vel_error_cumsum_list,
+            "pos_error_cumsum_m": self._pos_error_cumsum_list,
+            "vel_error_diff_m_s": self._vel_error_diff_list,
+            "pos_error_diff_m": self._pos_error_diff_list,
+            "force_N": self._force_list,
+        }
 
 
 class ImpulseController(Controller):
@@ -439,13 +559,15 @@ class ImpulseController(Controller):
 
         # 遅延時間中はゼロを返す (return zero during delay time)
         if t < self.delay_s:
-            return 0.0
+            self._force = 0.0
         # 指定時間ステップの間はインパルス推力を出力する (return impulse force for specified time steps)
         elif self._step_counter < self.on_timestep_count:
             self._step_counter += 1
-            return self.p_force
+            self._force = self.p_force
         else:
-            return 0.0
+            self._force = 0.0
+
+        return self._force
 
 
 class StepController(Controller):
@@ -504,7 +626,9 @@ class StepController(Controller):
 
         if t < self.delay_s:
             # 遅延時間中はゼロを返す (return zero during delay time)
-            return 0.0
+            self._force = 0.0
         else:
             # 遅延時間後はステップ値を返す (return step value after delay time)
-            return self.s_force
+            self._force = self.s_force
+
+        return self._force

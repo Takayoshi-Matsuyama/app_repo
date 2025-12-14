@@ -223,12 +223,12 @@ class PhysicalObjectObserver:
     @property
     def physical_obj(self) -> PhysicalObject:
         """観測対象の物理オブジェクトを返す
-        (Return the observed physical object)"""
+        (Return the observing physical object)"""
         return self._physical_obj
 
     def reset(self) -> None:
         """観測データをリセットする
-        (Reset observation data)"""
+        (Reset the observed data)"""
         self._obj_acc_list.clear()
         self._obj_vel_list.clear()
         self._obj_pos_list.clear()
@@ -240,13 +240,13 @@ class PhysicalObjectObserver:
         self._obj_vel_list.append(self._physical_obj.vel)
         self._obj_pos_list.append(self._physical_obj.pos)
 
-    def get_observation_data(self) -> dict:
-        """観測データリストを返す
-        (Return the observation data list)
+    def get_observed_data(self) -> dict:
+        """観測データを辞書形式で返す
+        (Return the observed data in dictionary format)
 
         Returns:
-            list: 観測データリスト
-            (Observation data list)
+            dict: 観測データ辞書
+            (Observed data dictionary)
         """
         return {
             "obj_acceleration_m_s2": self._obj_acc_list,
@@ -429,13 +429,14 @@ class MDSPhysicalObject(PhysicalObject):
         #  + position changes due to current acceleration)
         self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)
 
-    def calc_char_values(self) -> tuple[float, float, float]:
+    def calc_char_values(self) -> tuple[float, float, float, float]:
         """物理オブジェクトの理論特性値を計算する
         (Calculate theoretical characteristic values of the physical object)
 
         Returns:
-            tuple: 固有振動数 [Hz]、減衰比、減衰振動数 [Hz]
-            (natural frequency [Hz], damping ratio, damped natural frequency [Hz])
+            tuple: 固有振動数 [Hz]、臨界減衰率 [Ns/m]、減衰比 [-]、減衰振動数 [Hz]
+            (natural frequency [Hz], critical damping coefficient [Ns/m],
+             damping ratio [-], damped natural frequency [Hz])
 
         Reference:
             https://www.onosokki.co.jp/HP-WK/c_support/newreport/dampingfactor/dampingfactor_2.htm
@@ -489,7 +490,7 @@ class MDSPhysicalObjectObserver(PhysicalObjectObserver):
         self._spring_force_list.append(self.physical_obj._spring_force)
         self._net_force_list.append(self.physical_obj._net_force)
 
-    def get_observation_data(self) -> dict:
+    def get_observed_data(self) -> dict:
         """観測データリストを返す
         (Return the observation data list)
 

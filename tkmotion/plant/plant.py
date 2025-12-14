@@ -87,14 +87,15 @@ class Plant:
             phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
         """
         self._config: dict = config
+        self._physical_object: PhysicalObject
         try:
             match self._config["physical_object"][phyobj_index]["type"]:
                 case "MDS":
-                    self._physical_object: PhysicalObject = MDSPhysicalObject(
+                    self._physical_object = MDSPhysicalObject(
                         self._config["physical_object"][phyobj_index]
                     )
                 case _:
-                    self._physical_object: PhysicalObject = PhysicalObject(
+                    self._physical_object = PhysicalObject(
                         self._config["physical_object"][phyobj_index]
                     )
         except KeyError as e:
