@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 from tkmotion.util.utility import Utility
 from tkmotion.util.utility import ConfigVersionIncompatibleError
 
@@ -210,16 +212,16 @@ class PhysicalObjectObserver:
     """物理オブジェクト観測クラス
     (Physical Object Observer Class)"""
 
-    def __init__(self, physical_obj: PhysicalObject) -> None:
+    def __init__(self, physical_obj: PhysicalObject | MDSPhysicalObject) -> None:
         """PhysicalObjectObserverを初期化する
         (Initialize PhysicalObjectObserver)"""
-        self._physical_obj: PhysicalObject = physical_obj
+        self._physical_obj: PhysicalObject | MDSPhysicalObject = physical_obj
         self._obj_acc_list: list[float] = []
         self._obj_vel_list: list[float] = []
         self._obj_pos_list: list[float] = []
 
     @property
-    def physical_obj(self) -> PhysicalObject:
+    def physical_obj(self) -> PhysicalObject | MDSPhysicalObject:
         """観測対象の物理オブジェクトを返す
         (Return the observed physical object)"""
         return self._physical_obj
@@ -227,9 +229,9 @@ class PhysicalObjectObserver:
     def reset(self) -> None:
         """観測データをリセットする
         (Reset observation data)"""
-        self._obj_acc_list = []
-        self._obj_vel_list = []
-        self._obj_pos_list = []
+        self._obj_acc_list.clear()
+        self._obj_vel_list.clear()
+        self._obj_pos_list.clear()
 
     def observe(self) -> None:
         """物理オブジェクトの状態を観測し、データリストに追加する
@@ -384,6 +386,16 @@ class MDSPhysicalObject(PhysicalObject):
         self._spring_force = 0.0
         self._net_force = 0.0
 
+    def get_observer(self):
+        """物理オブジェクトの観測者を取得する
+        (Get the observer of the physical object)
+
+        Returns:
+            MDSPhysicalObjectObserver: 物理オブジェクトの観測者
+            (Observer of the physical object)
+        """
+        return MDSPhysicalObjectObserver(self)
+
     def apply_force(self, ex_force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
         (Apply force to the physical object and update status)"""
@@ -416,3 +428,49 @@ class MDSPhysicalObject(PhysicalObject):
         self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)
 
     # TODO: 理論特性値（固有振動数、減衰比など）を計算するメソッドを追加
+
+
+class MDSPhysicalObjectObserver(PhysicalObjectObserver):
+    """質量・減衰器・ばね 物理オブジェクト観測クラス
+    (Mass-Damper-Spring Physical Object Observer Class)"""
+
+    def __init__(self, physical_obj: MDSPhysicalObject) -> None:
+        """MDSPhysicalObjectObserverを初期化する
+        (Initialize MDSPhysicalObjectObserver)"""
+        super().__init__(physical_obj)
+        self._damper_force_list: list[float] = []
+        self._spring_force_list: list[float] = []
+        self._net_force_list: list[float] = []
+
+    def reset(self) -> None:
+        """観測データをリセットする
+        (Reset observation data)"""
+        super().reset()
+        self._damper_force_list.clear()
+        self._spring_force_list.clear()
+        self._net_force_list.clear()
+
+    def observe(self) -> None:
+        """物理オブジェクトの状態を観測し、データリストに追加する
+        (Observe the state of the physical object and add to data list)"""
+        super().observe()
+        self._damper_force_list.append(self.physical_obj._damper_force)
+        self._spring_force_list.append(self.physical_obj._spring_force)
+        self._net_force_list.append(self.physical_obj._net_force)
+
+    def get_observation_data(self) -> dict:
+        """観測データリストを返す
+        (Return the observation data list)
+
+        Returns:
+            list: 観測データリスト
+            (Observation data list)
+        """
+        return {
+            "obj_acceleration_m_s2": self._obj_acc_list,
+            "obj_velocity_m_s": self._obj_vel_list,
+            "obj_position_m": self._obj_pos_list,
+            "damper_force_N": self._damper_force_list,
+            "spring_force_N": self._spring_force_list,
+            "net_force_N": self._net_force_list,
+        }

@@ -88,7 +88,6 @@ class Plant:
         """
         self._config: dict = config
         try:
-            # TODO: 物理オブジェクトを作り分ける
             match self._config["physical_object"][phyobj_index]["type"]:
                 case "MDS":
                     self._physical_object: PhysicalObject = MDSPhysicalObject(
