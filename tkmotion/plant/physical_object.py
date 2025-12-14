@@ -212,16 +212,16 @@ class PhysicalObjectObserver:
     """物理オブジェクト観測クラス
     (Physical Object Observer Class)"""
 
-    def __init__(self, physical_obj: PhysicalObject | MDSPhysicalObject) -> None:
+    def __init__(self, physical_obj: PhysicalObject) -> None:
         """PhysicalObjectObserverを初期化する
         (Initialize PhysicalObjectObserver)"""
-        self._physical_obj: PhysicalObject | MDSPhysicalObject = physical_obj
+        self._physical_obj: PhysicalObject = physical_obj
         self._obj_acc_list: list[float] = []
         self._obj_vel_list: list[float] = []
         self._obj_pos_list: list[float] = []
 
     @property
-    def physical_obj(self) -> PhysicalObject | MDSPhysicalObject:
+    def physical_obj(self) -> PhysicalObject:
         """観測対象の物理オブジェクトを返す
         (Return the observed physical object)"""
         return self._physical_obj
@@ -313,6 +313,8 @@ class MDSPhysicalObject(PhysicalObject):
             self._damper_force = 0.0
             self._spring_force = 0.0
             self._net_force = 0.0
+
+            self._test_flag = False
 
         except Exception as e:
             print(f"Error initializing MDS physical object: {type(e)} {e}")
@@ -438,9 +440,16 @@ class MDSPhysicalObjectObserver(PhysicalObjectObserver):
         """MDSPhysicalObjectObserverを初期化する
         (Initialize MDSPhysicalObjectObserver)"""
         super().__init__(physical_obj)
+        self._physical_obj: MDSPhysicalObject = self._physical_obj
         self._damper_force_list: list[float] = []
         self._spring_force_list: list[float] = []
         self._net_force_list: list[float] = []
+
+    @property
+    def physical_obj(self) -> MDSPhysicalObject:
+        """観測対象の物理オブジェクトを返す
+        (Return the observed physical object)"""
+        return self._physical_obj
 
     def reset(self) -> None:
         """観測データをリセットする

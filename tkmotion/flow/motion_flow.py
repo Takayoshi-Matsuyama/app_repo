@@ -171,8 +171,8 @@ class MotionFlow:
         # コントローラ状態初期化 (initialize controller state)
         self._controller.reset()
 
-        # 物理オブジェクト状態初期化 (initialize physical object state)
-        self._plant.physical_obj.reset()
+        # プラント状態の初期化は、execute()呼び出し前に、excute()呼び出し側で行う
+        # (The initialization of the plant state is performed by the caller before calling execute())
 
         # 時間ステップ毎のシミュレーション (simulation for each time step)
         for t in time_steps_gen:
