@@ -429,7 +429,29 @@ class MDSPhysicalObject(PhysicalObject):
         #  + position changes due to current acceleration)
         self.pos += self.prev_vel * dt + 0.5 * self.acc * (dt**2)
 
-    # TODO: 理論特性値（固有振動数、減衰比など）を計算するメソッドを追加
+    def calc_char_values(self) -> tuple[float, float, float]:
+        """物理オブジェクトの理論特性値を計算する
+        (Calculate theoretical characteristic values of the physical object)
+
+        Returns:
+            tuple: 固有振動数 [Hz]、減衰比、減衰振動数 [Hz]
+            (natural frequency [Hz], damping ratio, damped natural frequency [Hz])
+
+        Reference:
+            https://www.onosokki.co.jp/HP-WK/c_support/newreport/dampingfactor/dampingfactor_2.htm
+        """
+        import math
+
+        # 固有振動数 [Hz] (natural frequency)
+        wn_Hz = math.sqrt(self.spring / self.mass) / (2.0 * math.pi)
+        # 臨界減衰率 [Ns/m] (critical damping coefficient)
+        cc = 2.0 * math.sqrt(self.mass * self.spring)
+        # 減衰比 [-] (damping ratio)
+        zeta = self.damper / cc
+        # 減衰系の固有振動数 [Hz] (damped natural frequency)
+        wd_Hz = wn_Hz * math.sqrt(1.0 - zeta**2)
+
+        return wn_Hz, cc, zeta, wd_Hz
 
 
 class MDSPhysicalObjectObserver(PhysicalObjectObserver):
