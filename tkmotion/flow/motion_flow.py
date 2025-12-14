@@ -161,8 +161,7 @@ class MotionFlow:
 
         # データ収集リスト (lists for data acquisition)
         time_list = []
-        cmd_vel_list = []
-        cmd_pos_list = []
+        motion_prof_observer = self._motion_profile.get_observer()
         controller_observer = self._controller.get_observer()
         phyobj_observer = self._plant.physical_obj.get_observer()
 
@@ -178,8 +177,7 @@ class MotionFlow:
 
             # 指令速度と位置 (command velocity and position)
             cmd_vel, cmd_pos = self._motion_profile.calculate_cmd_vel_pos(t)
-            cmd_vel_list.append(cmd_vel)
-            cmd_pos_list.append(cmd_pos)
+            motion_prof_observer.observe()
 
             # サーボ推力計算 (servo force calculation)
             force = self._controller.calculate_force(
@@ -189,21 +187,21 @@ class MotionFlow:
                 self._plant.physical_obj.vel,
                 self._plant.physical_obj.pos,
             )
+            controller_observer.observe()
 
             # 物理オブジェクト状態更新 (physical object state update)
             self._plant.physical_obj.apply_force(force, self._discrete_time.dt)
-
-            controller_observer.observe()
             phyobj_observer.observe()
 
         # シミュレーション結果のデータフレーム作成 (create DataFrame of simulation results)
         result_df = pd.DataFrame(
             {
                 "time_s": time_list,
-                "cmd_velocity_m_s": cmd_vel_list,
-                "cmd_position_m": cmd_pos_list,
             }
         )
+
+        for key, value in motion_prof_observer.get_observed_data().items():
+            result_df[key] = value
 
         for key, value in controller_observer.get_observed_data().items():
             result_df[key] = value

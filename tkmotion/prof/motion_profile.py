@@ -114,6 +114,8 @@ class MotionProfile:
         """モーションプロファイルを初期化する
         (Initialize the MotionProfile)."""
         self._config: dict = config
+        self._cmd_vel: float = 0.0
+        self._cmd_pos: float = 0.0
 
     @property
     def module_version(self) -> str:
@@ -143,16 +145,76 @@ class MotionProfile:
                 f"Missing 'type' in motion profile configuration: {type(e)} {e}"
             )
 
+    @property
+    def cmd_vel(self) -> float:
+        """コマンド速度を返す
+        (Returns the command velocity)"""
+        return self._cmd_vel
+
+    @property
+    def cmd_pos(self) -> float:
+        """コマンド位置を返す
+        (Returns the command position)"""
+        return self._cmd_pos
+
     def get_config(self) -> dict:
         """プロファイルソースの辞書を返す
         (Returns the profile source dictionary)"""
         return self._config
+
+    def get_observer(self) -> MotionProfileObserver:
+        """モーションプロファイルオブザーバーを返す
+        (Returns the motion profile observer)"""
+        return MotionProfileObserver(self)
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
         """速度と位置のタプルを返す
         (Return a tuple of velocity and position)"""
         # ベースクラスのデフォルト実装 (Default implementation for base class)
         return 0.0, 0.0
+
+
+class MotionProfileObserver:
+    """モーションプロファイルオブザーバークラス (Observer class for MotionProfile)"""
+
+    def __init__(self, motion_profile: MotionProfile) -> None:
+        """MotionProfileObserverを初期化する
+        (Initialize the MotionProfileObserver)"""
+        self._motion_profile: MotionProfile = motion_profile
+        self._cmd_vel_list: list[float] = []
+        self._cmd_pos_list: list[float] = []
+
+    @property
+    def module_version(self) -> str:
+        """モーションプロファイルモジュールのバージョンを返す
+        (Returns the motion profile module version)"""
+        return module_version
+
+    @property
+    def profile(self) -> MotionProfile:
+        """観測対象のモーションプロファイルを返す
+        (Returns the observing motion profile)"""
+        return self._motion_profile
+
+    def reset(self) -> None:
+        """観測データをリセットする
+        (Reset the observed data)"""
+        self._cmd_vel_list.clear()
+        self._cmd_pos_list.clear()
+
+    def observe(self) -> None:
+        """モーションプロファイルの観測を行う
+        (Observe the motion profile)"""
+        self._cmd_vel_list.append(self._motion_profile.cmd_vel)
+        self._cmd_pos_list.append(self._motion_profile.cmd_pos)
+
+    def get_observed_data(self) -> dict:
+        """観測データの辞書を返す
+        (Return a dictionary of observed data)"""
+        return {
+            "cmd_velocity_m_s": self._cmd_vel_list,
+            "cmd_position_m": self._cmd_pos_list,
+        }
 
 
 class TrapezoidalMotionProfile(MotionProfile):
@@ -228,12 +290,10 @@ class TrapezoidalMotionProfile(MotionProfile):
         if t < self.Ta:
             vel = self.dir * self.A * t
             pos = self.dir * (0.5 * self.A * t**2)
-            return vel, pos
         # 等速 (constant velocity)
         elif t < (self.Ta + self.Tc):
             vel = self.dir * self.A * self.Ta
             pos = self.dir * (0.5 * self.A * self.Ta**2 + self.V * (t - self.Ta))
-            return vel, pos
         # 減速 (deceleration)
         elif t <= self.T:
             td = t - self.Ta - self.Tc
@@ -244,12 +304,13 @@ class TrapezoidalMotionProfile(MotionProfile):
                 + self.V * td
                 - 0.5 * self.A * td**2
             )
-            return vel, pos
         # 停止 (stop)
         else:
             vel = 0.0
             pos = self.dir * self.L
-            return vel, pos
+
+        self._cmd_vel, self._cmd_pos = vel, pos
+        return self._cmd_vel, self._cmd_pos
 
 
 class ImpulseMotionProfile(MotionProfile):
@@ -315,13 +376,16 @@ class ImpulseMotionProfile(MotionProfile):
 
         # 遅延時間中はゼロを返す (return zero during delay time)
         if t < self.delay_s:
-            return (0.0, 0.0)
+            vel, pos = 0.0, 0.0
         # 指定時間ステップの間はインパルス値を返す (return impulse values for specified time steps)
         elif self._step_counter < self.on_timestep_count:
             self._step_counter += 1
-            return self.p_vel, self.p_pos
+            vel, pos = self.p_vel, self.p_pos
         else:
-            return 0.0, 0.0
+            vel, pos = 0.0, 0.0
+
+        self._cmd_vel, self._cmd_pos = vel, pos
+        return self._cmd_vel, self._cmd_pos
 
 
 class StepMotionProfile(MotionProfile):
@@ -374,7 +438,10 @@ class StepMotionProfile(MotionProfile):
 
         if t < self.delay_s:
             # 遅延時間中はゼロを返す (return zero during delay time)
-            return (0.0, 0.0)
+            vel, pos = 0.0, 0.0
         else:
             # 遅延時間後はステップ値を返す (return step values after delay time)
-            return (self.s_vel, self.s_pos)
+            vel, pos = self.s_vel, self.s_pos
+
+        self._cmd_vel, self._cmd_pos = vel, pos
+        return self._cmd_vel, self._cmd_pos
