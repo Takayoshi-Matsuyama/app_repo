@@ -26,6 +26,9 @@ module_version = "0.2.0"
 class PhysicalObject:
     """物理オブジェクトクラス (Physical Object Class)"""
 
+    # 重力加速度 [m/s^2] (gravitational acceleration)
+    grav_acc_m_s2: float = 9.80665
+
     def __init__(self, config: dict) -> None:
         """PhysicalObjectを初期化する
         (Initialize PhysicalObject)"""
@@ -410,9 +413,39 @@ class MDSPhysicalObject(PhysicalObject):
         # (force by spring Fs = -k*x)
         self._spring_force = -self.spring * (self.pos - self.spring_balance_pos)
 
-        # 合力F = 外力 + 減衰器力 + ばね力
-        # (net force F = external force + damper force + spring force)
-        self._net_force = ex_force + self._damper_force + self._spring_force
+        # 摩擦力 (friction force)
+        # https://www.heidon.co.jp/archives/2269
+        max_sfric_force = (
+            self.static_friction_coeff * self.mass * PhysicalObject.grav_acc_m_s2
+        )
+        dfric_force = (
+            self.dynamic_friction_coeff * self.mass * PhysicalObject.grav_acc_m_s2
+        )
+        friction_force = 0.0
+        if abs(self.vel) < 1e-6:
+            total_other_forces = ex_force + self._damper_force + self._spring_force
+            if abs(total_other_forces) < max_sfric_force:
+                # 静止摩擦力が他の力を相殺できる場合、摩擦力は他の力と逆向きで等しい
+                # (if static friction can cancel other forces,
+                #  friction force is equal and opposite to other forces)
+                friction_force = -total_other_forces
+            else:
+                # 静止摩擦力が他の力を相殺できない場合、動摩擦力に移行
+                # (if static friction cannot cancel other forces,
+                #  transition to dynamic friction)
+                friction_force = -dfric_force * (
+                    1.0 if total_other_forces > 0 else -1.0
+                )
+        else:
+            # 速度がある場合、動摩擦力を適用
+            # (if there is velocity, apply dynamic friction)
+            friction_force = -dfric_force * (self.vel / abs(self.vel))
+
+        # 合力F = 外力 + 減衰器力 + ばね力 + 摩擦力
+        # (net force F = external force + damper force + spring force + friction force)
+        self._net_force = (
+            ex_force + self._damper_force + self._spring_force + friction_force
+        )
 
         # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
         # (when force F is applied, acceleration a occurs in mass m object)
