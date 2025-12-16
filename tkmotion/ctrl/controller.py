@@ -205,6 +205,12 @@ class ControllerObserver:
         self._force_list: list[float] = []
 
     @property
+    def module_version(self) -> str:
+        """コントローラモジュールのバージョンを返す
+        (Returns the controller module version)"""
+        return module_version
+
+    @property
     def controller(self) -> Controller:
         """観測対象のコントローラを返す
         (Return the observing controller)"""

@@ -153,6 +153,16 @@ class PhysicalObject:
         (Return the configuration dictionary)"""
         return self._config
 
+    def get_observer(self) -> "PhysicalObjectObserver":
+        """物理オブジェクトの観測者を取得する
+        (Get the observer of the physical object)
+
+        Returns:
+            PhysicalObjectObserver: 物理オブジェクトの観測者
+            (Observer of the physical object)
+        """
+        return PhysicalObjectObserver(self)
+
     def reset(self) -> None:
         """物理オブジェクトの状態をリセットする
         (Reset the state of the physical object)"""
@@ -180,16 +190,6 @@ class PhysicalObject:
         self._prev_vel = vel
         self.pos = pos
         self._prev_pos = pos
-
-    def get_observer(self) -> "PhysicalObjectObserver":
-        """物理オブジェクトの観測者を取得する
-        (Get the observer of the physical object)
-
-        Returns:
-            PhysicalObjectObserver: 物理オブジェクトの観測者
-            (Observer of the physical object)
-        """
-        return PhysicalObjectObserver(self)
 
     def apply_force(self, force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
@@ -383,15 +383,7 @@ class MDSPhysicalObject(PhysicalObject):
         (Dynamic friction coefficient of the physical object)"""
         self._dynamic_friction_coeff = value
 
-    def reset(self) -> None:
-        """物理オブジェクトの状態をリセットする
-        (Reset the state of the physical object)"""
-        super().reset()
-        self._damper_force = 0.0
-        self._spring_force = 0.0
-        self._net_force = 0.0
-
-    def get_observer(self):
+    def get_observer(self) -> MDSPhysicalObjectObserver:
         """物理オブジェクトの観測者を取得する
         (Get the observer of the physical object)
 
@@ -400,6 +392,14 @@ class MDSPhysicalObject(PhysicalObject):
             (Observer of the physical object)
         """
         return MDSPhysicalObjectObserver(self)
+
+    def reset(self) -> None:
+        """物理オブジェクトの状態をリセットする
+        (Reset the state of the physical object)"""
+        super().reset()
+        self._damper_force = 0.0
+        self._spring_force = 0.0
+        self._net_force = 0.0
 
     def apply_force(self, ex_force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
