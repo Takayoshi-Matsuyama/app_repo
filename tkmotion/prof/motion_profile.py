@@ -23,7 +23,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # モーションプロファイルモジュールのバージョン情報
 # (motion profile module version information)
-module_version = "0.2.0"
+module_version = "0.3.0"
 
 
 class VelocityZeroOrMinusError(Exception):

@@ -14,7 +14,7 @@
 
 # ユーティリティモジュールのバージョン情報
 # (utility module version information)
-module_version = "0.1.0"
+module_version = "0.3.0"
 
 
 class ConfigVersionIncompatibleError(Exception):

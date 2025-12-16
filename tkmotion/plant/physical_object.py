@@ -20,7 +20,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # 物理オブジェクトモジュールのバージョン情報
 # (physical object module version information)
-module_version = "0.2.0"
+module_version = "0.3.0"
 
 
 class PhysicalObject:
