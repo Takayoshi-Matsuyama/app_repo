@@ -27,22 +27,19 @@ module_version = "0.3.0"
 
 
 class VelocityZeroOrMinusError(Exception):
-    """速度がゼロまたは負の値の場合に発生する例外
-    (Exception raised for zero or negative velocity)"""
+    """速度がゼロまたは負の値の場合に発生する例外 (Exception raised for zero or negative velocity)"""
 
     pass
 
 
 class AccelerationZeroOrMinusError(Exception):
-    """加速度がゼロまたは負の値の場合に発生する例外
-    (Exception raised for zero or negative acceleration)"""
+    """加速度がゼロまたは負の値の場合に発生する例外 (Exception raised for zero or negative acceleration)"""
 
     pass
 
 
 class MovingLengthZeroError(Exception):
-    """移動距離がゼロの場合に発生する例外
-    (Exception raised for zero moving length)"""
+    """移動距離がゼロの場合に発生する例外 (Exception raised for zero moving length)"""
 
     pass
 
@@ -51,27 +48,25 @@ class MotionProfileLoader:
     """モーションプロファイル読込クラス (Loader for MotionProfile)"""
 
     def __init__(self):
-        """MotionProfileLoaderを初期化する
-        (Initialize the MotionProfileLoader)"""
+        """MotionProfileLoaderを初期化する (Initializes the MotionProfileLoader)"""
         pass
 
     @property
     def module_version(self) -> str:
-        """モーションプロファイルモジュールのバージョンを返す
-        (Returns the motion profile module version)"""
+        """モーションプロファイルモジュールのバージョン (Motion profile module version)"""
         return module_version
 
     def load(
         self, filepath="tkmotion/prof/default_motion_prof_config.json", prof_index=0
     ) -> MotionProfile | None:
-        """JSONファイルからモーションプロファイル設定を読み込む
-        (Load motion profile from a JSON file)
+        """モーションプロファイル設定を読み込む (Load motion profile configuration)
 
         Args:
-            filepath (str): JSONファイルのパス (Path to the JSON file)
-            prof_index (int): プロファイル設定辞書のインデックス (Index of the profile setting dictionary)
+            filepath (str): 設定JSONファイルのパス (Path to the configuration JSON file)
+            prof_index (int): プロファイル設定辞書のインデックス (Index of the profile configuration dictionary)
+
         Returns:
-            MotionProfile | None: モーションプロファイルオブジェクト (MotionProfile object)
+            MotionProfile | None: モーションプロファイル (MotionProfile)
         """
         try:
             with open(filepath, "r") as f:
@@ -111,22 +106,24 @@ class MotionProfile:
     """モーションプロファイルの基底クラス (A base class for motion profiles)"""
 
     def __init__(self, config: dict):
-        """モーションプロファイルを初期化する
-        (Initialize the MotionProfile)."""
+        """モーションプロファイルを初期化する (Initializes the MotionProfile)."""
         self._config: dict = config
         self._cmd_vel: float = 0.0
         self._cmd_pos: float = 0.0
 
     @property
     def module_version(self) -> str:
-        """モーションプロファイルモジュールのバージョンを返す
-        (Returns the motion profile module version)"""
+        """モーションプロファイルモジュールのバージョン (Motion profile module version)"""
         return module_version
 
     @property
     def config_version(self) -> str:
-        """モーションプロファイル設定のバージョンを返す
-        (Returns the motion profile configuration version)"""
+        """モーションプロファイル設定のバージョン (Motion profile configuration version)
+
+        Raises:
+            KeyError: 設定辞書に'version'キーが存在しない場合に発生
+              (If 'version' key is missing in the configuration dictionary)
+        """
         try:
             return self._config["version"]
         except KeyError as e:
@@ -136,8 +133,12 @@ class MotionProfile:
 
     @property
     def type(self) -> str:
-        """モーションプロファイルタイプを返す
-        (Returns the motion profile type)"""
+        """モーションプロファイルタイプ (Motion profile type)
+
+        Raises:
+            KeyError: 設定辞書に'type'キーが存在しない場合に発生
+              (If 'type' key is missing in the configuration dictionary)
+        """
         try:
             return self._config["type"]
         except KeyError as e:
@@ -147,29 +148,38 @@ class MotionProfile:
 
     @property
     def cmd_vel(self) -> float:
-        """コマンド速度を返す
-        (Returns the command velocity)"""
+        """指令速度 (Command velocity)"""
         return self._cmd_vel
 
     @property
     def cmd_pos(self) -> float:
-        """コマンド位置を返す
-        (Returns the command position)"""
+        """指令位置 (Command position)"""
         return self._cmd_pos
 
     def get_config(self) -> dict:
-        """プロファイルソースの辞書を返す
-        (Returns the profile source dictionary)"""
+        """プロファイルソースの辞書を返す (Returns the profile source dictionary)
+
+        Returns:
+            dict: プロファイル設定辞書 (Profile configuration dictionary)
+        """
         return self._config
 
     def get_observer(self) -> MotionProfileObserver:
-        """モーションプロファイルオブザーバーを返す
-        (Returns the motion profile observer)"""
+        """モーションプロファイルオブザーバーを返す (Returns the motion profile observer)
+
+        Returns:
+            MotionProfileObserver: モーションプロファイルオブザーバー (Motion profile observer)
+        """
         return MotionProfileObserver(self)
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """速度と位置のタプルを返す
-        (Return a tuple of velocity and position)"""
+        """指令速度と位置を計算する (Calculates command velocity and position)
+
+        Args:
+            t (float): [s] 時間 (Time)
+        Returns:
+            tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
+        """
         # ベースクラスのデフォルト実装 (Default implementation for base class)
         return 0.0, 0.0
 
@@ -178,39 +188,33 @@ class MotionProfileObserver:
     """モーションプロファイルオブザーバークラス (Observer class for MotionProfile)"""
 
     def __init__(self, motion_profile: MotionProfile) -> None:
-        """MotionProfileObserverを初期化する
-        (Initialize the MotionProfileObserver)"""
+        """MotionProfileObserverを初期化する (Initializes the MotionProfileObserver)"""
         self._motion_profile: MotionProfile = motion_profile
         self._cmd_vel_list: list[float] = []
         self._cmd_pos_list: list[float] = []
 
     @property
     def module_version(self) -> str:
-        """モーションプロファイルモジュールのバージョンを返す
-        (Returns the motion profile module version)"""
+        """モーションプロファイルモジュールのバージョン (Motion profile module version)"""
         return module_version
 
     @property
     def profile(self) -> MotionProfile:
-        """観測対象のモーションプロファイルを返す
-        (Returns the observing motion profile)"""
+        """観測対象のモーションプロファイル (Observing motion profile)"""
         return self._motion_profile
 
     def reset(self) -> None:
-        """観測データをリセットする
-        (Reset the observed data)"""
+        """観測データをリセットする (Reset the observed data)"""
         self._cmd_vel_list.clear()
         self._cmd_pos_list.clear()
 
     def observe(self) -> None:
-        """モーションプロファイルの観測を行う
-        (Observe the motion profile)"""
+        """モーションプロファイルを観測する (Observes the motion profile)"""
         self._cmd_vel_list.append(self._motion_profile.cmd_vel)
         self._cmd_pos_list.append(self._motion_profile.cmd_pos)
 
     def get_observed_data(self) -> dict:
-        """観測データの辞書を返す
-        (Return a dictionary of observed data)"""
+        """観測データの辞書を返す (Returns a dictionary of observed data)"""
         return {
             "cmd_velocity_m_s": self._cmd_vel_list,
             "cmd_position_m": self._cmd_pos_list,
@@ -221,8 +225,18 @@ class TrapezoidalMotionProfile(MotionProfile):
     """台形モーションプロファイルのクラス (A class for trapezoidal motion profiles)"""
 
     def __init__(self, config: dict):
-        """TrapezoidalMotionProfileを初期化する
-        (Initialize the TrapezoidalMotionProfile)"""
+        """TrapezoidalMotionProfileを初期化する (Initializes the TrapezoidalMotionProfile)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+            VelocityZeroOrMinusError: 速度がゼロまたは負の値の場合に発生
+              (If velocity is zero or negative)
+            AccelerationZeroOrMinusError: 加速度がゼロまたは負の値の場合に発生
+              (If acceleration is zero or negative)
+            MovingLengthZeroError: 移動距離がゼロの場合に発生
+              (If moving length is zero)
+        """
         super().__init__(config)
 
         # 最大速度 (maximum velocity)
@@ -277,15 +291,14 @@ class TrapezoidalMotionProfile(MotionProfile):
             self.T = 2 * self.Ta
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """速度と位置のタプルを返す
-        (Return a tuple of velocity and position)
+        """指令速度と位置を計算する (Calculates command velocity and position)
 
         Args:
             t (float): [s] 時間 (Time)
+
         Returns:
             tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
         """
-
         # 加速 (acceleration)
         if t < self.Ta:
             vel = self.dir * self.A * t
@@ -314,12 +327,15 @@ class TrapezoidalMotionProfile(MotionProfile):
 
 
 class ImpulseMotionProfile(MotionProfile):
-    """インパルスモーションプロファイルのクラス
-    (A class for impulse motion profiles)"""
+    """インパルスモーションプロファイルのクラス (A class for impulse motion profiles)"""
 
     def __init__(self, config: dict):
-        """ImpulseMotionProfileを初期化する
-        (Initialize the ImpulseMotionProfile)"""
+        """ImpulseMotionProfileを初期化する (Initializes the ImpulseMotionProfile)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+        """
         super().__init__(config)
 
         # インパルス速度 (impulse velocity)
@@ -365,15 +381,13 @@ class ImpulseMotionProfile(MotionProfile):
         self._step_counter: int = 0
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """速度と位置のタプルを返す
-        (Return a tuple of velocity and position)
+        """指令速度と位置を計算する (Calculates command velocity and position)
 
         Args:
             t (float): [s] 時間 (Time)
         Returns:
             tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
         """
-
         # 遅延時間中はゼロを返す (return zero during delay time)
         if t < self.delay_s:
             vel, pos = 0.0, 0.0
@@ -389,12 +403,15 @@ class ImpulseMotionProfile(MotionProfile):
 
 
 class StepMotionProfile(MotionProfile):
-    """ステップモーションプロファイルのクラス
-    (A class for step motion profiles)"""
+    """ステップモーションプロファイルのクラス (A class for step motion profiles)"""
 
     def __init__(self, config: dict):
-        """StepMotionProfileを初期化する
-        (Initialize the StepMotionProfile)"""
+        """StepMotionProfileを初期化する (Initializes the StepMotionProfile)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+        """
         super().__init__(config)
 
         # ステップ速度 (step velocity)
@@ -427,8 +444,7 @@ class StepMotionProfile(MotionProfile):
         self.delay_s: float = _delay_s
 
     def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
-        """速度と位置のタプルを返す
-        (Return a tuple of velocity and position)
+        """指令速度と位置を計算する (Calculates command velocity and position)
 
         Args:
             t (float): [s] 時間 (Time)

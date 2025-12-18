@@ -29,29 +29,26 @@ class DiscreteTimeLoader:
     """離散時間設定の読込クラス (Loader for DiscreteTime)"""
 
     def __init__(self):
-        """DiscreteTimeLoaderを初期化する
-        (Initialize the DiscreteTimeLoader)"""
+        """DiscreteTimeLoaderを初期化する (Initialize the DiscreteTimeLoader)"""
         pass
 
     @property
     def module_version(self) -> str:
-        """離散時間モジュールのバージョンを返す
-        (Returns the discrete time module version)"""
+        """離散時間モジュールのバージョン (Discrete time module version)"""
         return module_version
 
     def load(
         self, filepath="tkmotion/time/default_discrete_time_config.json", dtime_index=0
     ) -> DiscreteTime | None:
-        """離散時間設定をJSONファイルから読み込む
-        (Load configuration from a JSON file)
+        """離散時間設定をJSONファイルから読み込む (Load configuration from a JSON file)
 
         Args:
             filepath (str): JSONファイルのパス (Path to the JSON file)
             dtime_index (int): 離散時間設定辞書のインデックス (Index of the discrete time setting dictionary)
+
         Returns:
             DiscreteTime | None: 離散時間オブジェクト (DiscreteTime object)
         """
-
         try:
             with open(filepath, "r") as f:
                 config = json.load(f)
@@ -76,8 +73,17 @@ class DiscreteTime:
 
     def __init__(self, config: dict):
         """離散時間設定を初期化する
-        (Initialize DiscreteTime with given configuration)"""
+        (Initialize DiscreteTime with given configuration)
 
+        Args:
+            config (dict): 離散時間設定辞書 (Discrete time configuration dictionary)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+            ValueError: 設定値が不正な場合に発生
+              (If configuration values are invalid)
+        """
         self._config: dict = config
         try:
             self._dt: float = float(self._config["time_step_us"]) / 1000000.0  # 秒単位
@@ -101,7 +107,12 @@ class DiscreteTime:
     @property
     def config_version(self):
         """離散時間設定のバージョンを返す
-        (Returns the version of the discrete time configurations)"""
+        (Returns the version of the discrete time configurations)
+
+        Raises:
+            KeyError: 設定辞書に'version'キーが存在しない場合に発生
+              (If 'version' key is missing in the configuration dictionary)
+        """
         try:
             return self._config["version"]
         except KeyError as e:
@@ -111,35 +122,40 @@ class DiscreteTime:
 
     @property
     def dt(self) -> float:
-        """離散時間ステップ [s]
-        (Returns the discrete time step [s])"""
+        """離散時間ステップ [s] (Discrete time step [s])"""
         return self._dt
 
     @dt.setter
     def dt(self, value: float):
-        """離散時間ステップ [s]
-        (Set the discrete time step [s])"""
+        """離散時間ステップ [s] (Discrete time step [s])
+
+        Raises:
+            ValueError: dtが正の数でない場合に発生
+                (If dt is not a positive number)
+        """
         if value <= 0:
             raise ValueError("dt must be a positive number.")
         self._dt = value
 
     @property
     def duration(self) -> float:
-        """離散時間の継続時間 [s]
-        (Returns the duration of the discrete time [s])"""
+        """離散時間の継続時間 [s] (Duration of the discrete time [s])"""
         return self._duration_s
 
     @duration.setter
     def duration(self, value: float):
-        """離散時間の継続時間 [s]
-        (Set the duration of the discrete time [s])"""
+        """離散時間の継続時間 [s] (Duration of the discrete time [s])
+
+        Raises:
+            ValueError: durationが正の数でない場合に発生
+                (If duration is not a positive number)
+        """
         if value <= 0:
             raise ValueError("duration must be a positive number.")
         self._duration_s = value
 
     def get_config(self) -> dict:
-        """設定辞書を返す
-        (Return the configuration dictionary)"""
+        """設定辞書を返す (Return the configuration dictionary)"""
         return self._config
 
     def get_time_step_generator(self):

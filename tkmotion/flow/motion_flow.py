@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import pandas as pd
 
 from tkmotion.time.discrete_time import DiscreteTimeLoader
@@ -34,8 +36,7 @@ class MotionFlow:
     (Class that manages the flow of motion control commands)"""
 
     def __init__(self) -> None:
-        """モーションフローを初期化する
-        (Initialize the MotionFlow)"""
+        """モーションフローを初期化する (Initialize the MotionFlow)"""
         self._discrete_time: DiscreteTime | None = None
         self._controller: Controller | None = None
         self._plant: Plant | None = None
@@ -43,40 +44,45 @@ class MotionFlow:
 
     @property
     def module_version(self) -> str:
-        """モーションフローモジュールのバージョンを返す
-        (Returns the motion flow module version)"""
+        """モーションフローモジュールのバージョン (Motion flow module version)"""
         return module_version
 
     @property
     def discrete_time(self) -> DiscreteTime | None:
-        """離散時間設定を返す
-        (Returns the discrete time configuration)"""
+        """離散時間設定 (Discrete time configuration)"""
         return self._discrete_time
 
     @property
     def mprof(self) -> MotionProfile | None:
-        """モーションプロファイルを返す
-        (Returns the motion profile)"""
+        """モーションプロファイル (Motion profile)"""
         return self._motion_profile
 
     @property
     def controller(self) -> Controller | None:
-        """コントローラを返す
-        (Returns the controller)"""
+        """コントローラ (Controller)"""
         return self._controller
 
     @property
     def plant(self) -> Plant | None:
-        """プラントを返す
-        (Returns the plant)"""
+        """プラント (Plant)"""
         return self._plant
 
     def load_discrete_time(
         self, filepath="tkmotion/time/default_discrete_time_config.json"
     ) -> None:
-        """離散時間設定をロードする
-        (Load discrete time configuration)"""
+        """離散時間設定を読み込む (Load discrete time configuration)
 
+        Args:
+            filepath (str): 設定JSONファイルのパス
+              (Path to the configuration JSON file)
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: 離散時間設定の読込に失敗した場合に発生
+              (If loading discrete time configuration fails)
+        """
         self._discrete_time = DiscreteTimeLoader().load(filepath)
         if self._discrete_time is None:
             raise ValueError("Failed to load discrete time configuration.")
@@ -84,17 +90,20 @@ class MotionFlow:
     def load_motion_profile(
         self, filepath="tkmotion/prof/default_motion_prof_config.json", prof_index=0
     ) -> None:
-        """モーションプロファイルをロードする
-        (Load motion profile)
+        """モーションプロファイル設定をロードする
+        (Load motion profile configuration)
 
         Args:
             filepath (str): モーションプロファイル設定JSONファイルのパス (Path to the motion profile configuration JSON file)
             prof_index (int): プロファイル設定辞書のインデックス (Index of the profile setting dictionary)
 
         Returns:
-                None
-        """
+            None
 
+        Raises:
+            ValueError: モーションプロファイルの読込に失敗した場合に発生
+              (If loading motion profile fails)
+        """
         self._motion_profile = MotionProfileLoader().load(filepath, prof_index)
         if self._motion_profile is None:
             raise ValueError("Failed to load motion profile.")
@@ -108,8 +117,14 @@ class MotionFlow:
         Args:
             filepath (str): コントローラ設定JSONファイルのパス (Path to the controller configuration JSON file)
             ctrl_index (int): コントローラ設定辞書のインデックス (Index of the controller setting dictionary)
-        """
 
+        Returns:
+            None
+
+        Raises:
+            ValueError: コントローラの読込に失敗した場合に発生
+              (If loading controller fails)
+        """
         self._controller = ControllerLoader().load(filepath, ctrl_index)
         if self._controller is None:
             raise ValueError("Failed to load controller.")
@@ -127,8 +142,14 @@ class MotionFlow:
             filepath (str): プラント設定JSONファイルのパス (Path to the plant configuration JSON file)
             plant_index (int): プラント設定辞書のインデックス (Index of the plant setting dictionary)
             phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
-        """
 
+        Returns:
+            None
+
+        Raises:
+            ValueError: プラントの読込に失敗した場合に発生
+              (If loading plant fails)
+        """
         self._plant = PlantLoader().load(filepath, plant_index, phyobj_index)
         if self._plant is None:
             raise ValueError("Failed to load plant.")
@@ -140,8 +161,11 @@ class MotionFlow:
         Returns:
             pd.DataFrame: シミュレーション結果のデータフレーム
             (DataFrame of simulation results)
-        """
 
+        Raises:
+            ValueError: 必要な設定がロードされていない場合に発生
+              (If required configurations are not loaded)
+        """
         if self._discrete_time is None:
             raise ValueError("Discrete time configuration not available.")
 
