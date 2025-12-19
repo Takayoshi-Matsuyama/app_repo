@@ -44,7 +44,7 @@ class DiscreteTimeLoader:
 
         Args:
             filepath (str): JSONファイルのパス (Path to the JSON file)
-            dtime_index (int): 離散時間設定辞書のインデックス (Index of the discrete time setting dictionary)
+            dtime_index (int): 離散時間設定辞書のインデックス (Index of the discrete time configuration dictionary)
 
         Returns:
             DiscreteTime | None: 離散時間オブジェクト (DiscreteTime object)
@@ -94,20 +94,18 @@ class DiscreteTime:
         try:
             self._duration_s: float = float(self._config["duration_s"])
         except KeyError as e:
-            raise ValueError(f"Missing 'duration_s' in configuration: {type(e)} {e}")
+            raise KeyError(f"Missing 'duration_s' in configuration: {type(e)} {e}")
         except ValueError as e:
             raise ValueError(f"'duration_s' must be a number: {type(e)} {e}")
 
     @property
     def module_version(self) -> str:
-        """離散時間モジュールのバージョンを返す
-        (Returns the discrete time module version)"""
+        """離散時間モジュールのバージョン (Discrete time module version)"""
         return module_version
 
     @property
     def config_version(self):
-        """離散時間設定のバージョンを返す
-        (Returns the version of the discrete time configurations)
+        """離散時間設定のバージョン (Discrete time configuration version)
 
         Raises:
             KeyError: 設定辞書に'version'キーが存在しない場合に発生

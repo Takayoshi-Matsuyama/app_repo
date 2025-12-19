@@ -29,14 +29,24 @@ class Utility:
 
     @staticmethod
     def get_module_version() -> str:
-        """ユーティリティモジュールのバージョンを返す
-        (Returns the utility module version)"""
+        """ユーティリティモジュールのバージョン (Utility module version)"""
         return module_version
 
     @staticmethod
     def is_config_compatible(module_version: str, config_version: str) -> bool:
         """モジュールバージョンと設定バージョンの互換性をチェックする
-        (Check compatibility between module version and configuration version)"""
+        (Checks compatibility between module version and configuration version)
+
+        Args:
+            module_version (str): モジュールのバージョン文字列 (Module version string)
+            config_version (str): 設定のバージョン文字列 (Configuration version string)
+
+        Returns:
+            bool: 互換性がある場合はTrue、ない場合はFalse (True if compatible, False otherwise)
+
+        Raises:
+            ValueError: バージョン文字列の形式が不正な場合 (If the version string format is invalid)
+        """
         try:
             module_major, module_minor, module_patch = [
                 int(x) for x in module_version.split(".")

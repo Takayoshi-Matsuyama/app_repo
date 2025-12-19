@@ -30,8 +30,14 @@ class PhysicalObject:
     grav_acc_m_s2: float = 9.80665
 
     def __init__(self, config: dict) -> None:
-        """PhysicalObjectを初期化する
-        (Initialize PhysicalObject)"""
+        """PhysicalObjectを初期化する (Initializes PhysicalObject)
+
+        Raises:
+            ConfigVersionIncompatibleError: 設定バージョンがモジュールバージョンと互換性がない場合に発生
+              (If configuration version is not compatible with module version)
+            KeyError: 物理オブジェクト設定辞書に必要なキーが存在しない場合に発生
+              (If required keys do not exist in the physical object configuration dictionary)
+        """
         self._config: dict = config
         try:
             # 設定バージョン互換性確認 (Check configuration version compatibility)
@@ -64,14 +70,12 @@ class PhysicalObject:
 
     @property
     def module_version(self) -> str:
-        """物理オブジェクトモジュールのバージョンを返す
-        (Returns the physical object module version)"""
+        """物理オブジェクトモジュールのバージョン (Physical object module version)"""
         return module_version
 
     @property
     def config_version(self) -> str:
-        """物理オブジェクト設定のバージョンを返す
-        (Returns the physical object configuration version)"""
+        """物理オブジェクト設定のバージョン (Physical object configuration version)"""
         try:
             return self._config["version"]
         except KeyError as e:
@@ -81,91 +85,76 @@ class PhysicalObject:
 
     @property
     def mass(self) -> float:
-        """物理オブジェクトの質量 [kg]
-        (Mass of the physical object)"""
+        """物理オブジェクトの質量 [kg] (Mass of the physical object)"""
         return self._mass
 
     @mass.setter
     def mass(self, value: float) -> None:
-        """物理オブジェクトの質量 [kg]
-        (Mass of the physical object)"""
+        """物理オブジェクトの質量 [kg] (Mass of the physical object)"""
         self._mass = value
 
     @property
     def acc(self) -> float:
-        """物理オブジェクトの加速度 [m/s^2]
-        (Acceleration of the physical object)"""
+        """物理オブジェクトの加速度 [m/s^2] (Acceleration of the physical object)"""
         return self._acc
 
     @acc.setter
     def acc(self, value: float) -> None:
-        """物理オブジェクトの加速度 [m/s^2]
-        (Acceleration of the physical object)"""
+        """物理オブジェクトの加速度 [m/s^2] (Acceleration of the physical object)"""
         self._prev_acc = self._acc  # 前の値を保存
         self._acc = value
 
     @property
     def prev_acc(self) -> float:
-        """物理オブジェクトの前回の加速度 [m/s^2]
-        (Previous acceleration of the physical object)"""
+        """物理オブジェクトの前回の加速度 [m/s^2] (Previous acceleration of the physical object)"""
         return self._prev_acc
 
     @property
     def vel(self) -> float:
-        """物理オブジェクトの速度 [m/s]
-        (Velocity of the physical object)"""
+        """物理オブジェクトの速度 [m/s] (Velocity of the physical object)"""
         return self._vel
 
     @vel.setter
     def vel(self, value: float) -> None:
-        """物理オブジェクトの速度 [m/s]
-        (Velocity of the physical object)"""
+        """物理オブジェクトの速度 [m/s] (Velocity of the physical object)"""
         self._prev_vel = self._vel  # 前の値を保存
         self._vel = value
 
     @property
     def prev_vel(self) -> float:
-        """物理オブジェクトの前回の速度 [m/s]
-        (Previous velocity of the physical object)"""
+        """物理オブジェクトの前回の速度 [m/s](Previous velocity of the physical object)"""
         return self._prev_vel
 
     @property
     def pos(self) -> float:
-        """物理オブジェクトの位置 [m]
-        (Position of the physical object)"""
+        """物理オブジェクトの位置 [m] (Position of the physical object)"""
         return self._pos
 
     @pos.setter
     def pos(self, value: float) -> None:
-        """物理オブジェクトの位置 [m]
-        (Position of the physical object)"""
+        """物理オブジェクトの位置 [m] (Position of the physical object)"""
         self._prev_pos = self._pos  # 前の値を保存
         self._pos = value
 
     @property
     def prev_pos(self) -> float:
-        """物理オブジェクトの前回の位置 [m]
-        (Previous position of the physical object)"""
+        """物理オブジェクトの前回の位置 [m] (Previous position of the physical object)"""
         return self._prev_pos
 
     def get_config(self) -> dict:
-        """設定辞書を返す
-        (Return the configuration dictionary)"""
+        """設定辞書を返す (Returns the configuration dictionary)"""
         return self._config
 
     def get_observer(self) -> "PhysicalObjectObserver":
-        """物理オブジェクトの観測者を取得する
-        (Get the observer of the physical object)
+        """物理オブジェクトの観測者を取得する (Get the observer of the physical object)
 
         Returns:
-            PhysicalObjectObserver: 物理オブジェクトの観測者
-            (Observer of the physical object)
+            PhysicalObjectObserver: 物理オブジェクトの観測者 (Observer of the physical object)
         """
         return PhysicalObjectObserver(self)
 
     def reset(self) -> None:
-        """物理オブジェクトの状態をリセットする
-        (Reset the state of the physical object)"""
+        """物理オブジェクトの状態をリセットする (Reset the state of the physical object)"""
         self._acc = 0.0
         self._prev_acc = 0.0
         self._vel = 0.0
@@ -174,15 +163,12 @@ class PhysicalObject:
         self._prev_pos = 0.0
 
     def set_state(self, acc: float, vel: float, pos: float) -> None:
-        """物理オブジェクトの状態を設定する
-        (Set the state of the physical object)
+        """物理オブジェクトの状態を設定する (Sets the state of the physical object)
 
         Args:
             acc (float): 加速度 [m/s^2] (acceleration)
             vel (float): 速度 [m/s] (velocity)
             pos (float): 位置 [m] (position)
-
-        Returns: None
         """
         self.acc = acc
         self._prev_acc = acc
@@ -193,7 +179,7 @@ class PhysicalObject:
 
     def apply_force(self, force: float, dt: float) -> None:
         """物理オブジェクトに力を適用し、状態を更新する
-        (Apply force to the physical object and update status)"""
+        (Applies force to the physical object and updates state)"""
 
         # 力Fを与えると、質量mの物体に加速度aが生じる (F = m*a より a = F/m)
         # (when force F is applied, acceleration a occurs in mass m object)
@@ -212,12 +198,10 @@ class PhysicalObject:
 
 
 class PhysicalObjectObserver:
-    """物理オブジェクト観測クラス
-    (Physical Object Observer Class)"""
+    """物理オブジェクト観測クラス (Physical Object Observer Class)"""
 
     def __init__(self, physical_obj: PhysicalObject) -> None:
-        """PhysicalObjectObserverを初期化する
-        (Initialize PhysicalObjectObserver)"""
+        """PhysicalObjectObserverを初期化する (Initializes PhysicalObjectObserver)"""
         self._physical_obj: PhysicalObject = physical_obj
         self._obj_acc_list: list[float] = []
         self._obj_vel_list: list[float] = []
@@ -225,31 +209,27 @@ class PhysicalObjectObserver:
 
     @property
     def physical_obj(self) -> PhysicalObject:
-        """観測対象の物理オブジェクトを返す
-        (Return the observing physical object)"""
+        """観測対象の物理オブジェクト (Observing physical object)"""
         return self._physical_obj
 
     def reset(self) -> None:
-        """観測データをリセットする
-        (Reset the observed data)"""
+        """観測データをリセットする (Resets the observed data)"""
         self._obj_acc_list.clear()
         self._obj_vel_list.clear()
         self._obj_pos_list.clear()
 
     def observe(self) -> None:
         """物理オブジェクトの状態を観測し、データリストに追加する
-        (Observe the state of the physical object and add to data list)"""
+        (Observes the state of the physical object and adds to data list)"""
         self._obj_acc_list.append(self._physical_obj.acc)
         self._obj_vel_list.append(self._physical_obj.vel)
         self._obj_pos_list.append(self._physical_obj.pos)
 
     def get_observed_data(self) -> dict:
-        """観測データを辞書形式で返す
-        (Return the observed data in dictionary format)
+        """観測データを辞書形式で返す (Return the observed data in dictionary format)
 
         Returns:
-            dict: 観測データ辞書
-            (Observed data dictionary)
+            dict: 観測データ辞書 (Observed data dictionary)
         """
         return {
             "obj_acceleration_m_s2": self._obj_acc_list,
@@ -259,12 +239,19 @@ class PhysicalObjectObserver:
 
 
 class MDSPhysicalObject(PhysicalObject):
-    """質量・減衰器・ばね 物理オブジェクトクラス
-    (Mass-Damper-Spring Physical Object Class)"""
+    """質量・減衰器・ばね 物理オブジェクトクラス (Mass-Damper-Spring Physical Object Class)"""
 
     def __init__(self, config: dict) -> None:
-        """MDSPhysicalObjectを初期化する
-        (Initialize MDSPhysicalObject)"""
+        """MDSPhysicalObjectを初期化する (Initializes MDSPhysicalObject)
+
+        Args:
+            config (dict): MDS物理オブジェクト設定辞書
+              (MDS physical object configuration dictionary)
+
+        Raises:
+            KeyError: MDS物理オブジェクト設定辞書に必要なキーが存在しない場合に発生
+              (If required keys do not exist in the MDS physical object configuration dictionary)
+        """
         super().__init__(config)
         try:
             # ダンパ係数 (damper coefficient)
@@ -325,67 +312,56 @@ class MDSPhysicalObject(PhysicalObject):
 
     @property
     def damper(self) -> float:
-        """物理オブジェクトのダンパ係数 [Ns/m]
-        (Damper coefficient of the physical object)"""
+        """ダンパ係数 [Ns/m] (Damper coefficient)"""
         return self._damper
 
     @damper.setter
     def damper(self, value: float):
-        """物理オブジェクトのダンパ係数 [Ns/m]
-        (Damper coefficient of the physical object)"""
+        """ダンパ係数 [Ns/m] (Damper coefficient)"""
         self._damper = value
 
     @property
     def spring(self) -> float:
-        """物理オブジェクトのばね係数 [N/m]
-        (Spring coefficient of the physical object)"""
+        """ばね係数 [N/m] (Spring coefficient)"""
         return self._spring
 
     @spring.setter
     def spring(self, value: float):
-        """物理オブジェクトのばね係数 [N/m]
-        (Spring coefficient of the physical object)"""
+        """ばね係数 [N/m] (Spring coefficient)"""
         self._spring = value
 
     @property
     def spring_balance_pos(self) -> float:
-        """物理オブジェクトのばね平衡位置 [m]
-        (Spring balance position of the physical object)"""
+        """ばね平衡位置 [m] (Spring balance position)"""
         return self._spring_balance_pos
 
     @spring_balance_pos.setter
     def spring_balance_pos(self, value: float):
-        """物理オブジェクトのばね平衡位置 [m]
-        (Spring balance position of the physical object)"""
+        """ばね平衡位置 [m] (Spring balance position)"""
         self._spring_balance_pos = value
 
     @property
     def static_friction_coeff(self) -> float:
-        """物理オブジェクトの静止摩擦係数
-        (Static friction coefficient of the physical object)"""
+        """静止摩擦係数 (Static friction coefficient)"""
         return self._static_friction_coeff
 
     @static_friction_coeff.setter
     def static_friction_coeff(self, value: float):
-        """物理オブジェクトの静止摩擦係数
-        (Static friction coefficient of the physical object)"""
+        """静止摩擦係数 (Static friction coefficient)"""
         self._static_friction_coeff = value
 
     @property
     def dynamic_friction_coeff(self) -> float:
-        """物理オブジェクトの動摩擦係数
-        (Dynamic friction coefficient of the physical object)"""
+        """動摩擦係数 (Dynamic friction coefficient)"""
         return self._dynamic_friction_coeff
 
     @dynamic_friction_coeff.setter
     def dynamic_friction_coeff(self, value: float):
-        """物理オブジェクトの動摩擦係数
-        (Dynamic friction coefficient of the physical object)"""
+        """動摩擦係数 (Dynamic friction coefficient)"""
         self._dynamic_friction_coeff = value
 
     def get_observer(self) -> MDSPhysicalObjectObserver:
-        """物理オブジェクトの観測者を取得する
-        (Get the observer of the physical object)
+        """物理オブジェクトの観測者を取得する (Gets the observer of the physical object)
 
         Returns:
             MDSPhysicalObjectObserver: 物理オブジェクトの観測者
@@ -394,16 +370,14 @@ class MDSPhysicalObject(PhysicalObject):
         return MDSPhysicalObjectObserver(self)
 
     def reset(self) -> None:
-        """物理オブジェクトの状態をリセットする
-        (Reset the state of the physical object)"""
+        """物理オブジェクトの状態をリセットする (Reset the state of the physical object)"""
         super().reset()
         self._damper_force = 0.0
         self._spring_force = 0.0
         self._net_force = 0.0
 
     def apply_force(self, ex_force: float, dt: float) -> None:
-        """物理オブジェクトに力を適用し、状態を更新する
-        (Apply force to the physical object and update status)"""
+        """物理オブジェクトに力を適用し、状態を更新する (Applies force to the physical object and updates state)"""
 
         # 減衰器による力Fd = -c*v
         # (force by damper Fd = -c*v)
@@ -464,7 +438,7 @@ class MDSPhysicalObject(PhysicalObject):
 
     def calc_char_values(self) -> tuple[float, float, float, float]:
         """物理オブジェクトの理論特性値を計算する
-        (Calculate theoretical characteristic values of the physical object)
+        (Calculates theoretical characteristic values of the physical object)
 
         Returns:
             tuple: 固有振動数 [Hz]、臨界減衰率 [Ns/m]、減衰比 [-]、減衰振動数 [Hz]
@@ -489,12 +463,10 @@ class MDSPhysicalObject(PhysicalObject):
 
 
 class MDSPhysicalObjectObserver(PhysicalObjectObserver):
-    """質量・減衰器・ばね 物理オブジェクト観測クラス
-    (Mass-Damper-Spring Physical Object Observer Class)"""
+    """質量・減衰器・ばね 物理オブジェクト観測クラス (Mass-Damper-Spring Physical Object Observer Class)"""
 
     def __init__(self, physical_obj: MDSPhysicalObject) -> None:
-        """MDSPhysicalObjectObserverを初期化する
-        (Initialize MDSPhysicalObjectObserver)"""
+        """MDSPhysicalObjectObserverを初期化する (Initializes MDSPhysicalObjectObserver)"""
         super().__init__(physical_obj)
         self._physical_obj: MDSPhysicalObject = self._physical_obj
         self._damper_force_list: list[float] = []
@@ -503,13 +475,11 @@ class MDSPhysicalObjectObserver(PhysicalObjectObserver):
 
     @property
     def physical_obj(self) -> MDSPhysicalObject:
-        """観測対象の物理オブジェクトを返す
-        (Return the observed physical object)"""
+        """観測対象の物理オブジェクト (Return the observed physical object)"""
         return self._physical_obj
 
     def reset(self) -> None:
-        """観測データをリセットする
-        (Reset observation data)"""
+        """観測データをリセットする (Resets observation data)"""
         super().reset()
         self._damper_force_list.clear()
         self._spring_force_list.clear()
@@ -517,15 +487,14 @@ class MDSPhysicalObjectObserver(PhysicalObjectObserver):
 
     def observe(self) -> None:
         """物理オブジェクトの状態を観測し、データリストに追加する
-        (Observe the state of the physical object and add to data list)"""
+        (Observes the state of the physical object and adds to data list)"""
         super().observe()
         self._damper_force_list.append(self.physical_obj._damper_force)
         self._spring_force_list.append(self.physical_obj._spring_force)
         self._net_force_list.append(self.physical_obj._net_force)
 
     def get_observed_data(self) -> dict:
-        """観測データリストを返す
-        (Return the observation data list)
+        """観測データリストを返す (Returns the observation data list)
 
         Returns:
             list: 観測データリスト

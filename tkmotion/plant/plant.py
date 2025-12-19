@@ -31,14 +31,12 @@ class PlantLoader:
     """プラント読込クラス (Plant Loader Class)"""
 
     def __init__(self):
-        """PlantLoaderを初期化する
-        (Initialize the PlantLoader)"""
+        """PlantLoaderを初期化する (Initializes the PlantLoader)"""
         pass
 
     @property
     def module_version(self) -> str:
-        """プラントモジュールのバージョンを返す
-        (Returns the plant module version)"""
+        """プラントモジュールのバージョン (Plant module version)"""
         return module_version
 
     def load(
@@ -47,8 +45,7 @@ class PlantLoader:
         plant_index=0,
         phyobj_index=0,
     ) -> Plant | None:
-        """プラント設定をJSONファイルから読み込む
-        (Load Plant settings from a JSON file)
+        """プラント設定をJSONファイルから読み込む (Loads Plant configuration from a JSON file)
 
         Args:
             filepath (str): JSONファイルのパス (Path to the JSON file)
@@ -79,12 +76,15 @@ class Plant:
     """プラント (制御対象) (Plant (Target System)) Class"""
 
     def __init__(self, config: dict, phyobj_index=0) -> None:
-        """Plantを初期化する
-        (Initialize Plant with given configuration)
+        """Plantを初期化する (Initializes the Plant with given configuration)
 
         Args:
-            pyconfig (dict): プラント設定辞書 (Plant configuration dictionary)
+            config (dict): プラント設定辞書 (Plant configuration dictionary)
             phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
+
+        Raises:
+            KeyError: プラント設定辞書に'physical_object'が存在しない場合に発生
+              (If 'physical_object' does not exist in the plant configuration dictionary)
         """
         self._config: dict = config
         self._physical_object: PhysicalObject
@@ -99,20 +99,21 @@ class Plant:
                         self._config["physical_object"][phyobj_index]
                     )
         except KeyError as e:
-            raise ValueError(
-                f"Missing 'physical_object' in configuration: {type(e)} {e}"
-            )
+            raise KeyError(f"Missing 'physical_object' in configuration: {type(e)} {e}")
 
     @property
     def module_version(self) -> str:
-        """プラントモジュールのバージョンを返す
-        (Returns the plant module version)"""
+        """プラントモジュールのバージョン (Plant module version)"""
         return module_version
 
     @property
     def config_version(self) -> str:
-        """プラント設定のバージョンを返す
-        (Returns the plant configuration version)"""
+        """プラント設定のバージョン (Plant configuration version)
+
+        Raises:
+            KeyError: プラント設定辞書に'version'が存在しない場合に発生
+              (If 'version' does not exist in the plant configuration dictionary)
+        """
         try:
             return self._config["version"]
         except KeyError as e:
@@ -120,11 +121,9 @@ class Plant:
 
     @property
     def physical_obj(self) -> PhysicalObject:
-        """プラントの物理オブジェクトを返す
-        (Return the physical object of the plant)"""
+        """プラントの物理オブジェクト (Physical object of the plant)"""
         return self._physical_object
 
     def get_config(self) -> dict:
-        """設定辞書を返す
-        (Return the configuration dictionary)"""
+        """設定辞書を返す (Returns the configuration dictionary)"""
         return self._config
