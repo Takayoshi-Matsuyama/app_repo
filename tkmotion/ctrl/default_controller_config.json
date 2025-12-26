@@ -35,6 +35,15 @@
                 "description": "Step controller settings for TKMotion simulations.",
                 "step_force_N": 2.0,
                 "delay_s": 1.0
+            },
+            {
+                "version": "0.3.0",
+                "type": "sin",
+                "name": "sinusoidal_controller",
+                "description": "Sine wave controller settings for TKMotion simulations.",
+                "amplitude_N": 1.0,
+                "frequency_Hz": 1.0,
+                "offset_N": 0.0
             }
         ]
     }

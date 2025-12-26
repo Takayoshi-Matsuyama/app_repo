@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+import numpy as np
 import json
 from tkmotion.util.utility import Utility
 from tkmotion.util.utility import ConfigVersionIncompatibleError
@@ -69,6 +70,8 @@ class ControllerLoader:
                         return ImpulseController(config[0]["controller"][ctrl_index])
                     case "step":
                         return StepController(config[0]["controller"][ctrl_index])
+                    case "sin":
+                        return SinusoidalController(config[0]["controller"][ctrl_index])
                     case _:
                         return Controller(config[0]["controller"][ctrl_index])
         except Exception as e:
@@ -619,4 +622,68 @@ class StepController(Controller):
             # 遅延時間後はステップ値を返す (return step value after delay time)
             self._force = self.s_force
 
+        return self._force
+
+
+class SinusoidalController(Controller):
+    """サイン波コントローラクラス (Sinusoidal Controller Class)"""
+
+    def __init__(self, config: dict) -> None:
+        """SinusoidalControllerを初期化する (Initializes SinusoidalController)
+
+        Args:
+            config (dict): サイン波コントローラ設定辞書 (Sinusoidal controller configuration dictionary)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+        """
+        super().__init__(config)
+
+        # サイン波振幅 (sinusoidal amplitude)
+        try:
+            _amplitude: float = self._config["amplitude_N"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'amplitude_N' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.amplitude: float = _amplitude
+
+        # サイン波周波数 (sinusoidal frequency)
+        try:
+            _frequency: float = self._config["frequency_Hz"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'frequency_Hz' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.frequency: float = _frequency
+
+    def reset(self) -> None:
+        """コントローラの状態をリセットする (Resets the controller state)"""
+        pass
+
+    def calculate_force(
+        self,
+        t: float,
+        cmd_vel: float,
+        cmd_pos: float,
+        plant_vel: float,
+        plant_pos: float,
+    ) -> float:
+        """制御力を計算する (Calculates the control force)
+
+        Args:
+            t (float): 現在の経過時間 [s] (current elapsed time)
+            cmd_vel (float): 指令速度 [m/s] (command velocity)
+            cmd_pos (float): 指令位置 [m] (command position)
+            plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
+            plant_pos (float): プラントの現在位置 [m] (current position of the plant)
+
+        Returns:
+            float: 計算された制御力 [N] (calculated control force)"""
+
+        # サイン波推力計算 (sinusoidal force calculation)
+        self._force = self.amplitude * np.sin(2 * np.pi * self.frequency * t)
         return self._force
