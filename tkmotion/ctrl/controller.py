@@ -22,7 +22,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # コントローラモジュールのバージョン情報
 # (Controller module version information)
-module_version = "0.3.0"
+module_version = "0.3.1"
 
 
 class ControllerLoader:
@@ -626,7 +626,7 @@ class StepController(Controller):
 
 
 class SinusoidalController(Controller):
-    """サイン波コントローラクラス (Sinusoidal Controller Class)"""
+    """正弦波コントローラクラス (Sinusoidal Controller Class)"""
 
     def __init__(self, config: dict) -> None:
         """SinusoidalControllerを初期化する (Initializes SinusoidalController)

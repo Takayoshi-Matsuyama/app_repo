@@ -23,7 +23,7 @@ from tkmotion.util.utility import ConfigVersionIncompatibleError
 
 # モーションプロファイルモジュールのバージョン情報
 # (motion profile module version information)
-module_version = "0.3.0"
+module_version = "0.3.1"
 
 
 class VelocityZeroOrMinusError(Exception):
@@ -93,6 +93,10 @@ class MotionProfileLoader:
                         )
                     case "step":
                         return StepMotionProfile(
+                            config[0]["motion_profile"][prof_index]
+                        )
+                    case "sin":
+                        return SinusoidalMotionProfile(
                             config[0]["motion_profile"][prof_index]
                         )
                     case _:
@@ -185,7 +189,7 @@ class MotionProfile:
 
 
 class MotionProfileObserver:
-    """モーションプロファイルオブザーバークラス (Observer class for MotionProfile)"""
+    """モーションプロファイルオブザーバー (Motion profile observer)"""
 
     def __init__(self, motion_profile: MotionProfile) -> None:
         """MotionProfileObserverを初期化する (Initializes the MotionProfileObserver)"""
@@ -222,7 +226,7 @@ class MotionProfileObserver:
 
 
 class TrapezoidalMotionProfile(MotionProfile):
-    """台形モーションプロファイルのクラス (A class for trapezoidal motion profiles)"""
+    """台形モーションプロファイル (Trapezoidal motion profile)"""
 
     def __init__(self, config: dict):
         """TrapezoidalMotionProfileを初期化する (Initializes the TrapezoidalMotionProfile)
@@ -327,7 +331,7 @@ class TrapezoidalMotionProfile(MotionProfile):
 
 
 class ImpulseMotionProfile(MotionProfile):
-    """インパルスモーションプロファイルのクラス (A class for impulse motion profiles)"""
+    """インパルスモーションプロファイル (Impulse motion profile)"""
 
     def __init__(self, config: dict):
         """ImpulseMotionProfileを初期化する (Initializes the ImpulseMotionProfile)
@@ -403,7 +407,7 @@ class ImpulseMotionProfile(MotionProfile):
 
 
 class StepMotionProfile(MotionProfile):
-    """ステップモーションプロファイルのクラス (A class for step motion profiles)"""
+    """ステップモーションプロファイル (Step motion profile)"""
 
     def __init__(self, config: dict):
         """StepMotionProfileを初期化する (Initializes the StepMotionProfile)
@@ -458,6 +462,59 @@ class StepMotionProfile(MotionProfile):
         else:
             # 遅延時間後はステップ値を返す (return step values after delay time)
             vel, pos = self.s_vel, self.s_pos
+
+        self._cmd_vel, self._cmd_pos = vel, pos
+        return self._cmd_vel, self._cmd_pos
+
+
+class SinusoidalMotionProfile(MotionProfile):
+    """正弦波モーションプロファイル (Sinusoidal motion profile)"""
+
+    def __init__(self, config: dict):
+        """SinusoidalMotionProfileを初期化する (Initializes the SinusoidalMotionProfile)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+        """
+        super().__init__(config)
+
+        # 振幅 (amplitude)
+        try:
+            _amplitude: float = self._config["amplitude_m"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'amplitude_m' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.amplitude: float = _amplitude
+
+        # 周波数 (frequency)
+        try:
+            _frequency: float = self._config["frequency_Hz"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'frequency_Hz' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.frequency: float = _frequency
+
+    def calculate_cmd_vel_pos(self, t: float) -> tuple[float, float]:
+        """指令速度と位置を計算する (Calculates command velocity and position)
+        Args:
+            t (float): [s] 時間 (Time)
+        Returns:
+            tuple[float, float]: ([m/s], [m]) (速度、位置) (velocity, position)
+        """
+        # 正弦波速度と位置計算 (sinusoidal velocity and position calculation)
+        vel = (
+            self.amplitude
+            * 2
+            * np.pi
+            * self.frequency
+            * np.cos(2 * np.pi * self.frequency * t)
+        )
+        pos = self.amplitude * np.sin(2 * np.pi * self.frequency * t)
 
         self._cmd_vel, self._cmd_pos = vel, pos
         return self._cmd_vel, self._cmd_pos
