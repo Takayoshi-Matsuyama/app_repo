@@ -72,6 +72,8 @@ class ControllerLoader:
                         return StepController(config[0]["controller"][ctrl_index])
                     case "sin":
                         return SinusoidalController(config[0]["controller"][ctrl_index])
+                    case "sinsweep":
+                        return SinSweepController(config[0]["controller"][ctrl_index])
                     case _:
                         return Controller(config[0]["controller"][ctrl_index])
         except Exception as e:
@@ -686,4 +688,106 @@ class SinusoidalController(Controller):
 
         # サイン波推力計算 (sinusoidal force calculation)
         self._force = self.amplitude * np.sin(2 * np.pi * self.frequency * t)
+        return self._force
+
+
+class SinSweepController(Controller):
+    """正弦波掃引コントローラクラス (Sinusoidal Sweep Controller Class)"""
+
+    def __init__(self, config: dict) -> None:
+        """SinusoidalSweepControllerを初期化する (Initializes SinusoidalSweepController)
+
+        Args:
+            config (dict): サイン波掃引コントローラ設定辞書 (Sinusoidal sweep controller configuration dictionary)
+
+        Raises:
+            KeyError: 必要なキーが設定辞書に存在しない場合に発生
+              (If required keys are missing in the configuration dictionary)
+        """
+        super().__init__(config)
+
+        # スイープ開始周波数 (sweep start frequency)
+        try:
+            _start_frequency: float = self._config["start_frequency_Hz"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'start_frequency_Hz' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.f_start: float = _start_frequency
+
+        # スイープ終了周波数 (sweep end frequency)
+        try:
+            _end_frequency: float = self._config["end_frequency_Hz"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'end_frequency_Hz' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.f_end: float = _end_frequency
+
+        # スイープ継続時間 (sweep duration)
+        try:
+            _duration: float = self._config["duration_s"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'duration_s' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.T: float = _duration
+
+        # サイン波振幅 (sinusoidal amplitude)
+        try:
+            _amplitude: float = self._config["amplitude_N"]
+        except KeyError as e:
+            raise KeyError(
+                f"Missing 'amplitude_N' in motion profile "
+                f"configuration: {type(e)} {e}"
+            )
+        self.amp: float = _amplitude
+
+    def reset(self) -> None:
+        """コントローラの状態をリセットする (Resets the controller state)"""
+        pass
+
+    def calculate_force(
+        self,
+        t: float,
+        cmd_vel: float,
+        cmd_pos: float,
+        plant_vel: float,
+        plant_pos: float,
+    ) -> float:
+        """制御力を計算する (Calculates the control force)
+
+        Args:
+            t (float): 現在の経過時間 [s] (current elapsed time)
+            cmd_vel (float): 指令速度 [m/s] (command velocity)
+            cmd_pos (float): 指令位置 [m] (command position)
+            plant_vel (float): プラントの現在速度 [m/s] (current velocity of the plant)
+            plant_pos (float): プラントの現在位置 [m] (current position of the plant)
+
+        Returns:
+            float: 計算された制御力 [N] (calculated control force)"""
+
+        # 周波数掃引計算 (frequency sweep calculation)
+        if t <= 0.0:
+            phase = 0.0
+        elif t <= self.T:
+            # 対数スイープの位相計算 (積分の結果)
+            # log_term = ln(f_end / f_start)
+            log_term = np.log(self.f_end / self.f_start)
+
+            # phase = (2 * pi * f_start * T / log_term) * ((f_end / f_start)^(t/T) - 1)
+            term1 = (2 * np.pi * self.f_start * self.T) / log_term
+            term2 = (self.f_end / self.f_start) ** (t / self.T) - 1.0
+            phase = term1 * term2
+        else:
+            # 最終位相 (final phase)
+            log_term = np.log(self.f_end / self.f_start)
+            phase = (2 * np.pi * self.T * (self.f_end - self.f_start)) / log_term
+
+        # 力の計算
+        self._force = self.amp * np.sin(phase)
+
         return self._force

@@ -41,8 +41,18 @@
                 "type": "sin",
                 "name": "sinusoidal_controller",
                 "description": "Sinusoidal controller configuration for TKMotion simulations.",
-                "amplitude_N": 1.0,
-                "frequency_Hz": 1.0
+                "frequency_Hz": 1.0,
+                "amplitude_N": 1.0
+            },
+            {
+                "version": "0.3.0",
+                "type": "sinsweep",
+                "name": "sinusoidal_sweep_controller",
+                "description": "Sinusoidal sweep controller configuration for TKMotion simulations.",
+                "start_frequency_Hz": 0.1,
+                "end_frequency_Hz": 10.0,
+                "duration_s": 6.0,
+                "amplitude_N": 1.0
             }
         ]
     }
