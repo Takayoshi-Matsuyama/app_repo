@@ -708,43 +708,79 @@ class SinSweepController(Controller):
 
         # スイープ開始周波数 (sweep start frequency)
         try:
-            _start_frequency: float = self._config["start_frequency_Hz"]
+            self._f_start: float = self._config["start_frequency_Hz"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'start_frequency_Hz' in motion profile "
                 f"configuration: {type(e)} {e}"
             )
-        self.f_start: float = _start_frequency
 
         # スイープ終了周波数 (sweep end frequency)
         try:
-            _end_frequency: float = self._config["end_frequency_Hz"]
+            self._f_end: float = self._config["end_frequency_Hz"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'end_frequency_Hz' in motion profile "
                 f"configuration: {type(e)} {e}"
             )
-        self.f_end: float = _end_frequency
 
         # スイープ継続時間 (sweep duration)
         try:
-            _duration: float = self._config["duration_s"]
+            self._T: float = self._config["duration_s"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'duration_s' in motion profile "
                 f"configuration: {type(e)} {e}"
             )
-        self.T: float = _duration
 
         # サイン波振幅 (sinusoidal amplitude)
         try:
-            _amplitude: float = self._config["amplitude_N"]
+            self._amp: float = self._config["amplitude_N"]
         except KeyError as e:
             raise KeyError(
                 f"Missing 'amplitude_N' in motion profile "
                 f"configuration: {type(e)} {e}"
             )
-        self.amp: float = _amplitude
+
+    @property
+    def f_start(self) -> float:
+        """スイープ開始周波数 [Hz] (Sweep start frequency)"""
+        return self._f_start
+
+    @f_start.setter
+    def f_start(self, value: float) -> None:
+        """スイープ開始周波数 [Hz] (Sweep start frequency)"""
+        self._f_start = value
+
+    @property
+    def f_end(self) -> float:
+        """スイープ終了周波数 [Hz] (Sweep end frequency)"""
+        return self._f_end
+
+    @f_end.setter
+    def f_end(self, value: float) -> None:
+        """スイープ終了周波数 [Hz] (Sweep end frequency)"""
+        self._f_end = value
+
+    @property
+    def T(self) -> float:
+        """スイープ継続時間 [s] (Sweep duration)"""
+        return self._T
+
+    @T.setter
+    def T(self, value: float) -> None:
+        """スイープ継続時間 [s] (Sweep duration)"""
+        self._T = value
+
+    @property
+    def amp(self) -> float:
+        """サイン波振幅 [N] (Sinusoidal amplitude)"""
+        return self._amp
+
+    @amp.setter
+    def amp(self, value: float) -> None:
+        """サイン波振幅 [N] (Sinusoidal amplitude)"""
+        self._amp = value
 
     def reset(self) -> None:
         """コントローラの状態をリセットする (Resets the controller state)"""
