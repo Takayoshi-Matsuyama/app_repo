@@ -28,7 +28,8 @@ class DBAccessor:
         """データベースに接続するメソッド
         (Method to connect to the database)
         """
-        raise NotImplementedError("Subclasses must implement this method")
+        print("Connecting to the database...")
+        # raise NotImplementedError("Subclasses must implement this method")
 
     def disconnect(self) -> None:
         """データベースから切断するメソッド
