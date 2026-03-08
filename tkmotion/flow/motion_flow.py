@@ -154,6 +154,21 @@ class MotionFlow:
         if self._plant is None:
             raise ValueError("Failed to load plant.")
 
+    def load_plant_from_db(self) -> None:
+        """プラント設定をデータベースからロードする
+        (Load plant configuration from a database)
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: プラントの読込に失敗した場合に発生
+              (If loading plant fails)
+        """
+        self._plant = PlantLoader().load_MDS_plant_fromDB()
+        if self._plant is None:
+            raise ValueError("Failed to load plant from database.")
+
     def execute(self) -> pd.DataFrame:
         """モーションシミュレーションを実行する
         (Execute motion simulation)

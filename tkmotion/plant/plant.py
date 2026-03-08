@@ -18,6 +18,7 @@ import json
 
 from tkmotion.plant.physical_object import PhysicalObject
 from tkmotion.plant.physical_object import MDSPhysicalObject
+from tkmotion.db.db_access import DBAccessor
 from tkmotion.util.utility import Utility
 from tkmotion.util.utility import ConfigVersionIncompatibleError
 
@@ -71,15 +72,39 @@ class PlantLoader:
             print(f"Error loading plant: {type(e)} {e}")
         return None
 
-    def load_fromDB(self, plant_id: int, phyobj_index=0) -> Plant | None:
-        """プラント設定をデータベースから読み込む (Loads Plant configuration from a database)
+    def load_MDS_plant_fromDB(self) -> Plant | None:
+        """プラント設定をデータベースから読み込む (Loads Plant configuration from a database)"""
+        try:
+            dba = DBAccessor()
+            params = dba.fetch_plant_params(1)
+            print(params)
 
-        Args:
-            db_accessor (DBAccessor): データベースアクセサーオブジェクト (Database accessor object)
-            plant_id (int): プラントID (Plant ID)
-            phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
-        """
-        raise NotImplementedError("Database loading is not implemented yet.")
+            # jsonと同じ形式の辞書を作成してPlantオブジェクトを初期化する
+            #  (Create a dictionary in the same format as JSON and initialize the Plant object)
+            physical_object_config = {
+                "version": "0.3.0",
+                "type": "MDS",
+                "name": "mds_physical_object",
+                "description": "Mass-Damper-Spring physical object settings.",
+                "mass_kg": params["mass_kg"],
+                "damper_Ns_m": params["damper_Ns_m"],
+                "spring_N_m": params["spring_N_m"],
+                "spring_balance_pos_m": params["spring_balance_pos_m"],
+                "static_friction_coeff": params["static_friction_coeff"],
+                "dynamic_friction_coeff": params["dynamic_friction_coeff"],
+            }
+            config = {
+                "version": "0.3.0",
+                "type": "default",
+                "name": "MDS_plant",
+                "description": "plant which uses MDS physical object settings.",
+                "physical_object": [physical_object_config],
+            }
+
+            return Plant(config, phyobj_index=0)
+        except Exception as e:
+            print(f"Error loading plant: {type(e)} {e}")
+        return None
 
 
 class Plant:
