@@ -71,6 +71,16 @@ class PlantLoader:
             print(f"Error loading plant: {type(e)} {e}")
         return None
 
+    def load_fromDB(self, plant_id: int, phyobj_index=0) -> Plant | None:
+        """プラント設定をデータベースから読み込む (Loads Plant configuration from a database)
+
+        Args:
+            db_accessor (DBAccessor): データベースアクセサーオブジェクト (Database accessor object)
+            plant_id (int): プラントID (Plant ID)
+            phyobj_index (int): 物理オブジェクト設定辞書のインデックス (Index of the physical object setting dictionary)
+        """
+        raise NotImplementedError("Database loading is not implemented yet.")
+
 
 class Plant:
     """プラント (制御対象) (Plant (Target System)) Class"""
