@@ -100,7 +100,8 @@ class DBAccessor:
                     # 結果を見やすく整形して出力
                     print(f"=== テーブル '{table_name}' のスキーマ定義 ===")
                     print(
-                        f"{'列名 (Column Name)':<25} | {'データ型 (Data Type)':<20} | {'デフォルト値 (Default)':<30} | {'NULL許可'}"
+                        "{'列名 (Column Name)':<25} | {'データ型 (Data Type)':<20} | "
+                        "{'デフォルト値 (Default)':<30} | {'NULL許可'}"
                     )
                     print("-" * 100)
 
