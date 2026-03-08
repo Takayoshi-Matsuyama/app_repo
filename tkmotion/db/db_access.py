@@ -19,7 +19,7 @@ from psycopg import OperationalError
 
 # データベースモジュールのバージョン情報
 # (Database module version information)
-module_version = "0.3.1"
+module_version = "0.4.0"
 
 
 class DBAccessor:
