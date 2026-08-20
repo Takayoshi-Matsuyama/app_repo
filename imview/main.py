@@ -34,7 +34,8 @@ class ImageViewer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Image Viewer & Processor")
-        self.resize(800, 600)
+        # 左右に並べるため、ウィンドウサイズを横長に変更
+        self.resize(1000, 500)
 
         # 画像データを保持する変数
         self.original_image = None
@@ -49,12 +50,25 @@ class ImageViewer(QMainWindow):
         self.setCentralWidget(main_widget)
         layout = QVBoxLayout(main_widget)
 
-        # 画像表示用のラベル
-        self.image_label = QLabel("ここに画像が表示されます")
-        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.image_label.setMinimumSize(400, 300)
-        self.image_label.setStyleSheet("border: 1px solid black;")
-        layout.addWidget(self.image_label)
+        # --- 変更点: 左右に画像を並べるレイアウト ---
+        image_layout = QHBoxLayout()
+
+        # 左側 (元画像用)
+        self.label_original = QLabel("元画像")
+        self.label_original.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_original.setMinimumSize(400, 300)
+        self.label_original.setStyleSheet("border: 1px solid black;")
+        image_layout.addWidget(self.label_original)
+
+        # 右側 (処理結果用)
+        self.label_processed = QLabel("処理結果")
+        self.label_processed.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_processed.setMinimumSize(400, 300)
+        self.label_processed.setStyleSheet("border: 1px solid black;")
+        image_layout.addWidget(self.label_processed)
+
+        layout.addLayout(image_layout)
+        # ----------------------------------------
 
         # 操作パネル（ボタンとスライダー）
         control_layout = QHBoxLayout()
@@ -66,7 +80,7 @@ class ImageViewer(QMainWindow):
         # 特徴抽出（二値化）のパラメータ調整用スライダー
         self.slider = QSlider(Qt.Orientation.Horizontal)
         self.slider.setRange(0, 255)
-        self.slider.setValue(127)  # 初期値
+        self.slider.setValue(127)
         self.slider.valueChanged.connect(self.apply_image_processing)
         control_layout.addWidget(self.slider)
 
@@ -81,6 +95,8 @@ class ImageViewer(QMainWindow):
             # OpenCVで画像を読み込み (日本語パス対応などが必要な場合は np.fromfile 等を使用)
             self.original_image = cv2.imread(file_name)
             if self.original_image is not None:
+                # 読み込んだらすぐに左側に元画像を表示
+                self.display_image(self.original_image, self.label_original)
                 self.apply_image_processing()
 
     def apply_image_processing(self):
@@ -96,23 +112,17 @@ class ImageViewer(QMainWindow):
 
         # 表示用にカラー(BGR)に戻す
         self.processed_image = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
-        self.update_preview()
 
-    def update_preview(self):
-        if self.processed_image is None:
-            return
+        # 右側に処理結果を表示
+        self.display_image(self.processed_image, self.label_processed)
 
-        # OpenCV(BGR)の配列をPyQt(RGB)のQImageに変換
-        # Note: ここでは、表示する画像として processed_image を使用していますが、
-        #       必要に応じて original_image を使用することもできます。
-        #       (右辺を original_image に変更する)
-        image = self.processed_image
-
-        height, width, channel = image.shape
+    # --- 変更点: 表示処理を共通の関数化 ---
+    def display_image(self, cv_image, label_widget):
+        height, width, channel = cv_image.shape
         bytes_per_line = 3 * width
 
         # BGRからRGBへ変換してQImageを作成
-        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        rgb_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
         q_image = QImage(
             rgb_image.data, width, height, bytes_per_line, QImage.Format.Format_RGB888
         )
@@ -120,9 +130,9 @@ class ImageViewer(QMainWindow):
         # QPixmapに変換してラベルにセット
         pixmap = QPixmap.fromImage(q_image)
         # ラベルのサイズに合わせて縮小表示
-        self.image_label.setPixmap(
+        label_widget.setPixmap(
             pixmap.scaled(
-                self.image_label.size(),
+                label_widget.size(),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
