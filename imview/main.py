@@ -15,7 +15,9 @@
 import sys
 import cv2
 import numpy as np
-from PyQt6.QtWidgets import (
+
+# 変更点: PyQt6 を PySide6 に変更
+from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QLabel,
@@ -26,8 +28,8 @@ from PyQt6.QtWidgets import (
     QSlider,
     QHBoxLayout,
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QImage, QPixmap
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage, QPixmap
 
 
 class ImageViewer(QMainWindow):
